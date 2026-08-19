@@ -31,7 +31,8 @@ export async function GET(request: NextRequest) {
   const adminSecretSet = Boolean(process.env.ADMIN_SESSION_SECRET);
   const pepperSet = Boolean(process.env.ADMIN_HASH_PEPPER);
 
-  let backendTest = {
+  // ✅ FIX: Changed `let` to `const` (properties are mutated, variable is not reassigned)
+  const backendTest = {
     status: 'not-tested' as string,
     latencyMs: null as number | null,
     error: null as string | null,
