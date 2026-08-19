@@ -59,7 +59,7 @@ export default function AdminProjectsPage() {
         p.title.toLowerCase().includes(q) ||
         p.client.toLowerCase().includes(q) ||
         p.category.toLowerCase().includes(q) ||
-        p.technologies.some((t) => t.toLowerCase().includes(q));
+        p.technologies.some((t: string) => t.toLowerCase().includes(q));
       return matchesStatus && matchesSearch;
     });
   }, [projects, filterStatus, search]);
