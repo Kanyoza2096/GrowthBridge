@@ -42,8 +42,9 @@ export function Testimonials() {
                       ))}
                     </div>
 
+                    {/* ✅ FIX: Use &quot; instead of unescaped quotes */}
                     <p className="text-xs sm:text-sm text-[var(--text-secondary)] italic leading-relaxed">
-                      "{t.quote}"
+                      &quot;{t.quote}&quot;
                     </p>
                   </div>
 
