@@ -1,0 +1,75 @@
+@import "tailwindcss";
+
+/* ═══════════════════════════════════════════════════════════════════════════
+ * Tailwind v4 — custom variant
+ *   `.dark` class applied to <html> drives both dark utilities.
+ * ═══════════════════════════════════════════════════════════════════════════ */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* ═══════════════════════════════════════════════════════════════════════════
+ * GROWTHBRIDGE DESIGN SYSTEM v1.0
+ * Full enterprise design system — 24 modular CSS files.
+ * ═══════════════════════════════════════════════════════════════════════════ */
+@import "../styles/index.css";
+
+/* ═══════════════════════════════════════════════════════════════════════════
+ * BACKWARD COMPATIBILITY ALIASES
+ * Maps old token names used throughout existing React components to the
+ * new semantic design-system tokens. This layer ensures zero breakage
+ * while incrementally migrating components to the new token API.
+ * ═══════════════════════════════════════════════════════════════════════════ */
+@layer base {
+  :root {
+    /* ── Legacy Brand Shortcuts ─────────────────────────────────────────── */
+    --gb-navy:        var(--gb-navy-800);
+    --gb-navy-2:      var(--gb-navy-700);
+    --gb-green:       var(--gb-green-600);
+    --gb-green-2:     var(--gb-green-800);
+    --gb-orange:      var(--gb-orange-500);
+    --gb-amber:       var(--gb-orange-600);
+
+    /* ── Legacy Surface Tokens ─────────────────────────────────────────── */
+    --bg:             var(--surface-page);
+    --bg-soft:        var(--surface-soft);
+    --bg-subtle:      var(--surface-subtle);
+    --bg-navy:        var(--gb-navy-800);
+    --bg-navy-soft:   rgba(11, 42, 90, 0.04);
+
+    /* ── Legacy Text Tokens ────────────────────────────────────────────── */
+    --text:           var(--text-primary);
+    --text-muted:     var(--text-secondary);
+    --text-subtle:    var(--text-tertiary);
+    --text-inverse:   var(--text-on-dark);
+
+    /* ── Legacy Border Tokens ──────────────────────────────────────────── */
+    --border:         var(--border-subtle);
+    --border-strong:  var(--border-default);
+    --border-navy:    var(--border-brand);
+
+    /* ── Legacy Card Tokens ────────────────────────────────────────────── */
+    --card-bg:        var(--card-surface);
+
+    /* ── Legacy Action Tokens ──────────────────────────────────────────── */
+    --accent:         var(--action-primary);
+    --accent-hover:   var(--action-primary-hover);
+    --accent-2:       var(--action-secondary);
+    --accent-2-hover: var(--action-secondary-hover);
+
+    /* ── Legacy Gradient Tokens ────────────────────────────────────────── */
+    --brand-gradient: var(--gradient-brand);
+    --text-gradient:  var(--gradient-text);
+
+    /* ── Legacy Input Tokens ───────────────────────────────────────────── */
+    --input-bg:       var(--form-bg);
+    --input-border:   var(--form-border);
+    --input-focus:    var(--form-border-focus);
+    --input-placeholder: var(--form-placeholder);
+  }
+
+  /* ── Dark Mode Legacy Overrides ──────────────────────────────────────── */
+  .dark {
+    --bg-navy:        #040913;
+    --bg-navy-soft:   rgba(18,59,93,0.25);
+    --text-inverse:   #070F1B;
+  }
+}
