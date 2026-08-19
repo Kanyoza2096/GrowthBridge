@@ -48,7 +48,7 @@ export function SocialFeedAggregator() {
           </Button>
         </div>
 
-        {/* Platform Filter Bar — improved mobile spacing */}
+        {/* Platform Filter Bar */}
         <div className="flex items-center gap-2.5 sm:gap-3 overflow-x-auto pb-3 -mx-4 px-4 sm:mx-0 sm:px-0 scrollbar-none">
           {PLATFORM_FILTERS.map((tab) => {
             const active = activePlatform === tab.id;
@@ -70,7 +70,7 @@ export function SocialFeedAggregator() {
           })}
         </div>
 
-        {/* Feed Cards Grid — improved mobile spacing */}
+        {/* Feed Cards Grid */}
         {isLoading ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
             {[1, 2, 3].map((i) => (
@@ -80,7 +80,10 @@ export function SocialFeedAggregator() {
         ) : !feed || feed.length === 0 ? (
           <div className="p-8 sm:p-12 text-center bg-[var(--surface-page)] rounded-2xl border border-[var(--border-subtle)] space-y-2">
             <p className="text-sm font-semibold text-[var(--text-primary)]">No posts found for this channel.</p>
-            <p className="text-xs text-[var(--text-tertiary)]">Try selecting "All Channels" or syncing again.</p>
+            {/* ✅ FIX: Replaced "All Channels" with &quot;All Channels&quot; */}
+            <p className="text-xs text-[var(--text-tertiary)]">
+              Try selecting &quot;All Channels&quot; or syncing again.
+            </p>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6 items-stretch">
