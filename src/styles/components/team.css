@@ -1,0 +1,258 @@
+/* ╔══════════════════════════════════════════════════════════════════════════╗
+   ║  GROWTHBRIDGE DESIGN SYSTEM v1.0                                         ║
+   ║  components/team.css — Team Section & People Cards                       ║
+   ╚══════════════════════════════════════════════════════════════════════════╝ */
+
+@layer components {
+  /* ── Team Grid ───────────────────────────────────────────────────────────── */
+  .team-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(260px, 100%), 1fr));
+    gap: var(--space-6);
+  }
+  .team-grid-3 { grid-template-columns: repeat(auto-fill, minmax(min(280px, 100%), 1fr)); }
+  .team-grid-4 { grid-template-columns: repeat(auto-fill, minmax(min(220px, 100%), 1fr)); }
+
+  /* ── Person Card ─────────────────────────────────────────────────────────── */
+  .person-card {
+    background: var(--card-surface);
+    border: 1px solid var(--card-border);
+    border-radius: var(--radius-2xl);
+    box-shadow: var(--card-shadow);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    transition:
+      box-shadow   var(--dur-normal) var(--ease-out),
+      border-color var(--dur-normal) var(--ease-out),
+      transform    var(--dur-normal) var(--ease-out);
+  }
+
+  .person-card:hover {
+    box-shadow: var(--card-shadow-hover);
+    border-color: color-mix(in srgb, var(--action-primary) 30%, transparent);
+    transform: translateY(-4px);
+  }
+
+  /* ── Photo Area ──────────────────────────────────────────────────────────── */
+  .person-card-photo-wrap {
+    position: relative;
+    aspect-ratio: 4/3;
+    overflow: hidden;
+    background: var(--surface-subtle);
+  }
+
+  .person-card-photo {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: top center;
+    transition: transform var(--dur-slow) var(--ease-out);
+  }
+  .person-card:hover .person-card-photo { transform: scale(1.06); }
+
+  /* Gradient overlay on photo */
+  .person-card-photo-wrap::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(11,42,90,0.65) 0%, transparent 50%);
+    opacity: 0;
+    transition: opacity var(--dur-normal) var(--ease-out);
+  }
+  .person-card:hover .person-card-photo-wrap::after { opacity: 1; }
+
+  /* Social links on hover */
+  .person-card-socials {
+    position: absolute;
+    bottom: var(--space-3);
+    right: var(--space-3);
+    display: flex;
+    gap: var(--space-1-5);
+    z-index: 1;
+    opacity: 0;
+    transform: translateY(8px);
+    transition:
+      opacity   var(--dur-normal) var(--ease-out),
+      transform var(--dur-normal) var(--ease-spring);
+  }
+  .person-card:hover .person-card-socials { opacity: 1; transform: translateY(0); }
+
+  .person-card-social-link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    background: rgba(255,255,255,0.90);
+    border-radius: var(--radius-md);
+    color: var(--gb-navy-800);
+    text-decoration: none;
+    transition: background var(--dur-fast) var(--ease-out), transform var(--dur-fast) var(--ease-spring);
+  }
+  .person-card-social-link:hover {
+    background: var(--white);
+    transform: scale(1.1);
+    text-decoration: none;
+  }
+
+  /* ── Card Body ───────────────────────────────────────────────────────────── */
+  .person-card-body {
+    padding: var(--space-5);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    flex: 1;
+  }
+
+  .person-card-name {
+    font-family: var(--font-display);
+    font-weight: var(--fw-bold);
+    font-size: var(--text-lg);
+    color: var(--text-primary);
+    line-height: var(--lh-snug);
+    margin: 0;
+  }
+
+  .person-card-title {
+    font-size: var(--text-sm);
+    font-weight: var(--fw-medium);
+    color: var(--text-accent);
+    margin: 0;
+  }
+
+  .person-card-dept {
+    font-size: var(--text-xs);
+    color: var(--text-tertiary);
+    display: flex;
+    align-items: center;
+    gap: var(--space-1);
+  }
+
+  .person-card-bio {
+    font-size: var(--text-sm);
+    color: var(--text-secondary);
+    line-height: var(--lh-relaxed);
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    margin-top: var(--space-1);
+  }
+
+  .person-card-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-1);
+    margin-top: var(--space-1);
+  }
+
+  /* ── Compact Person Row (table/list view) ────────────────────────────────── */
+  .person-row {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+    padding: var(--space-4) var(--space-5);
+    background: var(--card-surface);
+    border: 1px solid var(--card-border);
+    border-radius: var(--radius-xl);
+    transition:
+      background   var(--dur-fast) var(--ease-out),
+      border-color var(--dur-fast) var(--ease-out),
+      box-shadow   var(--dur-fast) var(--ease-out);
+  }
+  .person-row:hover {
+    background: var(--surface-soft);
+    border-color: color-mix(in srgb, var(--action-primary) 20%, transparent);
+    box-shadow: var(--card-shadow);
+  }
+
+  .person-row-avatar {
+    width: 2.75rem;
+    height: 2.75rem;
+    border-radius: 50%;
+    object-fit: cover;
+    background: var(--surface-subtle);
+    flex-shrink: 0;
+    border: 2px solid var(--card-border);
+  }
+
+  .person-row-info { flex: 1; min-width: 0; }
+  .person-row-name  { font-weight: var(--fw-semibold); font-size: var(--text-sm); color: var(--text-primary); }
+  .person-row-role  { font-size: var(--text-xs); color: var(--text-tertiary); }
+
+  .person-row-actions {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    flex-shrink: 0;
+  }
+
+  /* ── Avatar ──────────────────────────────────────────────────────────────── */
+  .avatar {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 50%;
+    object-fit: cover;
+    background: var(--gradient-brand);
+    color: var(--white);
+    font-family: var(--font-display);
+    font-weight: var(--fw-bold);
+    font-size: var(--text-sm);
+    flex-shrink: 0;
+    overflow: hidden;
+  }
+
+  .avatar-xs { width: 1.5rem; height: 1.5rem; font-size: var(--text-2xs); }
+  .avatar-sm { width: 2rem;   height: 2rem;   font-size: var(--text-xs); }
+  .avatar-md { width: 2.5rem; height: 2.5rem; font-size: var(--text-sm); }
+  .avatar-lg { width: 3.5rem; height: 3.5rem; font-size: var(--text-base); }
+  .avatar-xl { width: 5rem;   height: 5rem;   font-size: var(--text-xl); }
+  .avatar-2xl { width: 7rem;  height: 7rem;   font-size: var(--text-3xl); }
+
+  .avatar-group {
+    display: flex;
+    align-items: center;
+  }
+  .avatar-group .avatar { border: 2px solid var(--surface-page); }
+  .avatar-group .avatar + .avatar { margin-left: -0.75rem; }
+
+  /* ── Team Category Filter ────────────────────────────────────────────────── */
+  .team-filter-bar {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    flex-wrap: wrap;
+    padding-bottom: var(--space-6);
+  }
+
+  .team-filter-btn {
+    padding: var(--space-2) var(--space-4);
+    font-size: var(--text-sm);
+    font-weight: var(--fw-medium);
+    color: var(--text-secondary);
+    background: var(--surface-subtle);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-full);
+    cursor: pointer;
+    transition:
+      background   var(--dur-fast) var(--ease-out),
+      border-color var(--dur-fast) var(--ease-out),
+      color        var(--dur-fast) var(--ease-out);
+    min-height: auto;
+  }
+  .team-filter-btn:hover {
+    background: var(--chip-green-bg);
+    border-color: var(--action-primary);
+    color: var(--chip-green-text);
+  }
+  .team-filter-btn[aria-pressed="true"], .team-filter-btn.active {
+    background: var(--action-primary);
+    border-color: var(--action-primary);
+    color: var(--white);
+  }
+}

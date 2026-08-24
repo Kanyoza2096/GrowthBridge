@@ -1,0 +1,197 @@
+/* ╔══════════════════════════════════════════════════════════════════════════╗
+   ║  GROWTHBRIDGE DESIGN SYSTEM v1.0                                         ║
+   ║  foundations/tokens.css — Primitive Design Tokens                        ║
+   ║  All raw values. Never reference semantic tokens here.                   ║
+   ╚══════════════════════════════════════════════════════════════════════════╝ */
+
+:root {
+  /* ── Brand Primitives ──────────────────────────────────────────────────── */
+  --gb-navy-50:   #EFF6FF;
+  --gb-navy-100:  #DBEAFE;
+  --gb-navy-200:  #BFDBFE;
+  --gb-navy-300:  #93C5FD;
+  --gb-navy-400:  #60A5FA;
+  --gb-navy-500:  #3B82F6;
+  --gb-navy-600:  #1D4ED8;
+  --gb-navy-700:  #1E3A5F;
+  --gb-navy-800:  #0B2A5A;   /* brand core */
+  --gb-navy-900:  #081F44;
+  --gb-navy-950:  #040913;
+
+  --gb-green-50:  #ECFDF5;
+  --gb-green-100: #D1FAE5;
+  --gb-green-200: #A7F3D0;
+  --gb-green-300: #6EE7B7;
+  --gb-green-400: #34D399;
+  --gb-green-500: #10B981;
+  --gb-green-600: #1F8A3F;   /* brand core */
+  --gb-green-700: #166F33;
+  --gb-green-800: #16A36A;   /* bright emerald */
+  --gb-green-900: #064E3B;
+
+  --gb-orange-50:  #FFFBEB;
+  --gb-orange-100: #FEF3C7;
+  --gb-orange-200: #FDE68A;
+  --gb-orange-300: #FCD34D;
+  --gb-orange-400: #FBBF24;
+  --gb-orange-500: #F59E0B;  /* brand core */
+  --gb-orange-600: #D97706;
+  --gb-orange-700: #B45309;
+  --gb-orange-800: #92400E;
+
+  /* ── Slate Scale ───────────────────────────────────────────────────────── */
+  --slate-50:   #F8FAFC;
+  --slate-100:  #F1F5F9;
+  --slate-200:  #E2E8F0;
+  --slate-300:  #CBD5E1;
+  --slate-400:  #94A3B8;
+  --slate-500:  #64748B;
+  --slate-600:  #475569;
+  --slate-700:  #334155;
+  --slate-800:  #1E293B;
+  --slate-850:  #1F2937;
+  --slate-900:  #0F172A;
+  --slate-950:  #070F1B;
+
+  /* ── Neutral ───────────────────────────────────────────────────────────── */
+  --white: #FFFFFF;
+  --black: #000000;
+  --transparent: transparent;
+
+  /* ── Status Primitives ─────────────────────────────────────────────────── */
+  --success-light: #DCFCE7;
+  --success:       #22C55E;
+  --success-dark:  #15803D;
+
+  --warning-light: #FEF9C3;
+  --warning:       #EAB308;
+  --warning-dark:  #A16207;
+
+  --error-light:   #FEE2E2;
+  --error:         #EF4444;
+  --error-dark:    #B91C1C;
+
+  --info-light:    #DBEAFE;
+  --info:          #3B82F6;
+  --info-dark:     #1D4ED8;
+
+  /* ── Radius Scale ──────────────────────────────────────────────────────── */
+  --radius-none:  0;
+  --radius-xs:    0.125rem;   /* 2px  */
+  --radius-sm:    0.25rem;    /* 4px  */
+  --radius-md:    0.5rem;     /* 8px  */
+  --radius-lg:    0.75rem;    /* 12px */
+  --radius-xl:    1rem;       /* 16px */
+  --radius-2xl:   1.25rem;    /* 20px */
+  --radius-3xl:   1.5rem;     /* 24px */
+  --radius-4xl:   2rem;       /* 32px */
+  --radius-full:  9999px;
+
+  /* ── Spacing Scale ─────────────────────────────────────────────────────── */
+  --space-0:    0;
+  --space-px:   1px;
+  --space-0-5:  0.125rem;    /* 2px  */
+  --space-1:    0.25rem;     /* 4px  */
+  --space-1-5:  0.375rem;    /* 6px  */
+  --space-2:    0.5rem;      /* 8px  */
+  --space-2-5:  0.625rem;    /* 10px */
+  --space-3:    0.75rem;     /* 12px */
+  --space-3-5:  0.875rem;    /* 14px */
+  --space-4:    1rem;        /* 16px */
+  --space-5:    1.25rem;     /* 20px */
+  --space-6:    1.5rem;      /* 24px */
+  --space-7:    1.75rem;     /* 28px */
+  --space-8:    2rem;        /* 32px */
+  --space-10:   2.5rem;      /* 40px */
+  --space-12:   3rem;        /* 48px */
+  --space-14:   3.5rem;      /* 56px */
+  --space-16:   4rem;        /* 64px */
+  --space-20:   5rem;        /* 80px */
+  --space-24:   6rem;        /* 96px */
+  --space-28:   7rem;        /* 112px */
+  --space-32:   8rem;        /* 128px */
+
+  /* ── Type Scale ────────────────────────────────────────────────────────── */
+  --text-2xs:   0.625rem;    /* 10px */
+  --text-xs:    0.75rem;     /* 12px */
+  --text-sm:    0.875rem;    /* 14px */
+  --text-base:  1rem;        /* 16px */
+  --text-lg:    1.125rem;    /* 18px */
+  --text-xl:    1.25rem;     /* 20px */
+  --text-2xl:   1.5rem;      /* 24px */
+  --text-3xl:   1.875rem;    /* 30px */
+  --text-4xl:   2.25rem;     /* 36px */
+  --text-5xl:   3rem;        /* 48px */
+  --text-6xl:   3.75rem;     /* 60px */
+  --text-7xl:   4.5rem;      /* 72px */
+
+  /* ── Font Weights ──────────────────────────────────────────────────────── */
+  --fw-thin:       100;
+  --fw-light:      300;
+  --fw-normal:     400;
+  --fw-medium:     500;
+  --fw-semibold:   600;
+  --fw-bold:       700;
+  --fw-extrabold:  800;
+  --fw-black:      900;
+
+  /* ── Line Heights ──────────────────────────────────────────────────────── */
+  --lh-none:    1;
+  --lh-tight:   1.25;
+  --lh-snug:    1.375;
+  --lh-normal:  1.5;
+  --lh-relaxed: 1.625;
+  --lh-loose:   2;
+
+  /* ── Letter Spacing ────────────────────────────────────────────────────── */
+  --ls-tighter: -0.05em;
+  --ls-tight:   -0.025em;
+  --ls-normal:  0em;
+  --ls-wide:    0.025em;
+  --ls-wider:   0.05em;
+  --ls-widest:  0.1em;
+
+  /* ── Duration ──────────────────────────────────────────────────────────── */
+  --dur-instant:  50ms;
+  --dur-fast:     100ms;
+  --dur-normal:   200ms;
+  --dur-slow:     300ms;
+  --dur-slower:   500ms;
+  --dur-slowest:  800ms;
+
+  /* ── Easing ────────────────────────────────────────────────────────────── */
+  --ease-linear:   linear;
+  --ease-in:       cubic-bezier(0.4, 0, 1, 1);
+  --ease-out:      cubic-bezier(0, 0, 0.2, 1);
+  --ease-in-out:   cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-spring:   cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-back:     cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  --ease-smooth:   cubic-bezier(0.4, 0.2, 0.2, 1);
+
+  /* ── Z-Index Scale ─────────────────────────────────────────────────────── */
+  --z-below:    -1;
+  --z-base:      0;
+  --z-raised:    10;
+  --z-dropdown:  100;
+  --z-sticky:    200;
+  --z-overlay:   300;
+  --z-modal:     400;
+  --z-popover:   500;
+  --z-toast:     600;
+  --z-tooltip:   700;
+  --z-top:       9999;
+
+  /* ── Container Widths ──────────────────────────────────────────────────── */
+  --container-xs:   20rem;    /* 320px  */
+  --container-sm:   24rem;    /* 384px  */
+  --container-md:   28rem;    /* 448px  */
+  --container-lg:   32rem;    /* 512px  */
+  --container-xl:   36rem;    /* 576px  */
+  --container-2xl:  42rem;    /* 672px  */
+  --container-3xl:  48rem;    /* 768px  */
+  --container-4xl:  56rem;    /* 896px  */
+  --container-5xl:  64rem;    /* 1024px */
+  --container-6xl:  72rem;    /* 1152px */
+  --container-7xl:  80rem;    /* 1280px */
+  --container-max:  90rem;    /* 1440px */
+}

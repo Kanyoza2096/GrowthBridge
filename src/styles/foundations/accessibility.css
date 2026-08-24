@@ -1,0 +1,125 @@
+/* ╔══════════════════════════════════════════════════════════════════════════╗
+   ║  GROWTHBRIDGE DESIGN SYSTEM v1.0                                         ║
+   ║  foundations/accessibility.css — A11y Utilities                          ║
+   ╚══════════════════════════════════════════════════════════════════════════╝ */
+
+@layer base {
+  /* ── Focus Visible ──────────────────────────────────────────────────────── */
+  :focus-visible {
+    outline: 2px solid var(--border-focus);
+    outline-offset: 2px;
+  }
+
+  /* Only remove default outline if :focus-visible is supported.
+     Browsers that don't support :focus-visible will keep the default ring. */
+  :focus:not(:focus-visible) {
+    outline: none;
+  }
+
+  /* ── Skip to Content ────────────────────────────────────────────────────── */
+  .skip-to-content {
+    position: fixed;
+    top: -100%;
+    left: var(--space-4);
+    z-index: var(--z-top);
+    padding: var(--space-3) var(--space-5);
+    background: var(--action-primary);
+    color: var(--action-primary-text);
+    font-weight: var(--fw-semibold);
+    border-radius: var(--radius-md);
+    text-decoration: none;
+    transition: top var(--dur-normal) var(--ease-out);
+  }
+
+  .skip-to-content:focus {
+    top: var(--space-4);
+  }
+
+  /* ── Screen Reader Only ─────────────────────────────────────────────────── */
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+  }
+
+  .not-sr-only {
+    position: static;
+    width: auto;
+    height: auto;
+    padding: 0;
+    margin: 0;
+    overflow: visible;
+    clip: auto;
+    white-space: normal;
+  }
+
+  /* ── Interactive Element Sizes ──────────────────────────────────────────── */
+  button, [role="button"], a, input, select, textarea, label {
+    touch-action: manipulation;
+  }
+
+  /* Touch target: 44px minimum per WCAG 2.5.5 (Level AAA).
+     Only applied to standalone buttons, not inline elements. */
+  button:not(.inline-button),
+  [role="button"]:not(.inline-button) {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  /* ── Color Contrast Helpers ─────────────────────────────────────────────── */
+  .text-high-contrast {
+    color: var(--text-primary);
+  }
+
+  /* ── Disabled States ────────────────────────────────────────────────────── */
+  /* pointer-events: none removed — it blocks tooltips on disabled elements.
+     Rely on opacity and cursor to communicate disabled state instead. */
+  [disabled],
+  [aria-disabled="true"] {
+    opacity: 0.45;
+    cursor: not-allowed;
+  }
+
+  /* ── Print Accessibility ────────────────────────────────────────────────── */
+  @media print {
+    a[href]::after {
+      content: " (" attr(href) ")";
+      font-size: 0.75em;
+    }
+    abbr[title]::after {
+      content: " (" attr(title) ")";
+    }
+  }
+}
+
+@layer components {
+  /* ── Focus Ring Variants ────────────────────────────────────────────────── */
+  .focus-ring {
+    outline: 2px solid var(--border-focus);
+    outline-offset: 2px;
+    border-radius: var(--radius-sm);
+  }
+
+  .focus-ring-inset {
+    outline: 2px solid var(--border-focus);
+    outline-offset: -2px;
+  }
+
+  .focus-ring-brand {
+    box-shadow: var(--form-shadow-focus);
+  }
+
+  /* ── Loading State ──────────────────────────────────────────────────────── */
+  [aria-busy="true"] {
+    cursor: wait;
+  }
+  [aria-busy="true"] * {
+    pointer-events: none;
+  }
+}
