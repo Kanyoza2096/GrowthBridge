@@ -1,0 +1,60 @@
+/* ╔══════════════════════════════════════════════════════════════════════════╗
+   ║                                                                          ║
+   ║         GROWTHBRIDGE DESIGN SYSTEM v1.0                                  ║
+   ║         Enterprise CSS Architecture                                      ║
+   ║                                                                          ║
+   ║  Layer Order: base → components → utilities                              ║
+   ║  Total: 24 modular stylesheets                                           ║
+   ║                                                                          ║
+   ╚══════════════════════════════════════════════════════════════════════════╝ */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+/* ═══ 1. FOUNDATIONS ═══════════════════════════════════════════════════════ */
+/* Primitive tokens (colors, spacing, type scales, etc.) — no semantic meaning */
+@import './foundations/tokens.css';
+
+/* ═══ 2. THEMES ════════════════════════════════════════════════════════════ */
+/* Semantic token maps that reference primitives — surfaces, text, borders   */
+@import './themes/light.css';
+@import './themes/dark.css';
+
+/* ═══ 3. FOUNDATIONS (continued) ═══════════════════════════════════════════ */
+/* Typography system, base resets, heading scale                             */
+@import './foundations/typography.css';
+
+/* Animation keyframes, transition presets, reduced-motion                   */
+@import './foundations/motion.css';
+
+/* Accessibility: focus rings, skip links, sr-only, touch targets            */
+@import './foundations/accessibility.css';
+
+/* ═══ 4. COMPONENTS ════════════════════════════════════════════════════════ */
+/* Interactive */
+@import './components/buttons.css';
+@import './components/forms.css';
+@import './components/badges.css';
+
+/* Layout */
+@import './components/navigation.css';
+@import './components/hero.css';
+@import './components/footer.css';
+
+/* Content */
+@import './components/cards.css';
+@import './components/team.css';
+@import './components/projects.css';
+@import './components/blog.css';
+@import './components/testimonials.css';
+@import './components/timeline.css';
+@import './components/tables.css';
+
+/* Overlay */
+@import './components/modal.css';
+@import './components/toast.css';
+@import './components/skeleton.css';
+
+/* ═══ 5. UTILITIES ═════════════════════════════════════════════════════════ */
+@import './utilities/gradients.css';
+@import './utilities/scrollbar.css';
+@import './utilities/helpers.css';

@@ -1,0 +1,107 @@
+/* ╔══════════════════════════════════════════════════════════════════════════╗
+   ║  GROWTHBRIDGE DESIGN SYSTEM v1.0                                         ║
+   ║  utilities/gradients.css — Gradient & Surface Utilities                  ║
+   ╚══════════════════════════════════════════════════════════════════════════╝ */
+
+@layer components {
+  /* ── Background Gradients ────────────────────────────────────────────────── */
+  .bg-gradient-brand    { background: var(--gradient-brand); }
+  .bg-gradient-text     { background: var(--gradient-text); }
+  .bg-gradient-glow     { background: var(--gradient-glow); }
+  .bg-gradient-hero     { background: var(--gradient-hero); }
+  .bg-gradient-navy     { background: var(--gradient-navy-band); }
+  .bg-gradient-cta      { background: var(--gradient-cta); }
+  .bg-gradient-footer   { background: var(--gradient-footer); }
+
+  /* Mesh gradient */
+  .bg-gradient-mesh {
+    background:
+      radial-gradient(at 20% 20%, rgba(31,138,63,0.15) 0, transparent 50%),
+      radial-gradient(at 80% 80%, rgba(11,42,90,0.15) 0, transparent 50%),
+      radial-gradient(at 50% 0%,  rgba(245,158,11,0.10) 0, transparent 40%),
+      var(--surface-page);
+  }
+
+  /* ── Surface Backgrounds ─────────────────────────────────────────────────── */
+  .bg-page    { background: var(--surface-page); }
+  .bg-soft    { background: var(--surface-soft); }
+  .bg-subtle  { background: var(--surface-subtle); }
+  .bg-muted   { background: var(--surface-muted); }
+  .bg-inverse { background: var(--surface-inverse); }
+
+  .bg-navy         { background: var(--gb-navy-800); }
+  .bg-green        { background: var(--gb-green-600); }
+  .bg-orange       { background: var(--gb-orange-500); }
+  .bg-glass        { background: var(--glass-bg); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); }
+
+  /* ── Section Dividers with Gradient ─────────────────────────────────────── */
+  .divider-gradient {
+    height: 1px;
+    background: linear-gradient(90deg, transparent 0%, var(--border-default) 30%, var(--border-default) 70%, transparent 100%);
+    border: none;
+    margin: 0;
+  }
+
+  .divider-gradient-brand {
+    height: 2px;
+    background: linear-gradient(90deg, transparent 0%, var(--action-primary) 30%, var(--action-secondary) 70%, transparent 100%);
+    border: none;
+    margin: 0;
+  }
+
+  /* ── Gradient Text ───────────────────────────────────────────────────────── */
+  .text-gradient-gb {
+    background: var(--gradient-text);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    display: inline-block;
+  }
+
+  .text-gradient-green {
+    background: linear-gradient(90deg, var(--gb-green-600) 0%, var(--gb-green-800) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    display: inline-block;
+  }
+
+  .text-gradient-fire {
+    background: linear-gradient(90deg, var(--gb-orange-500) 0%, var(--error) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    display: inline-block;
+  }
+
+  /* ── Decorative Background Blobs ─────────────────────────────────────────── */
+  .blob-green {
+    position: absolute;
+    width: 32rem;
+    height: 32rem;
+    background: radial-gradient(circle, rgba(31,138,63,0.15) 0%, transparent 70%);
+    border-radius: 50%;
+    filter: blur(60px);
+    pointer-events: none;
+  }
+
+  .blob-navy {
+    position: absolute;
+    width: 40rem;
+    height: 40rem;
+    background: radial-gradient(circle, rgba(11,42,90,0.12) 0%, transparent 70%);
+    border-radius: 50%;
+    filter: blur(80px);
+    pointer-events: none;
+  }
+
+  .blob-orange {
+    position: absolute;
+    width: 24rem;
+    height: 24rem;
+    background: radial-gradient(circle, rgba(245,158,11,0.12) 0%, transparent 70%);
+    border-radius: 50%;
+    filter: blur(60px);
+    pointer-events: none;
+  }
+}

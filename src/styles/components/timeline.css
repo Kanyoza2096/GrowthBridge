@@ -1,0 +1,181 @@
+/* ╔══════════════════════════════════════════════════════════════════════════╗
+   ║  GROWTHBRIDGE DESIGN SYSTEM v1.0                                         ║
+   ║  components/timeline.css — Timeline & Progress System                    ║
+   ╚══════════════════════════════════════════════════════════════════════════╝ */
+
+@layer components {
+  /* ── Vertical Timeline ───────────────────────────────────────────────────── */
+  .timeline {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    padding-left: var(--space-10);
+  }
+
+  /* Connector line */
+  .timeline::before {
+    content: '';
+    position: absolute;
+    left: calc(var(--space-4) - 1px);
+    top: var(--space-6);
+    bottom: var(--space-6);
+    width: 2px;
+    background: linear-gradient(to bottom, var(--action-primary) 0%, var(--border-subtle) 100%);
+    border-radius: var(--radius-full);
+  }
+
+  /* ── Timeline Item ───────────────────────────────────────────────────────── */
+  .timeline-item {
+    position: relative;
+    padding: 0 0 var(--space-8) 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1-5);
+  }
+  .timeline-item:last-child { padding-bottom: 0; }
+
+  /* Dot */
+  .timeline-item::before {
+    content: '';
+    position: absolute;
+    left: calc(-1 * var(--space-10) + var(--space-3));
+    top: var(--space-1-5);
+    width: 0.875rem;
+    height: 0.875rem;
+    border-radius: 50%;
+    background: var(--action-primary);
+    border: 3px solid var(--surface-page);
+    box-shadow: 0 0 0 2px var(--action-primary);
+    transition: transform var(--dur-normal) var(--ease-spring), box-shadow var(--dur-normal) var(--ease-out);
+    z-index: 1;
+  }
+  .timeline-item:hover::before {
+    transform: scale(1.3);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--action-primary) 30%, transparent);
+  }
+
+  .timeline-item-muted::before  { background: var(--border-default); box-shadow: 0 0 0 2px var(--border-default); }
+  .timeline-item-orange::before { background: var(--gb-orange-500); box-shadow: 0 0 0 2px var(--gb-orange-500); }
+  .timeline-item-navy::before   { background: var(--action-secondary); box-shadow: 0 0 0 2px var(--action-secondary); }
+
+  .timeline-date {
+    font-size: var(--text-xs);
+    font-weight: var(--fw-semibold);
+    color: var(--text-tertiary);
+    letter-spacing: var(--ls-wide);
+    text-transform: uppercase;
+  }
+
+  .timeline-title {
+    font-family: var(--font-display);
+    font-size: var(--text-base);
+    font-weight: var(--fw-semibold);
+    color: var(--text-primary);
+    margin: 0;
+    line-height: var(--lh-snug);
+  }
+
+  .timeline-desc {
+    font-size: var(--text-sm);
+    color: var(--text-secondary);
+    line-height: var(--lh-relaxed);
+    margin: 0;
+  }
+
+  /* ── Horizontal Timeline (steps) ─────────────────────────────────────────── */
+  .steps {
+    display: flex;
+    align-items: flex-start;
+    gap: 0;
+    position: relative;
+  }
+
+  .step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-3);
+    flex: 1;
+    position: relative;
+    text-align: center;
+    padding: 0 var(--space-2);
+  }
+
+  .step + .step::before {
+    content: '';
+    position: absolute;
+    top: 1.1rem;
+    right: calc(50% + 1.5rem);
+    left: calc(-50% + 1.5rem);
+    height: 2px;
+    background: var(--border-default);
+  }
+
+  .step-number {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    border-radius: 50%;
+    background: var(--surface-subtle);
+    border: 2px solid var(--border-default);
+    font-size: var(--text-sm);
+    font-weight: var(--fw-bold);
+    color: var(--text-tertiary);
+    position: relative;
+    z-index: 1;
+    transition: all var(--dur-normal) var(--ease-out);
+    flex-shrink: 0;
+  }
+
+  .step-active .step-number {
+    background: var(--action-primary);
+    border-color: var(--action-primary);
+    color: var(--white);
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--action-primary) 20%, transparent);
+  }
+
+  .step-complete .step-number {
+    background: var(--success);
+    border-color: var(--success);
+    color: var(--white);
+  }
+  .step-complete + .step::before { background: var(--success); }
+
+  .step-label  { font-size: var(--text-xs); font-weight: var(--fw-medium); color: var(--text-tertiary); line-height: var(--lh-snug); }
+  .step-active .step-label  { color: var(--text-primary); font-weight: var(--fw-semibold); }
+
+  /* ── Progress Bar ────────────────────────────────────────────────────────── */
+  .progress-bar {
+    width: 100%;
+    height: 0.5rem;
+    background: var(--surface-subtle);
+    border-radius: var(--radius-full);
+    overflow: hidden;
+  }
+
+  .progress-bar-fill {
+    height: 100%;
+    background: var(--gradient-brand);
+    border-radius: var(--radius-full);
+    transition: width var(--dur-slow) var(--ease-out);
+  }
+
+  .progress-bar-sm { height: 0.25rem; }
+  .progress-bar-lg { height: 0.75rem; }
+  .progress-bar-xl { height: 1rem; }
+  .progress-bar-green .progress-bar-fill { background: var(--success); }
+  .progress-bar-navy  .progress-bar-fill { background: var(--action-secondary); }
+  .progress-bar-orange .progress-bar-fill { background: var(--gb-orange-500); }
+  .progress-bar-striped .progress-bar-fill {
+    background-image: repeating-linear-gradient(
+      45deg,
+      transparent,
+      transparent 8px,
+      rgba(255,255,255,0.15) 8px,
+      rgba(255,255,255,0.15) 16px
+    );
+  }
+}

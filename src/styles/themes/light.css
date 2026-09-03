@@ -1,0 +1,143 @@
+/* ╔══════════════════════════════════════════════════════════════════════════╗
+   ║  GROWTHBRIDGE DESIGN SYSTEM v1.0                                         ║
+   ║  themes/light.css — Light Mode Semantic Tokens                           ║
+   ╚══════════════════════════════════════════════════════════════════════════╝ */
+
+:root {
+  color-scheme: light;
+  /* ── Surface ───────────────────────────────────────────────────────────── */
+  --surface-page:        var(--white);
+  --surface-soft:        var(--slate-50);
+  --surface-subtle:      var(--slate-100);
+  --surface-muted:       var(--slate-200);
+  --surface-inverse:     var(--gb-navy-800);
+  --surface-overlay:     rgba(7, 15, 27, 0.48);
+
+  /* ── Text ──────────────────────────────────────────────────────────────── */
+  --text-primary:        var(--slate-850);
+  --text-secondary:      var(--slate-600);
+  --text-tertiary:       var(--slate-500);
+  --text-placeholder:    var(--slate-400);
+  --text-disabled:       var(--slate-300);
+  --text-on-dark:        var(--white);
+  --text-on-brand:       var(--white);
+  /* Dark text on brand green — white fails WCAG AA on --gb-green-600 */
+  --text-on-brand-green: var(--gb-navy-950);
+  --text-brand:          var(--gb-navy-800);
+  --text-accent:         var(--gb-green-700);
+  --text-link:           var(--gb-green-700);
+  --text-link-hover:     var(--gb-green-800);
+
+  /* ── Border ────────────────────────────────────────────────────────────── */
+  --border-subtle:       var(--slate-200);
+  --border-default:      var(--slate-300);
+  --border-strong:       var(--slate-400);
+  --border-brand:        rgba(11, 42, 90, 0.10);
+  --border-accent:       var(--gb-green-600);
+  --border-focus:        var(--gb-green-600);
+
+  /* ── Card ──────────────────────────────────────────────────────────────── */
+  --card-surface:        var(--white);
+  --card-border:         var(--slate-200);
+  --card-shadow:         0 1px 2px 0 rgba(15,23,42,0.04), 0 4px 16px -8px rgba(15,23,42,0.12);
+  --card-shadow-hover:   0 4px 8px -2px rgba(15,23,42,0.08), 0 20px 40px -20px rgba(11,42,90,0.20);
+  --card-shadow-lift:    0 24px 48px -12px rgba(11,42,90,0.25);
+
+  /* ── Interactive ───────────────────────────────────────────────────────── */
+  --action-primary:       var(--gb-green-600);
+  --action-primary-hover: var(--gb-green-700);
+  --action-primary-text:  var(--gb-navy-950);
+  --action-secondary:     var(--gb-navy-800);
+  --action-secondary-hover: var(--gb-navy-900);
+  --action-secondary-text: var(--white);
+  --action-ghost-hover:   var(--slate-100);
+  --action-ghost-text:    var(--slate-850);
+  --action-danger:        var(--error);
+  --action-danger-hover:  var(--error-dark);
+
+  /* ── Form ──────────────────────────────────────────────────────────────── */
+  --form-bg:             var(--white);
+  --form-border:         var(--slate-300);
+  --form-border-hover:   var(--slate-400);
+  --form-border-focus:   var(--gb-green-600);
+  --form-placeholder:    var(--slate-400);
+  --form-text:           var(--slate-850);
+  --form-label:          var(--slate-700);
+  --form-helper:         var(--slate-500);
+  --form-error:          var(--error);
+  --form-success:        var(--success);
+  --form-shadow-focus:   0 0 0 3px rgba(31,138,63,0.15);
+  --form-shadow-error:   0 0 0 3px rgba(239,68,68,0.15);
+
+  /* ── Badge / Chip ──────────────────────────────────────────────────────── */
+  --chip-navy-bg:        rgba(11,42,90,0.08);
+  --chip-navy-text:      var(--gb-navy-800);
+  --chip-navy-border:    rgba(11,42,90,0.15);
+  --chip-green-bg:       rgba(31,138,63,0.08);
+  --chip-green-text:     var(--gb-green-700);
+  --chip-green-border:   rgba(31,138,63,0.20);
+  --chip-orange-bg:      rgba(245,158,11,0.12);
+  --chip-orange-text:    var(--gb-orange-700);
+  --chip-orange-border:  rgba(245,158,11,0.25);
+  --chip-blue-bg:        rgba(59,130,246,0.08);
+  --chip-blue-text:      #1D4ED8;
+  --chip-blue-border:    rgba(59,130,246,0.20);
+  --chip-purple-bg:      rgba(168,85,247,0.08);
+  --chip-purple-text:    #7C3AED;
+  --chip-purple-border:  rgba(168,85,247,0.20);
+  --chip-success-bg:     var(--success-light);
+  --chip-success-text:   var(--success-dark);
+  --chip-success-border: rgba(34,197,94,0.25);
+  --chip-error-bg:       var(--error-light);
+  --chip-error-text:     var(--error-dark);
+  --chip-error-border:   rgba(239,68,68,0.25);
+
+  /* ── Danger (for error states) ─────────────────────────────────────────── */
+  --danger-bg:           var(--error-light);
+  --danger-text:         var(--error-dark);
+  --danger-border:       rgba(239,68,68,0.30);
+
+  /* ── Navigation ────────────────────────────────────────────────────────── */
+  --nav-bg:              rgba(255,255,255,0.92);
+  --nav-border:          var(--slate-200);
+  --nav-text:            var(--slate-850);
+  --nav-text-hover:      var(--gb-navy-800);
+  --nav-text-active:     var(--gb-green-600);
+  --nav-shadow:          0 1px 3px rgba(15,23,42,0.08), 0 8px 24px -8px rgba(15,23,42,0.06);
+  --nav-dropdown-bg:     var(--white);
+  --nav-dropdown-border: var(--slate-200);
+  --nav-dropdown-shadow: 0 8px 32px -8px rgba(15,23,42,0.16), 0 2px 8px rgba(15,23,42,0.08);
+
+  /* ── Glass ─────────────────────────────────────────────────────────────── */
+  --glass-bg:            rgba(255,255,255,0.72);
+  --glass-border:        rgba(255,255,255,0.50);
+  --glass-blur:          blur(12px);
+
+  /* ── Gradients (light-specific) ────────────────────────────────────────── */
+  --gradient-brand:      linear-gradient(135deg, var(--gb-brand-navy) 0%, var(--gb-brand-green) 100%);
+  --gradient-text:       linear-gradient(90deg, var(--gb-brand-navy) 0%, var(--gb-brand-green) 45%, var(--gb-brand-orange) 100%);
+  --gradient-glow:       radial-gradient(circle at 30% 0%, rgba(31,138,63,0.15) 0%, rgba(11,42,90,0.12) 45%, transparent 75%);
+  --gradient-hero:       linear-gradient(160deg, rgba(11,42,90,0.03) 0%, rgba(31,138,63,0.06) 100%);
+  --gradient-navy-band:  linear-gradient(180deg, var(--gb-navy-800) 0%, #0A2550 100%);
+  --gradient-cta:        radial-gradient(circle at 85% 20%, rgba(22,163,106,0.18), transparent 45%), linear-gradient(180deg, var(--gb-navy-800) 0%, var(--gb-navy-900) 100%);
+  --gradient-footer:     linear-gradient(180deg, var(--gb-navy-950) 0%, #030709 100%);
+
+  /* ── Shadow Scale ──────────────────────────────────────────────────────── */
+  --shadow-xs:    0 1px 2px rgba(15,23,42,0.04);
+  --shadow-sm:    0 1px 3px rgba(15,23,42,0.06), 0 1px 2px rgba(15,23,42,0.04);
+  --shadow-md:    0 4px 6px -1px rgba(15,23,42,0.07), 0 2px 4px -1px rgba(15,23,42,0.04);
+  --shadow-lg:    0 10px 15px -3px rgba(15,23,42,0.08), 0 4px 6px -2px rgba(15,23,42,0.04);
+  --shadow-xl:    0 20px 25px -5px rgba(15,23,42,0.10), 0 10px 10px -5px rgba(15,23,42,0.04);
+  --shadow-2xl:   0 25px 50px -12px rgba(15,23,42,0.20);
+  --shadow-brand: 0 8px 24px -8px rgba(22,163,106,0.35);
+  --shadow-navy:  0 8px 24px -8px rgba(18,59,93,0.35);
+
+  /* ── Skeleton ──────────────────────────────────────────────────────────── */
+  --skeleton-base:       var(--slate-200);
+  --skeleton-shimmer:    rgba(255,255,255,0.80);
+
+  /* ── Scrollbar ─────────────────────────────────────────────────────────── */
+  --scrollbar-track:     var(--slate-50);
+  --scrollbar-thumb:     var(--slate-300);
+  --scrollbar-thumb-hover: var(--gb-green-600);
+}

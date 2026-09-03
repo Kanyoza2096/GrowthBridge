@@ -1,0 +1,46 @@
+/* ╔══════════════════════════════════════════════════════════════════════════╗
+   ║  GROWTHBRIDGE DESIGN SYSTEM v1.0                                         ║
+   ║  utilities/scrollbar.css — Custom Scrollbar                              ║
+   ╚══════════════════════════════════════════════════════════════════════════╝ */
+
+/* ── Webkit Scrollbar ────────────────────────────────────────────────────── */
+::-webkit-scrollbar         { width: 8px; height: 8px; }
+::-webkit-scrollbar-track   { background: var(--scrollbar-track); border-radius: var(--radius-full); }
+::-webkit-scrollbar-thumb   {
+  background: var(--scrollbar-thumb);
+  border-radius: var(--radius-full);
+  border: 2px solid var(--scrollbar-track);
+  transition: background var(--dur-normal) var(--ease-out);
+}
+::-webkit-scrollbar-thumb:hover  { background: var(--scrollbar-thumb-hover); }
+::-webkit-scrollbar-corner       { background: var(--scrollbar-track); }
+
+/* ── Firefox ─────────────────────────────────────────────────────────────── */
+* { scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track); scrollbar-width: thin; }
+
+/* ── Overlay Scrollbar (content areas only) ──────────────────────────────── */
+.scrollbar-overlay { overflow: auto; }
+.scrollbar-overlay::-webkit-scrollbar { width: 4px; height: 4px; }
+
+/* ── Hidden Scrollbar (still scrollable) ─────────────────────────────────── */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar { display: none; }
+
+/* ── Horizontal Scroll ───────────────────────────────────────────────────── */
+.scroll-x {
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+  scroll-snap-type: x mandatory;
+}
+.scroll-x > * { scroll-snap-align: start; }
+
+/* ── Vertical Scroll ─────────────────────────────────────────────────────── */
+.scroll-y {
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+}
