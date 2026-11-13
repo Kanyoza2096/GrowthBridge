@@ -47,7 +47,7 @@ export async function PATCH(request: NextRequest, context: Context) {
       resourceType: 'users',
       resourceId: id,
       resourceName: updated.email,
-      changes: body,
+      changes: Object.entries(body).map(([field, value]) => ({ field, newValue: String(value) })), 
     });
     return NextResponse.json({ success: true, data: updated }, { headers: { 'Cache-Control': 'no-store' } });
   } catch (error) {
