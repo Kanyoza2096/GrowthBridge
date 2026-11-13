@@ -18,14 +18,14 @@ type Relationship = {
   referencedColumns: string[];
 };
 
-type Table<Row extends object, Relations extends Relationship[] = []> = {
+type Table<Row extends Record<string, unknown>, Relations extends Relationship[] = []> = {
   Row: Row;
   Insert: Partial<Row>;
   Update: Partial<Row>;
   Relationships: Relations;
 };
 
-type View<Row extends object> = {
+type View<Row extends Record<string, unknown>> = {
   Row: Row;
   Relationships: Relationship[];
 };
