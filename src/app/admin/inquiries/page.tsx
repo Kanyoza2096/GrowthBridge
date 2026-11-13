@@ -484,9 +484,9 @@ function InquiryDetailModal({
                         <span
                           className={cn(
                             'px-1.5 py-0.5 rounded text-[9px] ml-1',
-                            h.newStatus === 'approved' || h.newStatus === 'completed'
+                            h.newStatus === 'contacted'
                               ? 'bg-[var(--gb-green-600)]/15 text-[var(--gb-green-300)]'
-                              : h.newStatus === 'rejected'
+                              : h.newStatus === 'closed'
                               ? 'bg-rose-500/15 text-rose-300'
                               : 'bg-[var(--gb-navy-800)]/40 text-blue-300'
                           )}
