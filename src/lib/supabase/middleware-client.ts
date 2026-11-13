@@ -6,7 +6,7 @@ import type { NextRequest, NextResponse } from 'next/server';
 import type { Database } from './database.types';
 
 export function createMiddlewareClient(request: NextRequest, response: NextResponse) {
-  return createServerClient<Database, 'public'>(
+  return createServerClient<Database>(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
