@@ -4,6 +4,10 @@ GrowthBridge sends selected domain events to KDO through the canonical
 Website Integration endpoint. KDO remains responsible for orchestration and
 governed actions; GrowthBridge remains the source of truth for business data.
 
+## CI diagnostics
+
+The CI workflow uploads the TypeScript compiler output as the `typecheck-diagnostics` artifact, including on typecheck failure, so compiler errors can be inspected without relying on transient job-log downloads.
+
 ## Required server-only environment
 
 - `KDO_WEBSITE_INTEGRATION_ID`: the integration ID registered in KDO.
