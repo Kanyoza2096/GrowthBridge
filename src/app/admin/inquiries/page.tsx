@@ -84,12 +84,14 @@ function InquiryCard({
   onOpenDetail,
   onMarkContacted,
   onClose,
+  onStatusChange,
   canEdit,
 }: {
   inquiry: Inquiry;
   onOpenDetail: () => void;
   onMarkContacted: () => void;
   onClose: () => void;
+  onStatusChange: (status: Inquiry['status']) => void;
   canEdit: boolean;
 }) {
   const istatus = inquiry.status;
@@ -196,6 +198,7 @@ function InquiryCard({
             inquiry={inquiry}
             onMarkContacted={onMarkContacted}
             onClose={onClose}
+            onStatusChange={onStatusChange}
             onOpenDetail={onOpenDetail}
             canEdit={canEdit}
           />
@@ -225,6 +228,8 @@ function InquiryDetailModal({
   onCloseInquiry: () => void;
   onAddNote: (content: string) => void;
   onSendReply: (message: string) => void;
+  currentUserName?: string;
+  currentUserId?: string;
 }) {
   const [noteText, setNoteText] = useState('');
   const [replyText, setReplyText] = useState('');
@@ -479,9 +484,9 @@ function InquiryDetailModal({
                         <span
                           className={cn(
                             'px-1.5 py-0.5 rounded text-[9px] ml-1',
-                            h.newStatus === 'approved' || h.newStatus === 'completed'
+                            h.newStatus === 'contacted'
                               ? 'bg-[var(--gb-green-600)]/15 text-[var(--gb-green-300)]'
-                              : h.newStatus === 'rejected'
+                              : h.newStatus === 'closed'
                               ? 'bg-rose-500/15 text-rose-300'
                               : 'bg-[var(--gb-navy-800)]/40 text-blue-300'
                           )}
@@ -796,6 +801,8 @@ export default function AdminInquiriesPage() {
         onCloseInquiry={() => detailInquiry && handleCloseInquiry(detailInquiry.id)}
         onAddNote={(content) => detailInquiry && handleAddNote(detailInquiry.id, content)}
         onSendReply={(message) => detailInquiry && handleSendReply(detailInquiry.id, message)}
+        currentUserName={user?.name || 'Admin User'}
+        currentUserId={user?.id || 'admin-1'}
       />
     </div>
   );

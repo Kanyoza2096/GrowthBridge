@@ -149,7 +149,7 @@ export default function AdminUsersPage() {
         <span className="text-xs text-[var(--admin-text-tertiary)] sm:ml-auto">{filtered.length} of {users.length} accounts</span>
       </AdminToolbar>
 
-      {loading ? <Card variant="admin" className="h-72 animate-pulse" /> : users.length === 0 ? <AdminEmptyState title="No staff accounts" description="Create the first managed account for your Growthbridge team." actionLabel="Add user" onAction={() => setEditor('new')} /> : (
+      {loading ? <Card variant="admin" className="h-72 animate-pulse"><div className="h-full" /></Card> : users.length === 0 ? <AdminEmptyState title="No staff accounts" description="Create the first managed account for your Growthbridge team." action={<Button variant="primary" onClick={() => setEditor('new')}>Add user</Button>} /> : (
         <Card variant="admin" className="p-0 overflow-hidden">
           <div className="hidden md:grid grid-cols-[minmax(220px,1.5fr)_minmax(150px,1fr)_150px_110px_150px] gap-4 px-5 py-3 border-b border-[var(--admin-border)] text-[10px] font-bold uppercase tracking-wider text-[var(--admin-text-tertiary)]"> <span>User</span><span>Department</span><span>Role</span><span>Status</span><span className="text-right">Actions</span></div>
           <div className="divide-y divide-[var(--admin-border)]">

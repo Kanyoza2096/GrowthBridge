@@ -40,6 +40,7 @@ async function fetchConfiguredFeed(): Promise<SocialFeedItem[]> {
       ...item,
       authorHandle: item.authorHandle || '',
       authorAvatar: item.authorAvatar || '',
+      postUrl: item.postUrl || '',
       likesCount: item.likesCount ?? 0,
       commentsCount: item.commentsCount ?? 0,
     }));

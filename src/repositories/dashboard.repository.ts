@@ -39,22 +39,41 @@ function weeklySeries(dates: string[], count = 12): ChartDataPoint[] {
   }));
 }
 
-async function countSince(table: string, column: string, since: Date, filter?: { column: string; values: string[] }) {
+type CountTable = 'applications' | 'partnership_requests' | 'contact_submissions';
+
+async function countSince(table: CountTable, since: Date, talentOnly = false) {
   const supabase = createAdminClient();
-  let query = supabase.from(table).select('id', { count: 'exact', head: true }).gte(column, since.toISOString());
-  if (filter) query = query.in(filter.column, filter.values);
-  const { count, error } = await query;
-  if (error) throw error;
-  return count || 0;
+  let result;
+  if (table === 'applications') {
+    let query = supabase.from('applications').select('id', { count: 'exact', head: true }).gte('submitted_at', since.toISOString());
+    if (talentOnly) query = query.eq('type', 'talent');
+    result = await query;
+  } else if (table === 'partnership_requests') {
+    result = await supabase.from('partnership_requests').select('id', { count: 'exact', head: true }).gte('created_at', since.toISOString());
+  } else {
+    result = await supabase.from('contact_submissions').select('id', { count: 'exact', head: true }).gte('created_at', since.toISOString());
+  }
+  if (result.error) throw result.error;
+  return result.count || 0;
 }
 
-async function countBetween(table: string, column: string, start: Date, end: Date, filter?: { column: string; values: string[] }) {
+async function countBetween(table: CountTable, start: Date, end: Date, talentOnly = false) {
   const supabase = createAdminClient();
-  let query = supabase.from(table).select('id', { count: 'exact', head: true }).gte(column, start.toISOString()).lt(column, end.toISOString());
-  if (filter) query = query.in(filter.column, filter.values);
-  const { count, error } = await query;
-  if (error) throw error;
-  return count || 0;
+  let result;
+  if (table === 'applications') {
+    let query = supabase.from('applications').select('id', { count: 'exact', head: true })
+      .gte('submitted_at', start.toISOString()).lt('submitted_at', end.toISOString());
+    if (talentOnly) query = query.eq('type', 'talent');
+    result = await query;
+  } else if (table === 'partnership_requests') {
+    result = await supabase.from('partnership_requests').select('id', { count: 'exact', head: true })
+      .gte('created_at', start.toISOString()).lt('created_at', end.toISOString());
+  } else {
+    result = await supabase.from('contact_submissions').select('id', { count: 'exact', head: true })
+      .gte('created_at', start.toISOString()).lt('created_at', end.toISOString());
+  }
+  if (result.error) throw result.error;
+  return result.count || 0;
 }
 
 export class DashboardRepository {
@@ -67,21 +86,21 @@ export class DashboardRepository {
     const [services, projects, talentCurrent, talentPrevious, partnerCurrent, partnerPrevious, contactCurrent, contactPrevious] = await Promise.all([
       supabase.from('services').select('id', { count: 'exact', head: true }).eq('status', 'published'),
       supabase.from('projects').select('id', { count: 'exact', head: true }).eq('status', 'published'),
-      countBetween('applications', 'submitted_at', currentStart, now, { column: 'type', values: ['talent'] }),
-      countBetween('applications', 'submitted_at', previousStart, currentStart, { column: 'type', values: ['talent'] }),
-      countBetween('partnership_requests', 'created_at', currentStart, now),
-      countBetween('partnership_requests', 'created_at', previousStart, currentStart),
-      countBetween('contact_submissions', 'created_at', currentStart, now),
-      countBetween('contact_submissions', 'created_at', previousStart, currentStart),
+      countBetween('applications', currentStart, now, true),
+      countBetween('applications', previousStart, currentStart, true),
+      countBetween('partnership_requests', currentStart, now),
+      countBetween('partnership_requests', previousStart, currentStart),
+      countBetween('contact_submissions', currentStart, now),
+      countBetween('contact_submissions', previousStart, currentStart),
     ]);
 
     for (const result of [services, projects]) if (result.error) throw result.error;
 
     // Visitor analytics are intentionally not fabricated. The current schema has
     // no first-party page-view table, so the UI receives an explicit unavailable state.
-    const talentTotal = await countSince('applications', 'submitted_at', new Date(0), { column: 'type', values: ['talent'] });
-    const partnerTotal = await countSince('partnership_requests', 'created_at', new Date(0));
-    const contactTotal = await countSince('contact_submissions', 'created_at', new Date(0));
+    const talentTotal = await countSince('applications', new Date(0), true);
+    const partnerTotal = await countSince('partnership_requests', new Date(0));
+    const contactTotal = await countSince('contact_submissions', new Date(0));
 
     return {
       totalVisitors: 0,

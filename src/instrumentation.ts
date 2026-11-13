@@ -1,12 +1,12 @@
 /**
  * Server startup hook. Registers in-process optional integrations once per
- * application instance. Durable workflows should eventually move to an
- * outbox/queue worker; this hook only wires the graceful, best-effort bridge.
+ * application instance. KDO delivery is durable: handlers enqueue to Supabase
+ * and a protected dispatcher delivers/retries independently.
  */
-import { registerAutonomousPlatformEventHandlers } from '@/events/handlers/autonomous-platform.handler';
 import { registerAdminNotificationHandlers } from '@/events/handlers/admin-notifications.handler';
+import { registerKdoWebsiteEventHandler } from '@/events/handlers/kdo-website.handler';
 
 export function register() {
-  registerAutonomousPlatformEventHandlers();
   registerAdminNotificationHandlers();
+  registerKdoWebsiteEventHandler();
 }

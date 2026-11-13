@@ -1,0 +1,33 @@
+name: KDO Website Event Outbox
+
+on:
+  schedule:
+    - cron: '*/5 * * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  dispatch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - name: Dispatch pending KDO website events
+        env:
+          DISPATCH_URL: ${{ vars.GROWTHBRIDGE_KDO_DISPATCH_URL }}
+          DISPATCH_SECRET: ${{ secrets.KDO_WEBSITE_DISPATCH_SECRET }}
+        run: |
+          if [ -z "$DISPATCH_URL" ] || [ -z "$DISPATCH_SECRET" ]; then
+            echo "KDO outbox dispatcher is not configured; skipping safely."
+            exit 0
+          fi
+          case "$DISPATCH_URL" in
+            https://*) ;;
+            *) echo "Dispatcher URL must use HTTPS."; exit 1 ;;
+          esac
+          curl --fail-with-body --silent --show-error \
+            --max-time 50 \
+            --request POST \
+            --header "Authorization: Bearer $DISPATCH_SECRET" \
+            "$DISPATCH_URL"

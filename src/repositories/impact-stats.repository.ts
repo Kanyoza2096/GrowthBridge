@@ -4,25 +4,28 @@ import type { ImpactStats } from '@/lib/types/common';
 
 export class ImpactStatsRepository {
   async getStats(useAdminClient = false): Promise<ImpactStats> {
-    const supabase = useAdminClient ? createAdminClient() : await createServerClient();
-    const { data, error } = await supabase
-      .from('impact_stats')
-      .select('*')
-      .limit(1)
-      .single();
-
-    if (error || !data) {
-      throw error || new Error('Impact statistics are unavailable.');
-    }
-
-    return {
+    const mapStats = (data: {
+      projects_completed: number; youth_empowered: number; communities_served: number;
+      client_satisfaction: number; active_members: number; events_hosted: number;
+    }): ImpactStats => ({
       projectsCompleted: data.projects_completed,
       youthEmpowered: data.youth_empowered,
       communitiesServed: data.communities_served,
       clientSatisfaction: data.client_satisfaction,
       activeMembers: data.active_members,
       eventsHosted: data.events_hosted,
-    };
+    });
+
+    if (useAdminClient) {
+      const { data, error } = await createAdminClient().from('impact_stats').select('*').limit(1).single();
+      if (error || !data) throw error || new Error('Impact statistics are unavailable.');
+      return mapStats(data);
+    }
+
+    const supabase = await createServerClient();
+    const { data, error } = await supabase.from('impact_stats').select('*').limit(1).single();
+    if (error || !data) throw error || new Error('Impact statistics are unavailable.');
+    return mapStats(data);
   }
 
   async updateStats(stats: Partial<ImpactStats>): Promise<ImpactStats> {

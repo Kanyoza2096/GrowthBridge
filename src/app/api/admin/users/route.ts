@@ -49,7 +49,10 @@ export async function POST(request: NextRequest) {
       resourceType: 'users',
       resourceId: created.id,
       resourceName: created.email,
-      changes: { role: created.role, department: created.department },
+      changes: [
+        { field: 'role', newValue: created.role },
+        { field: 'department', newValue: created.department },
+      ],
     });
     return NextResponse.json({ success: true, data: created }, { status: 201, headers: { 'Cache-Control': 'no-store' } });
   } catch (error) {

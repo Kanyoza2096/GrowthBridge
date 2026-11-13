@@ -158,35 +158,35 @@ export async function PUT(request: NextRequest, context: RouteContext) {
 
     switch (resource) {
       case 'services':
-        updated = await servicesRepo.update(id, validatedBody);
+        updated = await servicesRepo.update(id, validatedBody as Parameters<typeof servicesRepo.update>[1]);
         break;
       case 'projects':
-        updated = await projectsRepo.update(id, validatedBody);
+        updated = await projectsRepo.update(id, validatedBody as Parameters<typeof projectsRepo.update>[1]);
         break;
       case 'blog':
-        updated = await blogService.updateBlogPost(id, validatedBody, user.id);
+        updated = await blogService.updateBlogPost(id, validatedBody as Parameters<typeof blogService.updateBlogPost>[1], user.id);
         break;
       case 'people':
       case 'team':
-        updated = await peopleRepo.update(id, validatedBody);
+        updated = await peopleRepo.update(id, validatedBody as Parameters<typeof peopleRepo.update>[1]);
         break;
       case 'testimonials':
-        updated = await testimonialsRepo.update(id, validatedBody);
+        updated = await testimonialsRepo.update(id, validatedBody as Parameters<typeof testimonialsRepo.update>[1]);
         break;
       case 'talent':
-        updated = await talentRepo.update(id, validatedBody);
+        updated = await talentRepo.update(id, validatedBody as Parameters<typeof talentRepo.update>[1]);
         break;
       case 'applications':
-        updated = await applicationsRepo.update(id, validatedBody);
+        updated = await applicationsRepo.update(id, validatedBody as Parameters<typeof applicationsRepo.update>[1]);
         break;
       case 'faqs':
-        updated = await faqsRepo.update(id, validatedBody);
+        updated = await faqsRepo.update(id, validatedBody as Parameters<typeof faqsRepo.update>[1]);
         break;
       case 'announcements':
-        updated = await announcementsRepo.update(id, validatedBody);
+        updated = await announcementsRepo.update(id, validatedBody as Parameters<typeof announcementsRepo.update>[1]);
         break;
       case 'partners':
-        updated = await partnersRepo.update(id, validatedBody);
+        updated = await partnersRepo.update(id, validatedBody as Parameters<typeof partnersRepo.update>[1]);
         break;
       default:
         return NextResponse.json({ success: false, error: 'Invalid resource' }, { status: 400 });

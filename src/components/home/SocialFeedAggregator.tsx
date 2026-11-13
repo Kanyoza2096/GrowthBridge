@@ -80,7 +80,7 @@ export function SocialFeedAggregator() {
         ) : !feed || feed.length === 0 ? (
           <div className="p-8 sm:p-12 text-center bg-[var(--surface-page)] rounded-2xl border border-[var(--border-subtle)] space-y-2">
             <p className="text-sm font-semibold text-[var(--text-primary)]">No posts found for this channel.</p>
-            <p className="text-xs text-[var(--text-tertiary)]">Try selecting "All Channels" or syncing again.</p>
+            <p className="text-xs text-[var(--text-tertiary)]">Try selecting &quot;All Channels&quot; or syncing again.</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6 items-stretch">

@@ -5,7 +5,6 @@
 import { createServerClient as createSSRServerClient } from '@supabase/ssr';
 import { createClient as createSupabaseAdminClient } from '@supabase/supabase-js';
 import { cookies } from 'next/headers';
-import type { Database } from './database.types';
 import { publicConfig } from '@/lib/config/public';
 
 /**
@@ -15,7 +14,7 @@ import { publicConfig } from '@/lib/config/public';
 export async function createServerClient() {
   const cookieStore = await cookies();
 
-  return createSSRServerClient<Database>(
+  return createSSRServerClient(
     publicConfig.NEXT_PUBLIC_SUPABASE_URL,
     publicConfig.NEXT_PUBLIC_SUPABASE_ANON_KEY,
     {
@@ -23,7 +22,7 @@ export async function createServerClient() {
         getAll() {
           return cookieStore.getAll();
         },
-        setAll(cookiesToSet) {
+        setAll(cookiesToSet: Array<{ name: string; value: string; options?: Parameters<typeof cookieStore.set>[2] }>) {
           try {
             cookiesToSet.forEach(({ name, value, options }) =>
               cookieStore.set(name, value, options)
@@ -48,7 +47,7 @@ export function createAdminClient() {
   if (!serviceRoleKey) {
     throw new Error('[Supabase] SUPABASE_SERVICE_ROLE_KEY is not set. Cannot create admin client.');
   }
-  return createSupabaseAdminClient<Database>(
+  return createSupabaseAdminClient(
     publicConfig.NEXT_PUBLIC_SUPABASE_URL,
     serviceRoleKey,
     {

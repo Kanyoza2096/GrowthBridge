@@ -60,6 +60,7 @@ const mockServices: Service[] = [
       { step: 4, title: 'Deploy', description: 'Launch, monitor, and optimize performance' },
     ],
     order: 1,
+    status: 'published',
   },
   {
     id: '2',
@@ -92,6 +93,7 @@ const mockServices: Service[] = [
       { step: 4, title: 'Scale', description: 'Optimize and expand for sustained growth' },
     ],
     order: 2,
+    status: 'published',
   },
   {
     id: '3',
@@ -124,6 +126,7 @@ const mockServices: Service[] = [
       { step: 4, title: 'Retain', description: 'Build long-term talent relationships' },
     ],
     order: 3,
+    status: 'published',
   },
   {
     id: '4',
@@ -156,6 +159,7 @@ const mockServices: Service[] = [
       { step: 4, title: 'Measure', description: 'Track impact and iterate for improvement' },
     ],
     order: 4,
+    status: 'published',
   },
   {
     id: '5',
@@ -188,6 +192,7 @@ const mockServices: Service[] = [
       { step: 4, title: 'Amplify', description: 'Post-event content, analytics, and follow-up' },
     ],
     order: 5,
+    status: 'published',
   },
 ];
 
@@ -212,6 +217,7 @@ const mockProjects: Project[] = [
     serviceDivision: 'digital',
     featured: true,
     completedAt: '2025-11-15',
+    status: 'published',
   },
   {
     id: '2',
@@ -233,6 +239,7 @@ const mockProjects: Project[] = [
     serviceDivision: 'digital',
     featured: true,
     completedAt: '2025-09-20',
+    status: 'published',
   },
   {
     id: '3',
@@ -254,6 +261,7 @@ const mockProjects: Project[] = [
     serviceDivision: 'community',
     featured: true,
     completedAt: '2025-08-10',
+    status: 'published',
   },
   {
     id: '4',
@@ -275,6 +283,7 @@ const mockProjects: Project[] = [
     serviceDivision: 'digital',
     featured: false,
     completedAt: '2025-07-05',
+    status: 'published',
   },
   {
     id: '5',
@@ -296,6 +305,7 @@ const mockProjects: Project[] = [
     serviceDivision: 'events',
     featured: true,
     completedAt: '2025-06-20',
+    status: 'published',
   },
   {
     id: '6',
@@ -317,6 +327,7 @@ const mockProjects: Project[] = [
     serviceDivision: 'business',
     featured: false,
     completedAt: '2025-05-15',
+    status: 'published',
   },
 ];
 
