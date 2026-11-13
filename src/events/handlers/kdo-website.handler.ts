@@ -44,7 +44,7 @@ export function registerKdoWebsiteEventHandler() {
         event_version: '1.0',
         occurred_at: event.timestamp,
         payload: buildKdoEventPayload(event),
-      });
+      }, { awaitCompletion: true });
       if (error && error.code !== '23505') {
         throw new Error(`KDO event outbox enqueue failed: ${error.message}`);
       }
