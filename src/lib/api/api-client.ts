@@ -34,6 +34,7 @@ function mapService(row: any): Service {
     process: Array.isArray(row.process) ? row.process : [],
     image: row.image || undefined,
     order: row.display_order ?? 0,
+    status: row.status,
   };
 }
 
@@ -54,6 +55,7 @@ function mapProject(row: any): Project {
     serviceDivision: row.service_division || 'Growthbridge Digital',
     featured: Boolean(row.featured),
     completedAt: row.completed_at || row.created_at,
+    status: row.status,
     url: row.url || undefined,
   };
 }
