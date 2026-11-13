@@ -74,3 +74,17 @@ registration must explicitly include the `PUBLISH_ARTICLE` capability and set
 `publish_status: "publish"` before public publishing is enabled. The KDO service
 rejects a publish mode that is not covered by the registered capability.
 This code does not set credentials or change KDO connector configuration.
+
+## Scheduled event dispatch
+
+The repository includes `.github/workflows/kdo-website-outbox.yml`, which
+dispatches a small batch every five minutes after the workflow is merged to the
+default branch. Configure these GitHub repository settings before enabling it:
+
+- Repository variable `GROWTHBRIDGE_KDO_DISPATCH_URL`: the deployed HTTPS URL
+  ending in `/api/kdo/events/dispatch`.
+- Repository secret `KDO_WEBSITE_DISPATCH_SECRET`: the same high-entropy value
+  configured as the GrowthBridge server environment variable.
+
+The workflow skips safely when either setting is absent and can also be run
+manually through GitHub Actions. It does not contain credentials in source.
