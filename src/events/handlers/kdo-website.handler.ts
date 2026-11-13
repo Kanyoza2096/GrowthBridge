@@ -1,4 +1,5 @@
 import { createAdminClient } from '@/lib/supabase/server';
+import { eventPublisher } from '@/events/publisher';
 import type { DomainEvent, DomainEventType } from '@/events/event-types';
 
 const eventTypes: DomainEventType[] = [
@@ -7,6 +8,8 @@ const eventTypes: DomainEventType[] = [
   'application.created','application.updated','contact.submitted',
   'partnership.requested','talent.profile.created','testimonial.created','settings.updated',
 ];
+
+let registered = false;
 
 function minimalPayload(event: DomainEvent): Record<string, unknown> {
   const source = event.payload && typeof event.payload === 'object' ? event.payload as Record<string, unknown> : {};
@@ -27,14 +30,12 @@ function minimalPayload(event: DomainEvent): Record<string, unknown> {
 }
 
 export function registerKdoWebsiteEventHandler() {
-  const integrationId = process.env.KDO_WEBSITE_INTEGRATION_ID?.trim();
-  if (!integrationId) return;
+  if (registered || !process.env.KDO_WEBSITE_INTEGRATION_ID?.trim()) return;
+  registered = true;
+  const integrationId = process.env.KDO_WEBSITE_INTEGRATION_ID.trim();
   const admin = createAdminClient();
 
   for (const eventType of eventTypes) {
-    // Registering once per process is guarded by instrumentation.ts.
-    // Persist before returning so the request path waits for the durable enqueue.
-    const { eventPublisher } = require('@/events/publisher') as typeof import('@/events/publisher');
     eventPublisher.subscribe(eventType, async (event) => {
       const { error } = await admin.from('kdo_website_event_outbox').insert({
         integration_id: integrationId,
