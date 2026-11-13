@@ -49,7 +49,7 @@ export function Testimonials() {
                     </div>
 
                     <p className="text-xs sm:text-sm text-[var(--text-secondary)] italic leading-relaxed">
-                      "{t.quote}"
+                      &ldquo;{t.quote}&rdquo;
                     </p>
                   </div>
 
