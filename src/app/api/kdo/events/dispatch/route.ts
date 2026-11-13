@@ -7,7 +7,7 @@ export const maxDuration = 60;
 
 async function authorized(request: NextRequest): Promise<boolean> {
   const expected = process.env.KDO_WEBSITE_DISPATCH_SECRET || '';
-  const supplied = request.headers.get('authorization')?.replace(/^Bearer\\s+/i, '') || '';
+  const supplied = request.headers.get('authorization')?.replace(/^Bearer\s+/i, '') || '';
   if (!expected || supplied.length !== expected.length) return false;
   const encoder = new TextEncoder();
   const [expectedHash, suppliedHash] = await Promise.all([
