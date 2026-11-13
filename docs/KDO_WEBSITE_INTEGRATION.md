@@ -30,7 +30,9 @@ double-claiming active rows. The dispatcher sends the canonical KDO event
 envelope and retries transient failures with capped exponential backoff.
 KDO's event ledger provides a second idempotency boundary using the stable
 event ID. Permanent 4xx responses and events exceeding ten attempts are
-marked failed for operator review.
+marked failed for operator review. The dispatcher returns HTTP 502 when a
+batch contains permanently failed events so the scheduled GitHub Actions run
+also records a failure for monitoring.
 
 Invoke `POST /api/kdo/events/dispatch` with
 `Authorization: Bearer <KDO_WEBSITE_DISPATCH_SECRET>` from a trusted scheduler.
