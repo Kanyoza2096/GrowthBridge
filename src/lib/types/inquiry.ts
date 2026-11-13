@@ -14,5 +14,5 @@ export interface Inquiry {
   submittedAt: string;
   assignee?: string;
   notes: { id: string; authorId: string; authorName: string; content: string; createdAt: string }[];
-  history: { id: string; action: string; actorId: string; actorName: string; timestamp: string }[];
+  history: { id: string; action: string; oldStatus?: InquiryStatus; newStatus?: InquiryStatus; actorId: string; actorName: string; timestamp: string }[];
 }
