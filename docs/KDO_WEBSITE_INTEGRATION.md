@@ -21,8 +21,10 @@ values through `NEXT_PUBLIC_*` variables.
 
 ## Delivery
 
-Domain events are written to `kdo_website_event_outbox` before the publishing
-service returns. A Postgres claim function leases rows with
+When configured, the event handler attempts to enqueue domain events in
+`kdo_website_event_outbox` and the publisher awaits handler completion before
+returning. The core business operation remains available if enqueueing fails;
+such failures are logged and require operational monitoring. A Postgres claim function leases rows with
 `FOR UPDATE SKIP LOCKED`, allowing concurrent dispatch invocations without
 double-claiming active rows. The dispatcher sends the canonical KDO event
 envelope and retries transient failures with capped exponential backoff.
