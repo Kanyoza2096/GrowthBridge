@@ -28,7 +28,19 @@ jobs:
       # `npm ci` immediately after package-lock.json is generated and committed.
       - id: install
         run: npm install --no-audit --no-fund
-      - run: npm run typecheck
+      - id: typecheck
+        name: Run typecheck and capture diagnostics
+        run: |
+          set +e
+          npm run typecheck 2>&1 | tee typecheck.log
+          result=${PIPESTATUS[0]}
+          exit "$result"
+      - if: always() && steps.install.outcome == 'success'
+        uses: actions/upload-artifact@v4
+        with:
+          name: typecheck-diagnostics
+          path: typecheck.log
+          if-no-files-found: ignore
       - if: always() && steps.install.outcome == 'success'
         run: npm run lint
       - if: always() && steps.install.outcome == 'success'
