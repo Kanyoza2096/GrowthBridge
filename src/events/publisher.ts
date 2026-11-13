@@ -6,7 +6,7 @@ type RegisteredHandler = {
   awaitCompletion: boolean;
 };
 
-class EventPublisher {
+export class EventPublisher {
   private handlers: Map<DomainEventType, Set<RegisteredHandler>> = new Map();
 
   subscribe<T = any>(
@@ -40,22 +40,22 @@ class EventPublisher {
     const targetHandlers = this.handlers.get(type);
     if (!targetHandlers || targetHandlers.size === 0) return;
 
-    const execute = async (registration: RegisteredHandler) => {
-      try {
-        await registration.handler(event);
-      } catch (err) {
-        console.error(`[EventPublisher] Error executing handler for event "${type}":`, err);
-      }
-    };
-
     const registrations = Array.from(targetHandlers);
     const awaited = registrations.filter((item) => item.awaitCompletion);
     const background = registrations.filter((item) => !item.awaitCompletion);
 
-    // Durable integration enqueue handlers are awaited; ordinary notifications
-    // and optional side effects retain their original non-blocking behavior.
-    void Promise.allSettled(background.map(execute));
-    await Promise.allSettled(awaited.map(execute));
+    // Optional handlers remain best-effort. Durable enqueue handlers must
+    // propagate failures so callers cannot mistake an unqueued event for success.
+    const runBackground = async (registration: RegisteredHandler) => {
+      try {
+        await registration.handler(event);
+      } catch (err) {
+        console.error(`[EventPublisher] Error executing background handler for event "${type}":`, err);
+      }
+    };
+
+    void Promise.allSettled(background.map(runBackground));
+    await Promise.all(awaited.map((registration) => registration.handler(event)));
   }
 }
 
