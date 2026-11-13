@@ -26,8 +26,12 @@ jobs:
           node-version: 20
       # The repository currently has no committed lockfile. Switch this to
       # `npm ci` immediately after package-lock.json is generated and committed.
-      - run: npm install --no-audit --no-fund
+      - id: install
+        run: npm install --no-audit --no-fund
       - run: npm run typecheck
-      - run: npm run lint
-      - run: npm test
-      - run: npm run build
+      - if: always() && steps.install.outcome == 'success'
+        run: npm run lint
+      - if: always() && steps.install.outcome == 'success'
+        run: npm test
+      - if: always() && steps.install.outcome == 'success'
+        run: npm run build
