@@ -75,7 +75,7 @@ export class AdminUsersRepository {
 
   async update(id: string, input: { role?: AdminRole; department?: string; isActive?: boolean; name?: string }) {
     const supabase = createAdminClient();
-    const changes: Record<string, unknown> = {};
+    const changes: { role?: AdminRole; department?: string | null; is_active?: boolean; full_name?: string } = {};
     if (input.role !== undefined) changes.role = input.role;
     if (input.department !== undefined) changes.department = input.department || null;
     if (input.isActive !== undefined) changes.is_active = input.isActive;
