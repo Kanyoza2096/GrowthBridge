@@ -48,3 +48,27 @@ operator authority.
 Apply migration `026_kdo_website_event_outbox.sql` before enabling the
 environment variables. No production registration, credentials, migration,
 or deployment is performed by this code change.
+
+## KDO -> GrowthBridge publishing
+
+The reverse WebsiteConnector path is `POST /api/kdo/content`. Configure these
+server-only GrowthBridge environment variables:
+
+- `KDO_WEBSITE_CONNECTOR_TOKEN`: bearer token configured on the KDO Website
+  Integration's canonical website account. This is not the token GrowthBridge
+  uses to call KDO.
+- `KDO_WEBSITE_CONNECTOR_WORKSPACE_ID`: the exact KDO workspace ID permitted
+  to publish to this GrowthBridge instance.
+
+The endpoint accepts title, content, optional slug, image_url, status
+(`publish` or `draft`), and workspace_id. It validates the workspace against
+the server-side allowlist, requires a bearer credential, limits request size,
+and requires an Idempotency-Key. A Postgres function creates the blog post and
+stores the idempotent response in one transaction. Reusing a key with the same
+payload returns the original result; reusing it with a different payload is a
+conflict. Only the service role can execute the function or read the ledger.
+
+Apply migration `027_kdo_content_idempotency.sql` before enabling the endpoint.
+The connector's `status` defaults to `publish`; set it to `draft` in the
+KDO website account configuration to prevent automatic public publication.
+This code does not set credentials or change KDO connector configuration.
