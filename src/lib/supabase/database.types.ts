@@ -20,8 +20,8 @@ type Relationship = {
 
 type Table<Row extends Record<string, unknown>, Relations extends Relationship[] = []> = {
   Row: Row;
-  Insert: Partial<Row> & Record<string, unknown>;
-  Update: Partial<Row> & Record<string, unknown>;
+  Insert: Record<string, unknown>;
+  Update: Record<string, unknown>;
   Relationships: Relations;
 };
 
