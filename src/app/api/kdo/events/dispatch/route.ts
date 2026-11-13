@@ -4,6 +4,7 @@ import { createAdminClient } from '@/lib/supabase/server';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
+export const maxDuration = 60;
 
 function authorized(request: NextRequest): boolean {
   const expected = process.env.KDO_WEBSITE_DISPATCH_SECRET || '';
@@ -29,7 +30,7 @@ export async function POST(request: NextRequest) {
 
   const admin = createAdminClient();
   const { data: rows, error } = await admin.rpc('claim_kdo_website_event_outbox', {
-    p_limit: 20,
+    p_limit: 5,
     p_lease_seconds: 90,
   });
   if (error) {
@@ -57,7 +58,7 @@ export async function POST(request: NextRequest) {
           occurred_at: row.occurred_at,
           payload: row.payload,
         }),
-        signal: AbortSignal.timeout(15000),
+        signal: AbortSignal.timeout(10000),
       });
       if (response.ok) {
         const { error: updateError } = await admin.from('kdo_website_event_outbox')
