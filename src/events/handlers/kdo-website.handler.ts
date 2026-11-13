@@ -11,7 +11,7 @@ const eventTypes: DomainEventType[] = [
 
 let registered = false;
 
-function minimalPayload(event: DomainEvent): Record<string, unknown> {
+export function buildKdoEventPayload(event: DomainEvent): Record<string, unknown> {
   const source = event.payload && typeof event.payload === 'object' ? event.payload as Record<string, unknown> : {};
   const resourceId = typeof source.id === 'string' || typeof source.id === 'number' ? String(source.id) : undefined;
   const payload: Record<string, unknown> = {
@@ -43,7 +43,7 @@ export function registerKdoWebsiteEventHandler() {
         event_type: event.type,
         event_version: '1.0',
         occurred_at: event.timestamp,
-        payload: minimalPayload(event),
+        payload: buildKdoEventPayload(event),
       });
       if (error && error.code !== '23505') {
         throw new Error(`KDO event outbox enqueue failed: ${error.message}`);
