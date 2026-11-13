@@ -7,6 +7,7 @@ import type {
   Project,
   TalentProfile,
   Application,
+  ApplicationStatus,
   BlogPost,
   Testimonial,
   FAQ,
@@ -48,7 +49,7 @@ interface AdminDataContextType {
   updateTalent: (id: string, updates: Partial<TalentProfile>) => Promise<void>;
   approveTalent: (id: string) => Promise<void>;
   rejectTalent: (id: string) => Promise<void>;
-  updateApplicationStatus: (id: string, status: string) => Promise<void>;
+  updateApplicationStatus: (id: string, status: ApplicationStatus) => Promise<void>;
   addApplicationNote: (id: string, content: string, authorId: string, authorName: string) => Promise<void>;
   upsertBlogPost: (b: Partial<BlogPost>) => Promise<void>;
   deleteBlogPost: (id: string) => Promise<void>;
@@ -183,7 +184,7 @@ export function AdminDataProvider({ children }: { children: React.ReactNode }) {
   const updateTalent = useCallback((id: string, updates: Partial<TalentProfile>) => mutate('talent', { ...updates, id }, setTalent), [mutate]);
   const approveTalent = useCallback((id: string) => updateTalent(id, { verificationStatus: 'verified' }), [updateTalent]);
   const rejectTalent = useCallback((id: string) => updateTalent(id, { verificationStatus: 'unverified' }), [updateTalent]);
-  const updateApplicationStatus = useCallback((id: string, status: string) => mutate('applications', { id, status }, setApplications), [mutate]);
+  const updateApplicationStatus = useCallback((id: string, status: ApplicationStatus) => mutate('applications', { id, status }, setApplications), [mutate]);
   const addApplicationNote = useCallback(async (id: string, content: string, authorId: string, authorName: string) => {
     const current = applications.find((item) => item.id === id);
     const note = { id: crypto.randomUUID(), content, authorId, authorName, createdAt: new Date().toISOString() };
