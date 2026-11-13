@@ -88,3 +88,15 @@ default branch. Configure these GitHub repository settings before enabling it:
 
 The workflow skips safely when either setting is absent and can also be run
 manually through GitHub Actions. It does not contain credentials in source.
+
+## KDO automation rule names
+
+KDO emits inbound events onto its Unified Event Bus using the exact name
+`website.integration.<event_type>`. For example, GrowthBridge's
+`blog.published` event becomes
+`website.integration.blog.published`. Configure KDO Business Automation rules
+against those exact names in the registered workspace. Registration and event
+delivery do not create or auto-approve automation rules; the existing
+workspace-scoped Business Automation engine and governed execution router
+remain responsible for admission. The Director does not directly generate or
+publish GrowthBridge content.
