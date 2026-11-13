@@ -56,3 +56,6 @@ export class AuditLogRepository {
     return mapDbToAudit(data);
   }
 }
+
+// Shared repository instance for API route consumers.
+export const auditRepo = new AuditLogRepository();
