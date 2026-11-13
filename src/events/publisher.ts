@@ -29,11 +29,10 @@ class EventPublisher {
     };
 
     const targetHandlers = this.handlers.get(type);
-    if (!targetHandlers || targetHandlers.size === 0) {
-      return;
-    }
+    if (!targetHandlers || targetHandlers.size === 0) return;
 
-    // Execute handlers asynchronously (non-blocking for critical paths)
+    // Await enqueue handlers so durable integrations finish their database write
+    // before the originating service returns. Handler failures remain isolated.
     const promises = Array.from(targetHandlers).map(async (handler) => {
       try {
         await handler(event);
@@ -41,9 +40,7 @@ class EventPublisher {
         console.error(`[EventPublisher] Error executing handler for event "${type}":`, err);
       }
     });
-
-    // Don't throw if background handlers fail
-    void Promise.allSettled(promises);
+    await Promise.allSettled(promises);
   }
 }
 
