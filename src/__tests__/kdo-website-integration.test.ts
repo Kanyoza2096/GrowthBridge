@@ -1,4 +1,6 @@
 import { describe, expect, it } from 'vitest';
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
 import { buildKdoEventPayload } from '@/events/handlers/kdo-website.handler';
 
 describe('KDO Website Integration event boundary', () => {
