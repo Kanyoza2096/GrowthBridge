@@ -1,4 +1,5 @@
 import { createAdminClient } from '@/lib/supabase/server';
+import type { Json } from '@/lib/supabase/database.types';
 import { eventPublisher } from '@/events/publisher';
 import type { DomainEvent, DomainEventType } from '@/events/event-types';
 
@@ -11,10 +12,10 @@ const eventTypes: DomainEventType[] = [
 
 let registered = false;
 
-export function buildKdoEventPayload(event: DomainEvent): Record<string, unknown> {
+export function buildKdoEventPayload(event: DomainEvent): Json {
   const source = event.payload && typeof event.payload === 'object' ? event.payload as Record<string, unknown> : {};
   const resourceId = typeof source.id === 'string' || typeof source.id === 'number' ? String(source.id) : undefined;
-  const payload: Record<string, unknown> = {
+  const payload: { [key: string]: Json } = {
     source: 'growthbridge',
     resource_type: event.type.split('.')[0],
     ...(resourceId ? { resource_id: resourceId } : {}),
