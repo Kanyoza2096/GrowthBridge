@@ -1,8 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { timingSafeEqual } from 'node:crypto';
 import { createAdminClient } from '@/lib/supabase/server';
 
-export const runtime = 'nodejs';
+export const runtime = 'edge';
 export const dynamic = 'force-dynamic';
 export const maxDuration = 60;
 
@@ -14,7 +13,7 @@ function authorized(request: NextRequest): boolean {
 }
 
 export async function POST(request: NextRequest) {
-  if (!authorized(request)) {
+  if (!(await authorized(request))) {
     return NextResponse.json({ ok: false, error: 'Unauthorized' }, { status: 401 });
   }
 
