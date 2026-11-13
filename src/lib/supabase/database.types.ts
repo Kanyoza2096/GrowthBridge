@@ -210,7 +210,7 @@ export type Database = {
         department: string | null; bio: string; short_bio: string | null; photo: string | null;
         location: string | null; joined_at: string | null; skills: Json; certifications: Json;
         social_links: Json; projects: Json; articles: Json; display_order: number;
-        featured: boolean; active: boolean;
+        featured: boolean; active: boolean; created_at: string; updated_at: string;
       }>;
     };
     Functions: {
