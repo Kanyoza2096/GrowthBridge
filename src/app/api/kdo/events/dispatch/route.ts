@@ -102,5 +102,8 @@ export async function POST(request: NextRequest) {
     }
   }
 
-  return NextResponse.json({ ok: true, claimed: rows?.length || 0, delivered, retried, failed });
+  return NextResponse.json(
+    { ok: failed === 0, claimed: rows?.length || 0, delivered, retried, failed },
+    { status: failed > 0 ? 502 : 200 }
+  );
 }
