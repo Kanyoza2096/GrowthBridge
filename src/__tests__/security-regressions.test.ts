@@ -10,6 +10,7 @@ describe('production security regressions', () => {
     const result = validateAdminResourcePayload('services', {
       slug: 'safe',
       title: 'Safe',
+      division: 'digital',
       description: 'Safe description',
       role: 'growthbridge_super_admin',
       is_active: true,
