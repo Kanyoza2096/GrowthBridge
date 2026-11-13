@@ -69,6 +69,8 @@ payload returns the original result; reusing it with a different payload is a
 conflict. Only the service role can execute the function or read the ledger.
 
 Apply migration `027_kdo_content_idempotency.sql` before enabling the endpoint.
-The connector's `status` defaults to `publish`; set it to `draft` in the
-KDO website account configuration to prevent automatic public publication.
+KDO registration now defaults its `publish_status` to `draft`. The KDO
+registration must explicitly include the `PUBLISH_ARTICLE` capability and set
+`publish_status: "publish"` before public publishing is enabled. The KDO service
+rejects a publish mode that is not covered by the registered capability.
 This code does not set credentials or change KDO connector configuration.
