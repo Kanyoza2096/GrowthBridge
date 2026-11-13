@@ -22,6 +22,10 @@ export default [
     ],
   },
   {
+    files: ['scripts/**/*.js'],
+    rules: { '@typescript-eslint/no-require-imports': 'off' },
+  },
+  {
     rules: {
       '@typescript-eslint/no-unused-vars': [
         'warn',
