@@ -306,7 +306,7 @@ export async function PUT(request: NextRequest, context: RouteContext) {
     }
 
     if (resource === 'settings') {
-      const updated = await settingsRepo.updateSettings(validated.data, user.id);
+      const updated = await settingsRepo.updateSettings(validated.data as Parameters<typeof settingsRepo.updateSettings>[0], user.id);
       await writeAudit(request, user, 'update', resource, { id: 'general', name: 'site settings' });
       return NextResponse.json({ success: true, data: updated });
     }
