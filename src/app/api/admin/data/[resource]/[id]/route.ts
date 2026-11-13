@@ -164,7 +164,7 @@ export async function PUT(request: NextRequest, context: RouteContext) {
         updated = await projectsRepo.update(id, validatedBody as Parameters<typeof projectsRepo.update>[1]);
         break;
       case 'blog':
-        updated = await blogService.updateBlogPost(id, validatedBody, user.id);
+        updated = await blogService.updateBlogPost(id, validatedBody as Parameters<typeof blogService.updateBlogPost>[1], user.id);
         break;
       case 'people':
       case 'team':
