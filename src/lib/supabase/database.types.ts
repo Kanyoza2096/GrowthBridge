@@ -229,7 +229,7 @@ export type Database = {
     };
     Functions: {
       has_admin_permission: { Args: { p_resource: string; p_action: string }; Returns: boolean };
-      is_admin: { Args: Record<PropertyKey, never>; Returns: boolean };
+      is_admin: { Args: never; Returns: boolean };
       soft_delete_record: { Args: { table_name: string; record_id: string }; Returns: undefined };
       purge_soft_deleted: { Args: { retention_days?: number }; Returns: { table_name: string; rows_deleted: number }[] };
       claim_kdo_website_event_outbox: { Args: { p_limit?: number; p_lease_seconds?: number }; Returns: { id: string; integration_id: string; event_id: string; event_type: string; event_version: string; occurred_at: string; payload: Json; status: string; attempt_count: number; next_attempt_at: string; locked_until: string | null; last_error: string | null; created_at: string; delivered_at: string | null }[] };
@@ -243,3 +243,8 @@ export type Database = {
     CompositeTypes: Record<string, never>;
   } & GenericSchemaContract;
 };
+
+type Assert<T extends true> = T;
+type PublicSchemaIsValid = Assert<Database['public'] extends GenericSchemaContract ? true : false>;
+
+
