@@ -36,7 +36,7 @@ CREATE OR REPLACE FUNCTION public.claim_kdo_website_event_outbox(
 RETURNS SETOF public.kdo_website_event_outbox
 LANGUAGE plpgsql
 SECURITY DEFINER
-SET search_path = public
+SET search_path = ''
 AS $$
 BEGIN
   RETURN QUERY
