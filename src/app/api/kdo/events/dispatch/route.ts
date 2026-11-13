@@ -5,11 +5,20 @@ export const runtime = 'edge';
 export const dynamic = 'force-dynamic';
 export const maxDuration = 60;
 
-function authorized(request: NextRequest): boolean {
+async function authorized(request: NextRequest): Promise<boolean> {
   const expected = process.env.KDO_WEBSITE_DISPATCH_SECRET || '';
-  const supplied = request.headers.get('authorization')?.replace(/^Bearer\s+/i, '') || '';
+  const supplied = request.headers.get('authorization')?.replace(/^Bearer\\s+/i, '') || '';
   if (!expected || supplied.length !== expected.length) return false;
-  return timingSafeEqual(Buffer.from(supplied), Buffer.from(expected));
+  const encoder = new TextEncoder();
+  const [expectedHash, suppliedHash] = await Promise.all([
+    crypto.subtle.digest('SHA-256', encoder.encode(expected)),
+    crypto.subtle.digest('SHA-256', encoder.encode(supplied)),
+  ]);
+  const left = new Uint8Array(expectedHash);
+  const right = new Uint8Array(suppliedHash);
+  let difference = 0;
+  for (let index = 0; index < left.length; index++) difference |= left[index] ^ right[index];
+  return difference === 0;
 }
 
 export async function POST(request: NextRequest) {
