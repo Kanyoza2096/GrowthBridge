@@ -31,7 +31,7 @@ const STATUS_FILTERS: { key: 'all' | ApplicationStatus; label: string }[] = [
 function exportApplications(items: Application[]) {
   const headers = ['Name', 'Email', 'Phone', 'Type', 'Status', 'Subject', 'Submitted At'];
   const escape = (value: string) => `"${value.replace(/"/g, '""')}"`;
-  const rows = items.map((item) => [item.applicant_name, item.email, item.phone || '', item.type, item.status, item.subject || '', item.submitted_at].map((v) => escape(String(v))).join(','));
+  const rows = items.map((item) => [item.name, item.email, item.phone || '', item.type, item.status, item.subject || '', item.submittedAt].map((v) => escape(String(v))).join(','));
   const blob = new Blob([[headers.map(escape).join(','), ...rows].join('\n')], { type: 'text/csv;charset=utf-8' });
   const url = URL.createObjectURL(blob);
   const link = document.createElement('a');
