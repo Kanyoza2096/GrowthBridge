@@ -15,7 +15,7 @@ import { publicConfig } from '@/lib/config/public';
 export async function createServerClient() {
   const cookieStore = await cookies();
 
-  return createSSRServerClient<Database>(
+  return createSSRServerClient<Database, 'public'>(
     publicConfig.NEXT_PUBLIC_SUPABASE_URL,
     publicConfig.NEXT_PUBLIC_SUPABASE_ANON_KEY,
     {
@@ -48,7 +48,7 @@ export function createAdminClient() {
   if (!serviceRoleKey) {
     throw new Error('[Supabase] SUPABASE_SERVICE_ROLE_KEY is not set. Cannot create admin client.');
   }
-  return createSupabaseAdminClient<Database>(
+  return createSupabaseAdminClient<Database, 'public'>(
     publicConfig.NEXT_PUBLIC_SUPABASE_URL,
     serviceRoleKey,
     {
