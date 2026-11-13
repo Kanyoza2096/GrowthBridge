@@ -22,11 +22,11 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
   }
 
-  const declaredLength = Number(request.headers.get('content-length') || 0);
-  if (declaredLength > 1_000_000) {
+  const rawText = await request.text();
+  if (Buffer.byteLength(rawText, 'utf8') > 1_000_000) {
     return NextResponse.json({ success: false, error: 'Request body is too large' }, { status: 413 });
   }
-  const raw = await request.json().catch(() => null);
+  const raw = (() => { try { return JSON.parse(rawText); } catch { return null; } })();
   if (!raw || typeof raw !== 'object' || Array.isArray(raw)) {
     return NextResponse.json({ success: false, error: 'A JSON object is required' }, { status: 400 });
   }
