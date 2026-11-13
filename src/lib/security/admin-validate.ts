@@ -31,7 +31,8 @@ export function validateAdminResourcePayload(resource: string, body: unknown, ac
   const schema = schemas[canonical as keyof typeof schemas];
   if (!schema) return { success: false as const, error: 'This resource does not accept JSON mutations.' };
 
-  const result = schema.safeParse(body);
+  const validationSchema = action === 'update' ? schema.partial() : schema;
+  const result = validationSchema.safeParse(body);
   if (!result.success) {
     return { success: false as const, error: result.error.issues[0]?.message || 'Invalid request payload.' };
   }
