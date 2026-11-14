@@ -1071,14 +1071,6 @@ export type Database = {
         Update: { idempotency_key?: string; workspace_id?: string; request_sha256?: string; response_json?: Json | null; created_at?: string; updated_at?: string }
         Relationships: []
       }
-      admin_notifications: {
-        Row: { id: string; recipient_id: string; type: string; title: string; message: string; link: string | null; read: boolean; created_at: string }
-        Insert: { id?: string; recipient_id: string; type: string; title: string; message: string; link?: string | null; read?: boolean; created_at?: string }
-        Update: { id?: string; recipient_id?: string; type?: string; title?: string; message?: string; link?: string | null; read?: boolean; created_at?: string }
-        Relationships: [
-          { foreignKeyName: "admin_notifications_recipient_id_fkey"; columns: ["recipient_id"]; isOneToOne: false; referencedRelation: "profiles"; referencedColumns: ["id"] }
-        ]
-      }
     }
     Views: {
       public_people: {
