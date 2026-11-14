@@ -1,11 +1,15 @@
 import type { MetadataRoute } from 'next';
+import { publicConfig } from '@/lib/config/public';
 import { createAdminClient } from '@/lib/supabase/server';
 
-const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL || 'https://growthbridge.org').replace(/\/$/, '');
+const SITE_URL = publicConfig.NEXT_PUBLIC_SITE_URL.replace(/\/$/, '');
+
+// Force generation at request time so newly published content appears without a redeploy.
+export const dynamic = 'force-dynamic';
 
 /**
  * Dynamic sitemap: public content changes without requiring a deployment.
- * Only published/active public records are emitted.
+ * Only published/active public records are emitted; admin and API routes are excluded.
  */
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const staticPages: MetadataRoute.Sitemap = [
@@ -29,6 +33,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       supabase.from('services').select('slug, updated_at').eq('status', 'published').is('deleted_at', null),
       supabase.from('people').select('slug, updated_at').eq('active', true).is('deleted_at', null),
     ]);
+
+    const queryErrors = [blogs, projects, services, people]
+      .filter((result) => result.error)
+      .map((result) => result.error?.message);
+    if (queryErrors.length > 0) {
+      throw new Error(`Unable to load all public sitemap records: ${queryErrors.join('; ')}`);
+    }
 
     return [
       ...staticPages,
