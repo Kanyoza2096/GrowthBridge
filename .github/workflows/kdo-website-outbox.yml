@@ -1,4 +1,5 @@
 name: KDO Website Event Outbox
+# A workflow-file push also provides an immediate, auditable dispatch trigger.
 
 on:
   schedule:
