@@ -1,5 +1,6 @@
 name: KDO Website Event Outbox
 # A workflow-file push also provides an immediate, auditable dispatch trigger.
+# Operational note: this revision re-triggers delivery after the KDO receiver became ready.
 
 on:
   schedule:
