@@ -7,8 +7,8 @@ function mapDbToBlogPost(row: any): BlogPost {
     id: row.id,
     slug: row.slug,
     title: row.title,
-    excerpt: row.excerpt || row.content.slice(0, 160),
-    content: row.content,
+    excerpt: row.excerpt || (row.content || '').slice(0, 160),
+    content: row.content || '',
     author: {
       name: row.author_name || 'GrowthBridge Team',
       avatar: '/images/team-placeholder.jpg',
@@ -17,10 +17,10 @@ function mapDbToBlogPost(row: any): BlogPost {
     category: (row.category || 'technology') as BlogCategory,
     tags: Array.isArray(row.tags) ? row.tags : [],
     image: row.cover_image || '/images/blog-placeholder.jpg',
-    publishedAt: row.published_at || row.created_at,
+    publishedAt: row.published_at || undefined,
     readTime: row.read_time || 5,
     featured: Boolean(row.featured),
-    status: row.status || 'published',
+    status: row.status || 'draft',
     scheduledAt: row.scheduled_at || undefined,
   };
 }
@@ -30,65 +30,47 @@ export class BlogRepository {
     const supabase = await createServerClient();
     let query = supabase.from('blog_posts').select('*').is('deleted_at', null);
     if (!includeUnpublished) query = query.eq('status', 'published');
-    const { data, error } = await query
-      .order('published_at', { ascending: false });
-
-    if (error) {
-      console.error('[BlogRepository.getAll]', error);
-      throw error;
-    }
+    const { data, error } = await query.order('published_at', { ascending: false });
+    if (error) { console.error('[BlogRepository.getAll]', error); throw error; }
     return (data || []).map(mapDbToBlogPost);
   }
 
   async getBySlug(slug: string): Promise<BlogPost | null> {
     const supabase = await createServerClient();
-    const { data, error } = await supabase
-      .from('blog_posts')
-      .select('*')
-      .eq('slug', slug)
-      .is('deleted_at', null)
-      .eq('status', 'published')
-      .maybeSingle();
-
+    const { data, error } = await supabase.from('blog_posts').select('*')
+      .eq('slug', slug).is('deleted_at', null).eq('status', 'published').maybeSingle();
     if (error) throw error;
-    if (!data) return null;
-    return mapDbToBlogPost(data);
+    return data ? mapDbToBlogPost(data) : null;
   }
 
   async getStatusById(id: string): Promise<string | null> {
-    const supabase = await createAdminClient();
-    const { data, error } = await supabase
-      .from('blog_posts')
-      .select('status')
-      .eq('id', id)
-      .is('deleted_at', null)
-      .maybeSingle();
-
+    const supabase = createAdminClient();
+    const { data, error } = await supabase.from('blog_posts').select('status')
+      .eq('id', id).is('deleted_at', null).maybeSingle();
     if (error) throw error;
     return data?.status || null;
   }
 
-  async create(post: Partial<BlogPost>): Promise<BlogPost> {
+  async create(post: Partial<BlogPost> & { author?: BlogPost['author'] | string }): Promise<BlogPost> {
     const supabase = createAdminClient();
-    const { data, error } = await supabase
-      .from('blog_posts')
-      .insert({
-        slug: post.slug!,
-        title: post.title!,
-        excerpt: post.excerpt,
-        content: post.content || '',
-        author_name: post.author?.name || 'GrowthBridge Team',
-        cover_image: post.image,
-        tags: post.tags || [],
-        category: post.category || 'technology',
-        status: 'published',
-        published_at: post.publishedAt || new Date().toISOString(),
-        read_time: post.readTime || 5,
-        featured: Boolean(post.featured),
-      } as any)
-      .select()
-      .single();
-
+    const status = post.status || 'draft';
+    const authorName = typeof post.author === 'string' ? post.author : post.author?.name;
+    const now = new Date().toISOString();
+    const { data, error } = await supabase.from('blog_posts').insert({
+      slug: post.slug!,
+      title: post.title!,
+      excerpt: post.excerpt,
+      content: post.content || '',
+      author_name: authorName || 'GrowthBridge Team',
+      cover_image: post.image,
+      tags: post.tags || [],
+      category: post.category || 'technology',
+      status,
+      published_at: status === 'published' ? (post.publishedAt || now) : null,
+      scheduled_at: status === 'scheduled' ? (post.scheduledAt || null) : null,
+      read_time: post.readTime || 5,
+      featured: Boolean(post.featured),
+    } as any).select().single();
     if (error) throw error;
     return mapDbToBlogPost(data);
   }
@@ -106,25 +88,21 @@ export class BlogRepository {
     if (updates.category !== undefined) payload.category = updates.category;
     if (updates.readTime !== undefined) payload.read_time = updates.readTime;
     if (updates.featured !== undefined) payload.featured = updates.featured;
-
-    const { data, error } = await supabase
-      .from('blog_posts')
-      .update(payload)
-      .eq('id', id)
-      .select()
-      .single();
-
+    if (updates.status !== undefined) {
+      payload.status = updates.status;
+      payload.published_at = updates.status === 'published' ? (updates.publishedAt || new Date().toISOString()) : null;
+      payload.scheduled_at = updates.status === 'scheduled' ? (updates.scheduledAt || null) : null;
+    }
+    const { data, error } = await supabase.from('blog_posts').update(payload)
+      .eq('id', id).select().single();
     if (error) throw error;
     return mapDbToBlogPost(data);
   }
 
   async delete(id: string): Promise<boolean> {
     const supabase = createAdminClient();
-    const { error } = await supabase
-      .from('blog_posts')
-      .update({ deleted_at: new Date().toISOString() } as any)
-      .eq('id', id);
-
+    const { error } = await supabase.from('blog_posts')
+      .update({ deleted_at: new Date().toISOString() } as any).eq('id', id);
     if (error) throw error;
     return true;
   }
