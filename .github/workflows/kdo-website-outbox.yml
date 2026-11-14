@@ -4,6 +4,9 @@ on:
   schedule:
     - cron: '*/5 * * * *'
   workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/kdo-website-outbox.yml'
 
 permissions:
   contents: read
@@ -27,7 +30,9 @@ jobs:
             *) echo "Dispatcher URL must use HTTPS."; exit 1 ;;
           esac
           curl --fail-with-body --silent --show-error \
+            --connect-timeout 10 \
             --max-time 50 \
             --request POST \
             --header "Authorization: Bearer $DISPATCH_SECRET" \
+            --write-out '\nHTTP_STATUS=%{http_code}\n' \
             "$DISPATCH_URL"
