@@ -16,6 +16,7 @@ import { mediaService } from '@/services/media.service';
 import { AuditLogRepository } from '@/repositories/audit-log.repository';
 import { adminJsonBodySchema } from '@/lib/security/validate';
 import { validateAdminResourcePayload } from '@/lib/security/admin-validate';
+import { isBlogSlugConflict } from '@/lib/security/db-errors';
 import { blogService } from '@/services/blog.service';
 import { adminNotificationsRepository } from '@/repositories/admin-notifications.repository';
 
@@ -195,6 +196,12 @@ export async function PUT(request: NextRequest, context: RouteContext) {
     await writeAudit(request, user, 'update', resource, id, updated);
     return NextResponse.json({ success: true, data: updated });
   } catch (error) {
+    if (isBlogSlugConflict(error)) {
+      return NextResponse.json({
+        success: false,
+        error: 'A blog post already uses this URL slug. Choose a different slug.',
+      }, { status: 409 });
+    }
     console.error('[API single resource PUT]', error);
     return NextResponse.json({ success: false, error: 'Failed to update record' }, { status: 500 });
   }
