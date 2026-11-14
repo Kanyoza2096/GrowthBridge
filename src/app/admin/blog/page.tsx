@@ -35,10 +35,10 @@ export default function AdminBlogPage() {
   const { blogPosts, upsertBlogPost, deleteBlogPost } = useAdminData();
   const { success, error } = useToast();
 
-  const canRead = hasPermission('blog', 'read');
-  const canCreate = hasPermission('blog', 'create');
-  const canUpdate = hasPermission('blog', 'update');
-  const canDelete = hasPermission('blog', 'delete');
+  const canRead = hasPermission('content', 'read');
+  const canCreate = hasPermission('content', 'create');
+  const canUpdate = hasPermission('content', 'update');
+  const canDelete = hasPermission('content', 'delete');
 
   const [statusFilter, setStatusFilter] = useState<StatusFilter>('all');
   const [search, setSearch] = useState('');
