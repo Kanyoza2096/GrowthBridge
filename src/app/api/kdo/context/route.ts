@@ -6,7 +6,7 @@ export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
 function bearerMatches(request: NextRequest, expected: string): boolean {
-  const supplied = request.headers.get('authorization')?.replace(/^Bearer\\s+/i, '') || '';
+  const supplied = request.headers.get('authorization')?.replace(/^Bearer\s+/i, '') || '';
   if (!expected || supplied.length !== expected.length) return false;
   return timingSafeEqual(Buffer.from(supplied), Buffer.from(expected));
 }
