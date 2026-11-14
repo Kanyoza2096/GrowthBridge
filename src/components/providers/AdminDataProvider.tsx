@@ -2,6 +2,7 @@
 
 import React, { createContext, useContext, useState, useCallback, useMemo, useEffect } from 'react';
 import { adminFetch } from '@/lib/api/admin-client';
+import { toAdminBlogPost } from '@/lib/admin/blog-post-adapter';
 import type {
   Service,
   Project,
@@ -131,7 +132,7 @@ export function AdminDataProvider({ children }: { children: React.ReactNode }) {
       if (p) setProjects(p);
       if (t) setTalent(t);
       if (a) setApplications(a);
-      if (b) setBlogPosts(b);
+      if (b) setBlogPosts((b as unknown[]).map((post) => toAdminBlogPost(post as Record<string, unknown>)));
       if (te) setTestimonials(te);
       if (f) setFaqs(f);
       if (an) setAnnouncements(an);
@@ -168,7 +169,10 @@ export function AdminDataProvider({ children }: { children: React.ReactNode }) {
     const endpoint = value.id
       ? `/api/admin/data/${resource}/${encodeURIComponent(value.id)}`
       : `/api/admin/data/${resource}`;
-    const saved = unwrap<T>(await adminFetch(endpoint, { method, body: JSON.stringify(value) }));
+    const response = unwrap<T>(await adminFetch(endpoint, { method, body: JSON.stringify(value) }));
+    const saved = (resource === 'blog'
+      ? toAdminBlogPost(response as Record<string, unknown>)
+      : response) as T;
     setter((current) => (value.id ? current.map((item) => (item.id === value.id ? saved : item)) : [...current, saved]));
   }, []);
 
