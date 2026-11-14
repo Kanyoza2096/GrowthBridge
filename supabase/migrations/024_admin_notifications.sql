@@ -1,6 +1,6 @@
 -- Durable, per-admin notifications for operational events.
 CREATE TABLE IF NOT EXISTS public.admin_notifications (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id UUID PRIMARY KEY DEFAULT extensions.uuid_generate_v4(),
   recipient_id UUID NOT NULL REFERENCES public.profiles(id) ON DELETE CASCADE,
   type TEXT NOT NULL CHECK (type IN ('application', 'contact', 'partnership', 'system', 'content')),
   title TEXT NOT NULL,
