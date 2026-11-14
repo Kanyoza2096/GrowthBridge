@@ -82,7 +82,9 @@ export class BlogRepository {
     if (updates.slug !== undefined) payload.slug = updates.slug;
     if (updates.excerpt !== undefined) payload.excerpt = updates.excerpt;
     if (updates.content !== undefined) payload.content = updates.content;
-    if (updates.author?.name !== undefined) payload.author_name = updates.author.name;
+    if (updates.author !== undefined) {
+      payload.author_name = typeof updates.author === 'string' ? updates.author : updates.author?.name;
+    }
     if (updates.image !== undefined) payload.cover_image = updates.image;
     if (updates.tags !== undefined) payload.tags = updates.tags;
     if (updates.category !== undefined) payload.category = updates.category;
