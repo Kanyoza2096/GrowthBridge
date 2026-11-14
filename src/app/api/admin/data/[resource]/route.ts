@@ -16,6 +16,7 @@ import { MediaRepository } from '@/repositories/media.repository';
 import { mediaService } from '@/services/media.service';
 import { adminJsonBodySchema } from '@/lib/security/validate';
 import { validateAdminResourcePayload } from '@/lib/security/admin-validate';
+import { isBlogSlugConflict } from '@/lib/security/db-errors';
 import { SettingsRepository } from '@/repositories/settings.repository';
 import { AuditLogRepository } from '@/repositories/audit-log.repository';
 import { blogService } from '@/services/blog.service';
@@ -242,6 +243,12 @@ export async function POST(request: NextRequest, context: RouteContext) {
     await writeAudit(request, user, 'create', resource, saved);
     return NextResponse.json({ success: true, data: saved });
   } catch (error) {
+    if (isBlogSlugConflict(error)) {
+      return NextResponse.json({
+        success: false,
+        error: 'A blog post already uses this URL slug. Choose a different slug.',
+      }, { status: 409 });
+    }
     console.error('[API data resource POST]', error);
     return NextResponse.json({ success: false, error: 'Failed to create record' }, { status: 500 });
   }
