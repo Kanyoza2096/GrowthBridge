@@ -48,3 +48,13 @@ jobs:
         run: npm test
       - if: always() && steps.install.outcome == 'success'
         run: npm run build
+
+      - if: always() && steps.install.outcome == 'success'
+        name: Check accessible color contrast
+        run: npm run contrast:check
+      - if: always() && steps.install.outcome == 'success'
+        name: Check security migration invariants
+        run: npm run security:check
+      - if: always() && steps.install.outcome == 'success'
+        name: Check production readiness
+        run: npm run production:check
