@@ -25,10 +25,9 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-      # The repository currently has no committed lockfile. Switch this to
-      # `npm ci` immediately after package-lock.json is generated and committed.
+      # Install exactly the dependency graph captured by package-lock.json.
       - id: install
-        run: npm install --no-audit --no-fund
+        run: npm ci --no-audit --no-fund
       - id: typecheck
         name: Run typecheck and capture diagnostics
         run: |
