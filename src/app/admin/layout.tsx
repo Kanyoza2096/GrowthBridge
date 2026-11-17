@@ -280,11 +280,28 @@ function AdminLayoutContent({ children }: { children: React.ReactNode }) {
       if (e.key === 'Escape') {
         setNotifOpen(false);
         setPaletteOpen(false);
+        setMobileOpen(false);
       }
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
   }, []);
+
+  // Keep the mobile drawer from scrolling the page behind it, and restore the
+  // previous document behavior when the drawer closes or this layout unmounts.
+  useEffect(() => {
+    if (!mobileOpen) return;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = previousOverflow;
+    };
+  }, [mobileOpen]);
+
+  // Close transient navigation when the user moves to another admin route.
+  useEffect(() => {
+    setMobileOpen(false);
+  }, [pathname]);
 
   if (pathname === '/admin/login') {
     return <>{children}</>;
@@ -347,7 +364,10 @@ function AdminLayoutContent({ children }: { children: React.ReactNode }) {
         <button
           onClick={() => setMobileOpen((o) => !o)}
           className="p-2 rounded-lg text-[var(--admin-text-secondary)] hover:bg-[var(--admin-surface-soft)] cursor-pointer"
-          aria-label="Menu"
+          aria-label={mobileOpen ? 'Close navigation menu' : 'Open navigation menu'}
+          aria-expanded={mobileOpen}
+          aria-controls="growthbridge-admin-sidebar"
+          type="button"
         >
           <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
@@ -373,15 +393,19 @@ function AdminLayoutContent({ children }: { children: React.ReactNode }) {
 
       {/* Sidebar backdrop (mobile) */}
       {mobileOpen && (
-        <div
-          className="md:hidden fixed inset-0 z-40 bg-[var(--surface-overlay)] backdrop-blur-sm"
+        <button
+          type="button"
+          className="md:hidden fixed inset-0 z-40 bg-[var(--surface-overlay)] backdrop-blur-sm cursor-default"
           onClick={() => setMobileOpen(false)}
+          aria-label="Close navigation menu"
         />
       )}
 
       <div className="flex">
         {/* Sidebar */}
         <aside
+          id="growthbridge-admin-sidebar"
+          aria-label="Admin workspace navigation"
           className={cn(
             'fixed md:sticky top-0 md:top-0 h-screen z-50 md:z-0 flex-shrink-0 bg-[var(--admin-surface-sidebar)] border-r border-[var(--admin-border)] transition-all duration-300 flex flex-col',
             collapsed ? 'w-[76px]' : 'w-[264px]',
@@ -395,13 +419,23 @@ function AdminLayoutContent({ children }: { children: React.ReactNode }) {
               GB
             </div>
             {!collapsed && (
-              <div className="min-w-0">
+              <div className="min-w-0 flex-1">
                 <div><h3 className="text-sm font-extrabold text-[var(--admin-text-primary)] truncate tracking-tight">GrowthBridge</h3><p className="text-[10px] text-[var(--admin-text-tertiary)] mt-0.5">Operations</p></div>
                 <Badge variant="green" className="text-[9px] px-1.5 py-0 mt-1">
                   {user?.role && ROLE_LABELS[user.role] ? ROLE_LABELS[user.role] : 'Guest'}
                 </Badge>
               </div>
             )}
+            <button
+              type="button"
+              onClick={() => setMobileOpen(false)}
+              className="md:hidden ml-auto min-w-11 min-h-11 inline-flex items-center justify-center rounded-lg text-[var(--admin-text-secondary)] hover:text-[var(--admin-text-primary)] hover:bg-[var(--admin-surface-soft)]"
+              aria-label="Close navigation menu"
+            >
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M6 6l12 12M18 6L6 18" />
+              </svg>
+            </button>
           </div>
 
           {/* Collapse toggle (desktop) */}
@@ -426,7 +460,7 @@ function AdminLayoutContent({ children }: { children: React.ReactNode }) {
           </div>
 
           {/* Nav */}
-          <nav className="flex-1 overflow-y-auto p-3 space-y-5">
+          <nav aria-label="Primary" className="flex-1 overflow-y-auto p-3 space-y-5">
             {NAV_SECTIONS.map((sec) => {
               const visibleItems = sec.items.filter((i) => canAccessRoute(i.href));
               if (visibleItems.length === 0) return null;
