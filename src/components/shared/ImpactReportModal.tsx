@@ -40,10 +40,12 @@ export function ImpactReportModal({
         </div>
 
         <div className="flex flex-col sm:flex-row gap-3">
-          <Link href="/contact" onClick={onClose} className="flex-1">
-            <Button variant="primary" size="lg" className="w-full">
-              Contact Growthbridge
-            </Button>
+          <Link
+            href="/contact"
+            onClick={onClose}
+            className="inline-flex min-h-12 flex-1 items-center justify-center rounded-xl bg-[var(--gb-green-600)] px-7 py-3.5 text-base font-medium text-[var(--action-primary-text)] shadow-[0_10px_25px_-10px_var(--gb-green-600)] transition-colors hover:bg-[var(--gb-green-700)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--gb-green-600)]"
+          >
+            Contact Growthbridge
           </Link>
           <Button variant="outline" size="lg" onClick={onClose}>
             Close
