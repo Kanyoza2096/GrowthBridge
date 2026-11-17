@@ -4,6 +4,7 @@ import { adminUsersRepository } from '@/repositories/admin-users.repository';
 import { auditRepo } from '@/repositories/audit-log.repository';
 import { z } from 'zod';
 import type { AdminRole } from '@/lib/types/admin';
+import { auditWarning, recordAuditSafely } from '@/lib/audit/write-outcome';
 
 const roles: AdminRole[] = [
   'growthbridge_super_admin',
@@ -42,7 +43,7 @@ export async function POST(request: NextRequest) {
     if (existing) return NextResponse.json({ success: false, error: 'An account with this email already exists.' }, { status: 409 });
 
     const created = await adminUsersRepository.create(body);
-    await auditRepo.create({
+    const auditStatus = await recordAuditSafely(() => auditRepo.create({
       actorId: actor.id,
       actorName: actor.name,
       action: 'create',
@@ -53,8 +54,8 @@ export async function POST(request: NextRequest) {
         { field: 'role', newValue: created.role },
         { field: 'department', newValue: created.department },
       ],
-    });
-    return NextResponse.json({ success: true, data: created }, { status: 201, headers: { 'Cache-Control': 'no-store' } });
+    }), 'admin.users.create');
+    return NextResponse.json({ success: true, data: created, auditStatus, auditWarning: auditWarning(auditStatus) }, { status: 201, headers: { 'Cache-Control': 'no-store' } });
   } catch (error) {
     console.error('[Admin users POST]', error);
     if (error instanceof z.ZodError) return NextResponse.json({ success: false, error: error.issues[0]?.message || 'Invalid user data.' }, { status: 400 });

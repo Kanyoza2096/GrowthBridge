@@ -19,6 +19,7 @@ import { validateAdminResourcePayload } from '@/lib/security/admin-validate';
 import { isBlogSlugConflict } from '@/lib/security/db-errors';
 import { blogService } from '@/services/blog.service';
 import { adminNotificationsRepository } from '@/repositories/admin-notifications.repository';
+import { auditWarning, recordAuditSafely } from '@/lib/audit/write-outcome';
 
 export const dynamic = 'force-dynamic';
 
@@ -49,21 +50,17 @@ function getClientIp(request: NextRequest): string | undefined {
 }
 
 async function writeAudit(request: NextRequest, user: Awaited<ReturnType<typeof getServerUser>>, action: string, resource: string, id: string, saved?: any) {
-  if (!user) return;
-  try {
-    await auditRepo.create({
-      actorId: user.id,
-      actorName: user.name,
-      action: action as any,
-      resourceType: resource,
-      resourceId: id,
-      resourceName: saved?.name || saved?.title || saved?.question || saved?.organizationName || saved?.fileName,
-      ipAddress: getClientIp(request),
-      userAgent: request.headers.get('user-agent') || undefined,
-    });
-  } catch (error) {
-    console.error('[API audit]', error);
-  }
+  if (!user) return 'not_attempted' as const;
+  return recordAuditSafely(() => auditRepo.create({
+    actorId: user.id,
+    actorName: user.name,
+    action: action as any,
+    resourceType: resource,
+    resourceId: id,
+    resourceName: saved?.name || saved?.title || saved?.question || saved?.organizationName || saved?.fileName,
+    ipAddress: getClientIp(request),
+    userAgent: request.headers.get('user-agent') || undefined,
+  }), `admin.${resource}.${action}`);
 }
 
 export async function GET(request: NextRequest, context: RouteContext) {
@@ -193,8 +190,8 @@ export async function PUT(request: NextRequest, context: RouteContext) {
         return NextResponse.json({ success: false, error: 'Invalid resource' }, { status: 400 });
     }
 
-    await writeAudit(request, user, 'update', resource, id, updated);
-    return NextResponse.json({ success: true, data: updated });
+    const auditStatus = await writeAudit(request, user, 'update', resource, id, updated);
+    return NextResponse.json({ success: true, data: updated, auditStatus, auditWarning: auditWarning(auditStatus) });
   } catch (error) {
     if (isBlogSlugConflict(error)) {
       return NextResponse.json({
@@ -261,8 +258,8 @@ export async function DELETE(request: NextRequest, context: RouteContext) {
         return NextResponse.json({ success: false, error: 'Invalid resource' }, { status: 400 });
     }
 
-    if (deleted) await writeAudit(request, user, 'delete', resource, id);
-    return NextResponse.json({ success: deleted });
+    const auditStatus = deleted ? await writeAudit(request, user, 'delete', resource, id) : 'not_attempted';
+    return NextResponse.json({ success: deleted, auditStatus, auditWarning: auditWarning(auditStatus) });
   } catch (error) {
     console.error('[API single resource DELETE]', error);
     return NextResponse.json({ success: false, error: 'Failed to delete record' }, { status: 500 });

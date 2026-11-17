@@ -4,6 +4,7 @@ import { adminUsersRepository } from '@/repositories/admin-users.repository';
 import { auditRepo } from '@/repositories/audit-log.repository';
 import { z } from 'zod';
 import type { AdminRole } from '@/lib/types/admin';
+import { auditWarning, recordAuditSafely } from '@/lib/audit/write-outcome';
 
 const roles: AdminRole[] = [
   'growthbridge_super_admin', 'growthbridge_admin', 'growthbridge_content_manager',
@@ -40,7 +41,7 @@ export async function PATCH(request: NextRequest, context: Context) {
     }
 
     const updated = await adminUsersRepository.update(id, body);
-    await auditRepo.create({
+    const auditStatus = await recordAuditSafely(() => auditRepo.create({
       actorId: actor.id,
       actorName: actor.name,
       action: 'update',
@@ -48,8 +49,8 @@ export async function PATCH(request: NextRequest, context: Context) {
       resourceId: id,
       resourceName: updated.email,
       changes: Object.entries(body).map(([field, value]) => ({ field, newValue: String(value) })), 
-    });
-    return NextResponse.json({ success: true, data: updated }, { headers: { 'Cache-Control': 'no-store' } });
+    }), 'admin.users.update');
+    return NextResponse.json({ success: true, data: updated, auditStatus, auditWarning: auditWarning(auditStatus) }, { headers: { 'Cache-Control': 'no-store' } });
   } catch (error) {
     console.error('[Admin users PATCH]', error);
     if (error instanceof z.ZodError) return NextResponse.json({ success: false, error: error.issues[0]?.message || 'Invalid user data.' }, { status: 400 });
