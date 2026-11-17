@@ -14,7 +14,10 @@ describe('media storage cleanup worker', () => {
   const from = vi.fn(() => ({ remove }));
 
   beforeEach(() => {
-    vi.clearAllMocks();
+    rpc.mockReset();
+    remove.mockReset();
+    from.mockReset();
+    from.mockReturnValue({ remove });
     process.env.MEDIA_STORAGE_CLEANUP_SECRET = 'test-media-cleanup-secret';
     vi.mocked(createAdminClient).mockReturnValue({
       rpc,
