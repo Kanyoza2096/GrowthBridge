@@ -3,8 +3,9 @@ import type { ChartDataPoint, DashboardStats } from '@/lib/types/admin';
 
 const MS_PER_DAY = 24 * 60 * 60 * 1000;
 
-function percentChange(current: number, previous: number): number {
-  if (previous === 0) return current === 0 ? 0 : 100;
+function percentChange(current: number, previous: number): number | null {
+  // A percentage cannot be calculated honestly without a non-zero baseline.
+  if (previous === 0) return current === 0 ? 0 : null;
   return Math.round(((current - previous) / previous) * 100);
 }
 
@@ -104,11 +105,11 @@ export class DashboardRepository {
 
     return {
       totalVisitors: 0,
-      visitorsChange: 0,
+      visitorsChange: null,
       activeServices: services.count || 0,
-      servicesChange: 0,
+      servicesChange: null,
       publishedProjects: projects.count || 0,
-      projectsChange: 0,
+      projectsChange: null,
       talentApplications: talentTotal,
       applicationsChange: percentChange(talentCurrent, talentPrevious),
       partnerRequests: partnerTotal,

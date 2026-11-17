@@ -27,7 +27,7 @@ function StatCard({
 }: {
   title: string;
   value: string;
-  change: string;
+  change: number | null;
   color: 'emerald' | 'amber' | 'blue' | 'purple' | 'rose' | 'cyan';
   icon: string;
   href?: string;
@@ -47,7 +47,7 @@ function StatCard({
       'bg-cyan-500/10 text-cyan-300 border-cyan-500/25',
   };
 
-  const isPositive = !change.startsWith('-');
+  const trend = change === null ? 'neutral' : change > 0 ? 'up' : change < 0 ? 'down' : 'flat';
 
   return (
     <Card
@@ -73,13 +73,14 @@ function StatCard({
         </div>
         <span
           className={cn(
-            'text-[10px] font-bold px-2 py-1 rounded-full',
-            isPositive
-              ? 'bg-[var(--gb-green-600)]/15 text-[var(--gb-green-400)] border border-[var(--gb-green-600)]/30'
-              : 'bg-rose-500/15 text-rose-400 border border-rose-500/30'
+            'text-[10px] font-semibold px-2 py-1 rounded-full border',
+            trend === 'up' && 'bg-[var(--gb-green-600)]/15 text-[var(--gb-green-400)] border-[var(--gb-green-600)]/30',
+            trend === 'down' && 'bg-rose-500/15 text-rose-400 border-rose-500/30',
+            (trend === 'flat' || trend === 'neutral') && 'bg-white/[.035] text-[var(--admin-text-tertiary)] border-[var(--admin-border)]'
           )}
+          aria-label={change === null ? 'No comparison baseline available' : `${Math.abs(change)} percent ${trend} compared with the previous 30 days`}
         >
-          {isPositive ? '↑' : '↓'} {change.replace('-', '')}
+          {change === null ? 'Baseline needed' : change > 0 ? '↑' : change < 0 ? '↓' : '—'}{change === null ? '' : ` ${Math.abs(change)}% vs previous 30 days`}
         </span>
       </div>
       <div>
@@ -97,17 +98,17 @@ function StatCard({
 // ---------------------------------------------------------------------------
 const DEFAULT_STATS = {
   totalVisitors: 0,
-  visitorsChange: 0,
+  visitorsChange: null,
   activeServices: 0,
-  servicesChange: 0,
+  servicesChange: null,
   publishedProjects: 0,
-  projectsChange: 0,
+  projectsChange: null,
   talentApplications: 0,
-  applicationsChange: 0,
+  applicationsChange: null,
   partnerRequests: 0,
-  partnerChange: 0,
+  partnerChange: null,
   contactSubmissions: 0,
-  contactChange: 0,
+  contactChange: null,
 };
 
 // ---------------------------------------------------------------------------
@@ -214,17 +215,16 @@ export default function AdminDashboardPage() {
       {/* Statistics Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-5">
         <StatCard
-          title="Total Website Visitors"
-          value={fmt(stats.totalVisitors)}
-          change={`${stats.visitorsChange}% vs last period`}
+          title="Website traffic"
+          value="Not tracked"
+          change={null}
           color="emerald"
           icon="01"
-          href="/admin/analytics"
         />
         <StatCard
           title="Active Services"
           value={`${stats.activeServices}`}
-          change={`${stats.servicesChange}% this month`}
+          change={stats.servicesChange}
           color="blue"
           icon="02"
           href="/admin/services"
@@ -232,7 +232,7 @@ export default function AdminDashboardPage() {
         <StatCard
           title="Published Projects"
           value={`${stats.publishedProjects}`}
-          change={`${stats.projectsChange}% growth`}
+          change={stats.projectsChange}
           color="purple"
           icon="03"
           href="/admin/projects"
@@ -240,7 +240,7 @@ export default function AdminDashboardPage() {
         <StatCard
           title="Talent Applications"
           value={`${stats.talentApplications}`}
-          change={`${stats.applicationsChange}% new`}
+          change={stats.applicationsChange}
           color="amber"
           icon="04"
           href="/admin/talent"
@@ -248,7 +248,7 @@ export default function AdminDashboardPage() {
         <StatCard
           title="Partner Requests"
           value={`${stats.partnerRequests}`}
-          change={`${stats.partnerChange}% increase`}
+          change={stats.partnerChange}
           color="cyan"
           icon="05"
           href="/admin/partners"
@@ -256,7 +256,7 @@ export default function AdminDashboardPage() {
         <StatCard
           title="Contact Submissions"
           value={`${stats.contactSubmissions}`}
-          change={`${stats.contactChange}%`}
+          change={stats.contactChange}
           color="rose"
           icon="06"
           href="/admin/inquiries"
@@ -275,8 +275,8 @@ export default function AdminDashboardPage() {
                 Website traffic over the past 12 weeks
               </p>
             </div>
-            <Badge variant="green" className="text-[9px]">
-              ↑ {stats.visitorsChange}%
+            <Badge variant="outline" className="text-[9px]">
+              NOT TRACKED
             </Badge>
           </div>
           <div className="-mx-2">

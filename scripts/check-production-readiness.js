@@ -38,7 +38,7 @@ if (!settings.includes('apiKeys: []')) fail('Settings repository does not strip 
 
 const migrations = fs.readdirSync(path.join(root, 'supabase/migrations')).filter(f => f.endsWith('.sql'));
 const finalMigration = migrations.sort().at(-1);
-if (!finalMigration || !/^02[4-9]_/.test(finalMigration)) warn(`Expected a current privilege-hardening migration at the end of the migration chain; found ${finalMigration || 'none'}.`);
+if (!finalMigration || !/^(?:02[4-9]|\d{14})_/.test(finalMigration)) warn(`Expected a current privilege-hardening migration at the end of the migration chain; found ${finalMigration || 'none'}.`);
 
 // Rate limiting guidance (graceful fallback is intentional)
 const rateLimitSrc = read('src/lib/security/rate-limit.ts');
