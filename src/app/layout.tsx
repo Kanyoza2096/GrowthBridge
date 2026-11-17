@@ -1,5 +1,7 @@
-import type { Metadata } from 'next';
-import { Montserrat } from 'next/font/google';
+import type { Metadata, Viewport } from 'next';
+import '@fontsource-variable/inter';
+import '@fontsource-variable/plus-jakarta-sans';
+import '@fontsource-variable/jetbrains-mono';
 import './globals.css';
 import { QueryProvider } from '@/components/providers/QueryProvider';
 import { ToastProvider } from '@/components/providers/ToastProvider';
@@ -10,22 +12,16 @@ import { ThemeFlashScript } from '@/components/providers/ThemeFlashScript';
 import { PublicShell } from '@/components/layout/PublicShell';
 import { ServiceWorkerRegistration } from '@/components/providers/ServiceWorkerRegistration';
 import { defaultSeo } from '@/lib/constants/seo';
+import { publicConfig } from '@/lib/config/public';
 
-const montserrat = Montserrat({
-  subsets: ['latin'],
-  display: 'swap',
-  variable: '--font-montserrat',
-  preload: true,
-  weight: ['400', '500', '600', '700', '800', '900'],
-});
 
-export const viewport = {
+export const viewport: Viewport = {
   themeColor: '#123b5d',
   colorScheme: 'light',
 };
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://www.growthbridge.org'),
+  metadataBase: new URL(publicConfig.NEXT_PUBLIC_SITE_URL),
   title: defaultSeo.title,
   description: defaultSeo.description,
   openGraph: defaultSeo.openGraph,
@@ -40,7 +36,7 @@ export const metadata: Metadata = {
     ],
     apple: [{ url: '/icons/icon-192.svg', type: 'image/svg+xml' }],
   },
-  authors: [{ name: 'Growthbridge', url: 'https://www.growthbridge.org' }],
+  authors: [{ name: 'Growthbridge', url: publicConfig.NEXT_PUBLIC_SITE_URL }],
   creator: 'Growthbridge',
   publisher: 'Growthbridge',
   category: 'technology',
@@ -64,7 +60,7 @@ export default function RootLayout({
         <ThemeFlashScript />
       </head>
       <body
-        className={`${montserrat.variable} antialiased min-h-screen flex flex-col transition-colors duration-300 bg-[var(--surface-page)] text-[var(--text-primary)]`}
+        className="antialiased min-h-screen flex flex-col transition-colors duration-300 bg-[var(--surface-page)] text-[var(--text-primary)]"
       >
         <script
           type="application/ld+json"
@@ -73,7 +69,7 @@ export default function RootLayout({
               '@context': 'https://schema.org',
               '@type': 'Organization',
               name: 'Growthbridge Virtual Organization',
-              url: 'https://www.growthbridge.org',
+              url: publicConfig.NEXT_PUBLIC_SITE_URL,
               description: defaultSeo.description,
               slogan: 'Bridging Skills. Driving Growth.',
             }),
