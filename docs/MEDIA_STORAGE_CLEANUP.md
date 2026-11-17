@@ -4,7 +4,7 @@ GrowthBridge media deletion uses a transactional database outbox so a failed Sup
 
 ## Deployment order
 
-1. Apply `supabase/migrations/030_media_storage_cleanup_outbox.sql` to the Supabase project.
+1. Apply `supabase/migrations/20261117155200_media_storage_cleanup_outbox.sql` to the Supabase project.
 2. Deploy the application containing the cleanup route.
 3. Configure the same high-entropy secret in both places:
    - GrowthBridge server environment: `MEDIA_STORAGE_CLEANUP_SECRET`
