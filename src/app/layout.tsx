@@ -34,7 +34,7 @@ export const metadata: Metadata = {
       { url: '/icons/icon-192.svg', type: 'image/svg+xml', sizes: '192x192' },
       { url: '/icons/icon-512.svg', type: 'image/svg+xml', sizes: '512x512' },
     ],
-    apple: [{ url: '/icons/icon-192.svg', type: 'image/svg+xml' }],
+    apple: [{ url: '/icons/apple-touch-icon.png', type: 'image/png', sizes: '180x180' }],
   },
   authors: [{ name: 'Growthbridge', url: publicConfig.NEXT_PUBLIC_SITE_URL }],
   creator: 'Growthbridge',
