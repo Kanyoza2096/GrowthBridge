@@ -4,9 +4,9 @@ import { publicConfig } from '@/lib/config/public';
 export default function manifest(): MetadataRoute.Manifest {
   return {
     id: '/',
-    name: publicConfig.NEXT_PUBLIC_SITE_NAME,
-    short_name: 'GrowthBridge',
-    description: 'Bridging Skills. Driving Growth.',
+    name: 'GrowthBridge Virtual',
+    short_name: 'GB Virtual',
+    description: 'GrowthBridge Virtual — Bridging Skills. Driving Growth.',
     start_url: '/',
     scope: '/',
     display: 'standalone',
