@@ -46,4 +46,28 @@ test.describe('Public SEO and PWA delivery', () => {
     expect(xml).toContain('https://growthbridge.org/about');
     expect(xml).toContain('https://growthbridge.org/contact');
   });
+
+  test('registers and activates the public service worker in production', async ({ page, context }) => {
+    await page.goto('/');
+    await page.evaluate(async () => {
+      if (!('serviceWorker' in navigator)) throw new Error('Service workers are unavailable');
+      await navigator.serviceWorker.ready;
+    });
+    await page.waitForFunction(() => Boolean(navigator.serviceWorker.controller));
+    expect(context.serviceWorkers().length).toBeGreaterThan(0);
+  });
+
+  test('shows the offline fallback when a public navigation loses connectivity', async ({ page, context }) => {
+    await page.goto('/');
+    await page.evaluate(async () => {
+      await navigator.serviceWorker.ready;
+    });
+    await page.waitForFunction(() => Boolean(navigator.serviceWorker.controller));
+
+    await context.setOffline(true);
+    await page.goto('/offline-verification-page');
+    await expect(page.getByRole('heading', { name: "You're temporarily offline." })).toBeVisible();
+    await context.setOffline(false);
+  });
+
 });
