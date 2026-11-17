@@ -6,6 +6,6 @@
  */
 export function escapeCsvCell(value: unknown): string {
   const text = String(value ?? '');
-  const safeText = /^[\u0000-\u0020]*[=+@-]/.test(text) ? `'${text}` : text;
+  const safeText = /^[\u0000-\u0020\uFEFF]*[=+@-]/.test(text) ? `'${text}` : text;
   return `"${safeText.replace(/"/g, '""')}"`;
 }
