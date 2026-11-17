@@ -49,3 +49,43 @@ export async function readJsonBody<T = unknown>(request: NextRequest, maxBytes: 
   if (!text.trim()) return {} as T;
   return JSON.parse(text) as T;
 }
+
+
+/** Read multipart form data with a hard streaming size limit. */
+export async function readFormDataBody(request: Request, maxBytes: number): Promise<FormData> {
+  const contentLength = request.headers.get('content-length');
+  if (contentLength && Number(contentLength) > maxBytes) {
+    throw new Error('REQUEST_BODY_TOO_LARGE');
+  }
+
+  if (!request.body) return new FormData();
+  const reader = request.body.getReader();
+  const chunks: Uint8Array[] = [];
+  let total = 0;
+
+  try {
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      if (!value) continue;
+      total += value.byteLength;
+      if (total > maxBytes) throw new Error('REQUEST_BODY_TOO_LARGE');
+      chunks.push(value);
+    }
+  } finally {
+    reader.releaseLock();
+  }
+
+  const bytes = new Uint8Array(total);
+  let offset = 0;
+  for (const chunk of chunks) {
+    bytes.set(chunk, offset);
+    offset += chunk.byteLength;
+  }
+
+  const contentType = request.headers.get('content-type');
+  if (!contentType?.toLowerCase().startsWith('multipart/form-data;')) {
+    throw new Error('INVALID_MULTIPART_BODY');
+  }
+  return new Response(bytes, { headers: { 'content-type': contentType } }).formData();
+}

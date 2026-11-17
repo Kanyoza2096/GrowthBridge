@@ -115,3 +115,7 @@ delivery do not create or auto-approve automation rules; the existing
 workspace-scoped Business Automation engine and governed execution router
 remain responsible for admission. The Director does not directly generate or
 publish GrowthBridge content.
+
+## Admin media upload limits
+
+Admin media uploads are bounded while the multipart request stream is being read, before `FormData` parsing. The request ceiling includes a small multipart framing allowance above the 10 MiB file limit. Requests that exceed the byte ceiling are rejected with HTTP 413; malformed multipart bodies are rejected with HTTP 400. The server enforces the streamed byte count independently of `Content-Length`, so chunked requests cannot bypass the limit. These checks protect the application process from buffering arbitrarily large multipart bodies.
