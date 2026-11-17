@@ -246,17 +246,17 @@ export interface AdminNotification {
 
 export interface DashboardStats {
   totalVisitors: number;
-  visitorsChange: number;
+  visitorsChange: number | null;
   activeServices: number;
-  servicesChange: number;
+  servicesChange: number | null;
   publishedProjects: number;
-  projectsChange: number;
+  projectsChange: number | null;
   talentApplications: number;
-  applicationsChange: number;
+  applicationsChange: number | null;
   partnerRequests: number;
-  partnerChange: number;
+  partnerChange: number | null;
   contactSubmissions: number;
-  contactChange: number;
+  contactChange: number | null;
 }
 
 export interface ChartDataPoint {
