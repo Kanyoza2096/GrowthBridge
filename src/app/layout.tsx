@@ -11,16 +11,17 @@ import { ThemeProvider } from '@/components/providers/ThemeProvider';
 import { ThemeFlashScript } from '@/components/providers/ThemeFlashScript';
 import { PublicShell } from '@/components/layout/PublicShell';
 import { defaultSeo } from '@/lib/constants/seo';
+import { publicConfig } from '@/lib/config/public';
 
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://www.growthbridge.org'),
+  metadataBase: new URL(publicConfig.NEXT_PUBLIC_SITE_URL),
   title: defaultSeo.title,
   description: defaultSeo.description,
   openGraph: defaultSeo.openGraph,
   twitter: defaultSeo.twitter,
   applicationName: 'Growthbridge',
-  authors: [{ name: 'Growthbridge', url: 'https://www.growthbridge.org' }],
+  authors: [{ name: 'Growthbridge', url: publicConfig.NEXT_PUBLIC_SITE_URL }],
   creator: 'Growthbridge',
   publisher: 'Growthbridge',
   category: 'technology',
@@ -53,7 +54,7 @@ export default function RootLayout({
               '@context': 'https://schema.org',
               '@type': 'Organization',
               name: 'Growthbridge Virtual Organization',
-              url: 'https://www.growthbridge.org',
+              url: publicConfig.NEXT_PUBLIC_SITE_URL,
               description: defaultSeo.description,
               slogan: 'Bridging Skills. Driving Growth.',
             }),

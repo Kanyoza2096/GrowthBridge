@@ -1,7 +1,8 @@
 import type { MetadataRoute } from 'next';
 import { createAdminClient } from '@/lib/supabase/server';
+import { publicConfig } from '@/lib/config/public';
 
-const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL || 'https://growthbridge.org').replace(/\/$/, '');
+const SITE_URL = publicConfig.NEXT_PUBLIC_SITE_URL.replace(/\/+$/, '');
 
 /**
  * Dynamic sitemap: public content changes without requiring a deployment.
