@@ -70,9 +70,10 @@ export async function POST(request: NextRequest) {
       });
       if (response.ok) {
         const { error: updateError } = await admin.from('kdo_website_event_outbox')
-          .update({ status: 'delivered', delivered_at: new Date().toISOString(), locked_until: null, last_error: null })
-          .eq('id', row.id).eq('status', 'processing');
+          .update({ status: 'delivered', delivered_at: new Date().toISOString(), locked_until: null, lease_token: null, last_error: null })
+          .eq('id', row.id).eq('status', 'processing').eq('lease_token', row.lease_token).select('id').maybeSingle();
         if (updateError) throw new Error(updateError.message);
+        if (!data) throw new Error('Outbox lease was lost before delivery could be finalized');
         delivered++;
         continue;
       }
@@ -82,9 +83,9 @@ export async function POST(request: NextRequest) {
       const status = permanent || exhausted ? 'failed' : 'pending';
       const delaySeconds = Math.min(3600, 15 * (2 ** Math.min(row.attempt_count, 8)));
       const { error: updateError } = await admin.from('kdo_website_event_outbox').update({
-        status, last_error: message, locked_until: null,
+        status, last_error: message, locked_until: null, lease_token: null,
         next_attempt_at: new Date(Date.now() + delaySeconds * 1000).toISOString(),
-      }).eq('id', row.id).eq('status', 'processing');
+      }).eq('id', row.id).eq('status', 'processing').eq('lease_token', row.lease_token);
       if (updateError) throw new Error(updateError.message);
       if (status === 'failed') failed++; else retried++;
     } catch (err) {
@@ -95,8 +96,9 @@ export async function POST(request: NextRequest) {
         status: exhausted ? 'failed' : 'pending',
         last_error: message.slice(0, 1000),
         locked_until: null,
+        lease_token: null,
         next_attempt_at: new Date(Date.now() + delaySeconds * 1000).toISOString(),
-      }).eq('id', row.id).eq('status', 'processing');
+      }).eq('id', row.id).eq('status', 'processing').eq('lease_token', row.lease_token);
       if (updateError) console.error('[KDO outbox] failed to release event', row.id, updateError.message);
       if (exhausted) failed++; else retried++;
     }
