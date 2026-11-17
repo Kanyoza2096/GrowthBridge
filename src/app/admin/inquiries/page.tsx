@@ -224,9 +224,9 @@ function InquiryDetailModal({
   onClose: () => void;
   inquiry: Inquiry | null;
   canEdit: boolean;
-  onMarkContacted: () => void;
-  onCloseInquiry: () => void;
-  onAddNote: (content: string) => void;
+  onMarkContacted: () => void | Promise<void>;
+  onCloseInquiry: () => void | Promise<void>;
+  onAddNote: (content: string) => void | Promise<void>;
   onSendReply: (message: string) => void;
   currentUserName?: string;
   currentUserId?: string;
@@ -242,24 +242,26 @@ function InquiryDetailModal({
   const inquiryType: 'general' | 'partnership' =
     inquiry.type === 'partnership' ? 'partnership' : 'general';
 
-  const doAction = async (label: string, fn: () => void) => {
+  const doAction = async (label: string, fn: () => void | Promise<void>) => {
     setLoadingAction(label);
-    await new Promise((r) => setTimeout(r, 250));
-    fn();
-    setLoadingAction(null);
+    try {
+      await fn();
+    } finally {
+      setLoadingAction(null);
+    }
   };
 
-  const submitNote = () => {
+  const submitNote = async () => {
     if (!noteText.trim()) return;
-    doAction('note', () => {
-      onAddNote(noteText.trim());
+    await doAction('note', async () => {
+      await onAddNote(noteText.trim());
       setNoteText('');
     });
   };
 
-  const submitReply = () => {
+  const submitReply = async () => {
     if (!replyText.trim()) return;
-    doAction('reply', () => {
+    await doAction('reply', () => {
       onSendReply(replyText.trim());
       setReplyText('');
     });
@@ -392,7 +394,7 @@ function InquiryDetailModal({
                     disabled={!replyText.trim() || !canEdit}
                     onClick={submitReply}
                   >
-                    Send & Mark Contacted
+                    Open Email Draft
                   </Button>
                 </div>
               </div>
@@ -401,7 +403,7 @@ function InquiryDetailModal({
 
           {tab === 'notes' && (
             <div className="space-y-3">
-              {canEdit && (
+              {canEdit && inquiry.source === 'application' && (
                 <div className="p-3 rounded-xl bg-[var(--gb-navy-800)]/20 border border-[var(--gb-navy-800)]/40 space-y-2">
                   <Textarea
                     placeholder="Add an internal note (not visible to sender)..."
@@ -421,6 +423,11 @@ function InquiryDetailModal({
                     </Button>
                   </div>
                 </div>
+              )}
+              {canEdit && inquiry.source !== 'application' && (
+                <p className="rounded-xl border border-[var(--admin-border)] bg-[var(--admin-surface-card)]/40 p-3 text-xs text-[var(--admin-text-tertiary)]">
+                  Internal notes are available for application records only.
+                </p>
               )}
               {inquiry.notes.length === 0 ? (
                 <div className="p-8 text-center rounded-xl bg-[var(--admin-surface-card)]/40 border border-[var(--admin-border)]">
@@ -516,7 +523,7 @@ function InquiryDetailModal({
             <Button
               size="sm"
               variant="secondary"
-              onClick={() => doAction('contacted', onMarkContacted)}
+              onClick={() => void doAction('contacted', onMarkContacted)}
               isLoading={loadingAction === 'contacted'}
             >
               ✓ Mark as Contacted
@@ -526,7 +533,7 @@ function InquiryDetailModal({
             <Button
               size="sm"
               variant="accent"
-              onClick={() => doAction('close', onCloseInquiry)}
+              onClick={() => void doAction('close', onCloseInquiry)}
               isLoading={loadingAction === 'close'}
             >
               ✕ Close Inquiry
@@ -560,13 +567,27 @@ export default function AdminInquiriesPage() {
   const { success, info, error } = useToast();
   const [inquiries, setInquiries] = useState<Inquiry[]>([]);
   const [loadingInquiries, setLoadingInquiries] = useState(true);
+  const [inquiryLoadFailed, setInquiryLoadFailed] = useState(false);
 
   const loadInquiries = React.useCallback(async () => {
+    if (!hasPermission('applications', 'read')) {
+      setInquiries([]);
+      setInquiryLoadFailed(false);
+      setLoadingInquiries(false);
+      return;
+    }
+
     setLoadingInquiries(true);
-    try { setInquiries(await adminFetch<Inquiry[]>('/api/admin/inquiries')); }
-    catch (e) { error('Inbox unavailable', 'Could not load contact and partnership inquiries.'); }
-    finally { setLoadingInquiries(false); }
-  }, [error]);
+    setInquiryLoadFailed(false);
+    try {
+      setInquiries(await adminFetch<Inquiry[]>('/api/admin/inquiries'));
+    } catch {
+      setInquiryLoadFailed(true);
+      error('Inbox unavailable', 'Could not load contact and partnership inquiries.');
+    } finally {
+      setLoadingInquiries(false);
+    }
+  }, [error, hasPermission]);
   React.useEffect(() => { void loadInquiries(); }, [loadInquiries]);
 
   const [filterTab, setFilterTab] = useState<InquiryTab>('all');
@@ -617,47 +638,45 @@ export default function AdminInquiriesPage() {
     });
   }, [inquiries, filterTab, statusFilter, search]);
 
-  const refreshDetail = (id: string) => {
-    setDetailInquiry((cur) => {
-      if (!cur || cur.id !== id) return cur;
-      return inquiries.find((x) => x.id === id) || cur;
-    });
-  };
-
   const updateInquiryStatus = async (id: string, next: Inquiry['status']) => {
     const current = inquiries.find((i) => i.id === id);
     if (!current) return;
     try {
       await adminFetch('/api/admin/inquiries', { method:'PATCH', body: JSON.stringify({ id, source: current.source, status: next }) });
       setInquiries((items) => items.map((i) => i.id === id ? { ...i, status: next } : i));
+      setDetailInquiry((currentDetail) => currentDetail?.id === id ? { ...currentDetail, status: next } : currentDetail);
       success('Inquiry Updated', next === 'closed' ? 'The inquiry has been closed.' : next === 'new' ? 'The inquiry is back in NEW.' : 'Status changed to CONTACTED.');
-      refreshDetail(id);
     } catch { error('Update Failed', 'Could not update inquiry status.'); }
   };
-  const handleMarkContacted = (id: string) => { void updateInquiryStatus(id, 'contacted'); };
-  const handleStatusChange = (id: string, status: Inquiry['status']) => { void updateInquiryStatus(id, status); };
-  const handleCloseInquiry = (id: string) => { void updateInquiryStatus(id, 'closed'); };
+  const handleMarkContacted = (id: string) => updateInquiryStatus(id, 'contacted');
+  const handleStatusChange = (id: string, status: Inquiry['status']) => updateInquiryStatus(id, status);
+  const handleCloseInquiry = (id: string) => updateInquiryStatus(id, 'closed');
 
-  const handleAddNote = (id: string, content: string) => {
+  const handleAddNote = async (id: string, content: string) => {
+    const inquiry = inquiries.find((item) => item.id === id);
+    if (inquiry?.source !== 'application') {
+      info('Notes unavailable', 'Internal notes are currently supported for application records only.');
+      return;
+    }
     try {
-      const inquiry = inquiries.find((item) => item.id === id);
-      if (inquiry?.source !== 'application') { info('Notes unavailable', 'Internal notes are currently supported for application records only.'); return; }
-      addApplicationNote(id, content, user?.id || 'admin-1', user?.name || 'Admin User');
+      await addApplicationNote(id, content, user?.id || 'admin-1', user?.name || 'Admin User');
+      const refreshed = await adminFetch<Inquiry[]>('/api/admin/inquiries');
+      setInquiries(refreshed);
+      setDetailInquiry((currentDetail) => currentDetail?.id === id ? refreshed.find((item) => item.id === id) || currentDetail : currentDetail);
       success('Note Added', 'Internal note saved.');
-      refreshDetail(id);
-    } catch (e) {
+    } catch {
       error('Note Failed', 'Could not save the note.');
     }
   };
 
-  const handleSendReply = (id: string, _message: string) => {
-    try {
-      void updateInquiryStatus(id, 'contacted');
-      info('Reply Prepared', 'Reply has been prepared. Send via your email client.');
-      refreshDetail(id);
-    } catch (e) {
-      error('Reply Failed', 'Could not process the reply.');
-    }
+  const handleSendReply = (id: string, message: string) => {
+    const inquiry = inquiries.find((item) => item.id === id);
+    if (!inquiry) return;
+
+    const subject = inquiry.subject || 'Your Growthbridge inquiry';
+    const mailto = `mailto:${encodeURIComponent(inquiry.email)}?subject=${encodeURIComponent(`Re: ${subject}`)}&body=${encodeURIComponent(message)}`;
+    window.location.href = mailto;
+    info('Email draft opened', 'Send the message from your email app. Then update the inquiry status to Contacted.');
   };
 
   return (
@@ -768,6 +787,15 @@ export default function AdminInquiriesPage() {
           title="Access restricted"
           description="Your current role does not have permission to view inquiries."
         />
+      ) : loadingInquiries ? (
+        <AdminEmptyState icon="file" title="Loading inquiries" description="Retrieving the latest contact and partnership submissions." />
+      ) : inquiryLoadFailed ? (
+        <AdminEmptyState
+          icon="file"
+          title="Inbox could not be loaded"
+          description="Your inquiries have not been confirmed as empty. Check the connection and retry."
+          action={<Button size="sm" variant="secondary" onClick={() => void loadInquiries()}>Retry</Button>}
+        />
       ) : filtered.length === 0 ? (
         <AdminEmptyState
           icon={search ? 'search' : 'inbox'}
@@ -797,9 +825,9 @@ export default function AdminInquiriesPage() {
         onClose={() => setDetailInquiry(null)}
         inquiry={detailInquiry}
         canEdit={canEdit}
-        onMarkContacted={() => detailInquiry && handleMarkContacted(detailInquiry.id)}
-        onCloseInquiry={() => detailInquiry && handleCloseInquiry(detailInquiry.id)}
-        onAddNote={(content) => detailInquiry && handleAddNote(detailInquiry.id, content)}
+        onMarkContacted={() => detailInquiry ? handleMarkContacted(detailInquiry.id) : Promise.resolve()}
+        onCloseInquiry={() => detailInquiry ? handleCloseInquiry(detailInquiry.id) : Promise.resolve()}
+        onAddNote={(content) => detailInquiry ? handleAddNote(detailInquiry.id, content) : Promise.resolve()}
         onSendReply={(message) => detailInquiry && handleSendReply(detailInquiry.id, message)}
         currentUserName={user?.name || 'Admin User'}
         currentUserId={user?.id || 'admin-1'}
