@@ -12,7 +12,7 @@ export const dynamic = 'force-dynamic';
 type PageResult<T> = { data: T[] | null; error: unknown };
 
 async function fetchAllRows<T>(
-  fetchPage: (from: number, to: number) => Promise<PageResult<T>>
+  fetchPage: (from: number, to: number) => PromiseLike<PageResult<T>>
 ): Promise<T[]> {
   const rows: T[] = [];
   for (let from = 0; ; from += PAGE_SIZE) {
