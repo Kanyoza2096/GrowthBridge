@@ -82,7 +82,7 @@ export function Header() {
             </Link>
 
             {/* Desktop Navigation Links */}
-            <nav className="hidden md:flex items-center space-x-0.5 lg:space-x-1">
+            <nav aria-label="Main navigation" className="hidden md:flex items-center space-x-0.5 lg:space-x-1">
               {mainNavigation.map((item) => {
                 const isActive =
                   pathname === item.href ||
