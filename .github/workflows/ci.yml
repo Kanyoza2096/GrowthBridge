@@ -57,3 +57,18 @@ jobs:
       - if: always() && steps.install.outcome == 'success'
         name: Check production readiness
         run: npm run production:check
+
+      - if: always() && steps.install.outcome == 'success'
+        name: Install Playwright Chromium
+        run: npx playwright install --with-deps chromium
+      - if: always() && steps.install.outcome == 'success'
+        name: Run browser end-to-end tests
+        run: npm run test:e2e
+      - if: always() && steps.install.outcome == 'success'
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: |
+            playwright-report/
+            test-results/
+          if-no-files-found: ignore
