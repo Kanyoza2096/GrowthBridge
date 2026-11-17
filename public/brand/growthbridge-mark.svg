@@ -3,7 +3,7 @@
 <rect width="128" height="128" rx="26" fill="#123B5D"/>
 <path d="M18 91c17-35 32-51 46-51s29 16 46 51" fill="none" stroke="#fff" stroke-width="7" stroke-linecap="round"/>
 <path d="M27 91c13-26 25-38 37-38s24 12 37 38" fill="none" stroke="#16A36A" stroke-width="6" stroke-linecap="round"/>
-<path d="M37 91V66M64 91V53M91 91V66" stroke-width="7" stroke-linecap="round"/>
+<path d="M37 91V66" stroke="#fff" stroke-width="7" stroke-linecap="round"/><path d="M64 91V53" stroke="#16A36A" stroke-width="7" stroke-linecap="round"/><path d="M91 91V66" stroke="#F59E0B" stroke-width="7" stroke-linecap="round"/>
 <path d="M37 59V39m0 0-6 7m6-7 6 7" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
 <path d="M64 46V24m0 0-6 7m6-7 6 7" fill="none" stroke="#16A36A" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
 <path d="M91 59V39m0 0-6 7m6-7 6 7" fill="none" stroke="#F59E0B" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
