@@ -825,9 +825,9 @@ export default function AdminInquiriesPage() {
         onClose={() => setDetailInquiry(null)}
         inquiry={detailInquiry}
         canEdit={canEdit}
-        onMarkContacted={() => detailInquiry && handleMarkContacted(detailInquiry.id)}
-        onCloseInquiry={() => detailInquiry && handleCloseInquiry(detailInquiry.id)}
-        onAddNote={(content) => detailInquiry && handleAddNote(detailInquiry.id, content)}
+        onMarkContacted={() => detailInquiry ? handleMarkContacted(detailInquiry.id) : Promise.resolve()}
+        onCloseInquiry={() => detailInquiry ? handleCloseInquiry(detailInquiry.id) : Promise.resolve()}
+        onAddNote={(content) => detailInquiry ? handleAddNote(detailInquiry.id, content) : Promise.resolve()}
         onSendReply={(message) => detailInquiry && handleSendReply(detailInquiry.id, message)}
         currentUserName={user?.name || 'Admin User'}
         currentUserId={user?.id || 'admin-1'}
