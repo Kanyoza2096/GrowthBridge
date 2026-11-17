@@ -40,7 +40,7 @@ export function Footer() {
                     2026 Impact Report
                   </span>
                   <span className="text-[9px] px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 font-bold border border-emerald-400/30">
-                    FREE PDF
+                    IN PREPARATION
                   </span>
                 </div>
                 <p className="text-xs font-semibold text-white">
@@ -50,7 +50,7 @@ export function Footer() {
                   onClick={() => setReportModalOpen(true)}
                   className="text-xs font-bold text-[#34D399] hover:text-[#6EE7B7] transition-colors cursor-pointer"
                 >
-                  Download Free White Paper →
+                  Ask about the report →
                 </button>
               </div>
             </div>
@@ -86,7 +86,7 @@ export function Footer() {
                         onClick={() => setReportModalOpen(true)}
                         className="text-white/65 hover:text-[var(--gb-green-400)] transition-colors cursor-pointer text-sm"
                       >
-                        2026 Impact Report
+                        2026 Impact Report · In preparation
                       </button>
                     </li>
                   )}
