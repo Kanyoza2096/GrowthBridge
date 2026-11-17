@@ -259,7 +259,7 @@ function CommandPalette({ open, onClose }: { open: boolean; onClose: () => void 
 }
 
 function AdminLayoutContent({ children }: { children: React.ReactNode }) {
-  const { user, isAuthenticated, logout, canAccessRoute } = useAdminAuth();
+  const { user, isAuthenticated, isLoading, logout, canAccessRoute } = useAdminAuth();
   const { theme, toggleTheme } = useTheme();
   const { unreadCount } = useAdminNotifications();
   const pathname = usePathname();
@@ -305,6 +305,17 @@ function AdminLayoutContent({ children }: { children: React.ReactNode }) {
 
   if (pathname === '/admin/login') {
     return <>{children}</>;
+  }
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-[var(--admin-surface-page)] flex items-center justify-center p-6" role="status" aria-live="polite">
+        <div className="flex flex-col items-center gap-3 text-center">
+          <div className="h-9 w-9 rounded-full border-2 border-[var(--admin-border)] border-t-[var(--admin-accent)] animate-spin" aria-hidden="true" />
+          <p className="text-sm font-medium text-[var(--admin-text-secondary)]">Verifying your secure session…</p>
+        </div>
+      </div>
+    );
   }
 
   if (!isAuthenticated) {
