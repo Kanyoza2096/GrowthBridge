@@ -41,17 +41,22 @@ export default function ContactPage() {
     setSuccessMessage(null);
     setErrorMessage(null);
 
-    const res = await apiClient.submitContact({
-      ...formData,
-      type: 'general',
-    });
+    try {
+      const res = await apiClient.submitContact({
+        ...formData,
+        type: 'general',
+      });
 
-    setIsSubmitting(false);
-    if (res.success) {
-      setSuccessMessage(res.message || 'Thank you! We will get back to you shortly.');
-      setFormData({ name: '', email: '', phone: '', subject: '', message: '' });
-    } else {
-      setErrorMessage(res.message || 'We could not send your message. Please try again.');
+      if (res.success) {
+        setSuccessMessage(res.message || 'Thank you! We will get back to you shortly.');
+        setFormData({ name: '', email: '', phone: '', subject: '', message: '' });
+      } else {
+        setErrorMessage(res.message || res.error || 'We could not send your message. Please try again.');
+      }
+    } catch {
+      setErrorMessage('We could not reach Growthbridge. Check your connection and try again. Your message has not been confirmed as received.');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -61,21 +66,26 @@ export default function ContactPage() {
     setSuccessMessage(null);
     setErrorMessage(null);
 
-    const res = await apiClient.submitPartnership(partnerData);
+    try {
+      const res = await apiClient.submitPartnership(partnerData);
 
-    setIsSubmitting(false);
-    if (res.success) {
-      setSuccessMessage(res.message || 'Partnership inquiry received! We will be in touch.');
-      setPartnerData({
-        organizationName: '',
-        contactPerson: '',
-        email: '',
-        phone: '',
-        partnershipType: 'collaborator',
-        message: '',
-      });
-    } else {
-      setErrorMessage(res.message || 'We could not submit the partnership inquiry. Please try again.');
+      if (res.success) {
+        setSuccessMessage(res.message || 'Partnership inquiry received! We will be in touch.');
+        setPartnerData({
+          organizationName: '',
+          contactPerson: '',
+          email: '',
+          phone: '',
+          partnershipType: 'collaborator',
+          message: '',
+        });
+      } else {
+        setErrorMessage(res.message || res.error || 'We could not submit the partnership inquiry. Please try again.');
+      }
+    } catch {
+      setErrorMessage('We could not reach Growthbridge. Check your connection and try again. Your inquiry has not been confirmed as received.');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -161,7 +171,9 @@ export default function ContactPage() {
                     setTab('general');
                     setSuccessMessage(null);
                   }}
-                  className={`min-h-11 px-3 py-2.5 text-xs font-bold rounded-xl transition-colors cursor-pointer ${
+                  aria-pressed={tab === 'general'}
+                  disabled={isSubmitting}
+                  className={`min-h-11 px-3 py-2.5 text-xs font-bold rounded-xl transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed ${
                     tab === 'general'
                       ? 'bg-[var(--action-primary)] text-[var(--action-primary-text)] shadow-sm'
                       : 'text-[var(--text-tertiary)] hover:text-[var(--text-primary)]'
@@ -175,7 +187,9 @@ export default function ContactPage() {
                     setTab('partnership');
                     setSuccessMessage(null);
                   }}
-                  className={`min-h-11 px-3 py-2.5 text-xs font-bold rounded-xl transition-colors cursor-pointer ${
+                  aria-pressed={tab === 'partnership'}
+                  disabled={isSubmitting}
+                  className={`min-h-11 px-3 py-2.5 text-xs font-bold rounded-xl transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed ${
                     tab === 'partnership'
                       ? 'bg-[var(--action-secondary)] text-[var(--action-secondary-text)] shadow-sm'
                       : 'text-[var(--text-tertiary)] hover:text-[var(--text-primary)]'
@@ -190,7 +204,7 @@ export default function ContactPage() {
               )}
 
               {successMessage && (
-                <div className="p-4 rounded-xl bg-[var(--chip-success-bg)] border border-[var(--chip-success-text)]/30 text-[var(--chip-success-text)] text-xs font-semibold">
+                <div role="status" aria-live="polite" aria-atomic="true" className="p-4 rounded-xl bg-[var(--chip-success-bg)] border border-[var(--chip-success-text)]/30 text-[var(--chip-success-text)] text-xs font-semibold">
                   {successMessage}
                 </div>
               )}
@@ -257,6 +271,7 @@ export default function ContactPage() {
                       size="lg"
                       fullWidth
                       disabled={isSubmitting}
+                      aria-busy={isSubmitting}
                       className="w-full"
                     >
                       {isSubmitting ? 'Sending...' : 'Send Message'}
