@@ -1,16 +1,13 @@
 @import "tailwindcss";
 
 /* ═══════════════════════════════════════════════════════════════════════════
- * Tailwind v4 — custom variant
- *   `.dark` class applied to <html> drives both dark utilities.
- * ═══════════════════════════════════════════════════════════════════════════ */
-@custom-variant dark (&:where(.dark, .dark *));
-
-/* ═══════════════════════════════════════════════════════════════════════════
  * GROWTHBRIDGE DESIGN SYSTEM v1.0
  * Full enterprise design system — 24 modular CSS files.
  * ═══════════════════════════════════════════════════════════════════════════ */
 @import "../styles/index.css";
+
+/* Tailwind v4 custom variant: `.dark` on <html> drives dark utilities. */
+@custom-variant dark (&:where(.dark, .dark *));
 
 /* ═══════════════════════════════════════════════════════════════════════════
  * BACKWARD COMPATIBILITY ALIASES
