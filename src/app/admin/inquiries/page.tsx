@@ -638,13 +638,6 @@ export default function AdminInquiriesPage() {
     });
   }, [inquiries, filterTab, statusFilter, search]);
 
-  const refreshDetail = (id: string) => {
-    setDetailInquiry((cur) => {
-      if (!cur || cur.id !== id) return cur;
-      return inquiries.find((x) => x.id === id) || cur;
-    });
-  };
-
   const updateInquiryStatus = async (id: string, next: Inquiry['status']) => {
     const current = inquiries.find((i) => i.id === id);
     if (!current) return;
@@ -655,9 +648,9 @@ export default function AdminInquiriesPage() {
       success('Inquiry Updated', next === 'closed' ? 'The inquiry has been closed.' : next === 'new' ? 'The inquiry is back in NEW.' : 'Status changed to CONTACTED.');
     } catch { error('Update Failed', 'Could not update inquiry status.'); }
   };
-  const handleMarkContacted = (id: string) => { void updateInquiryStatus(id, 'contacted'); };
-  const handleStatusChange = (id: string, status: Inquiry['status']) => { void updateInquiryStatus(id, status); };
-  const handleCloseInquiry = (id: string) => { void updateInquiryStatus(id, 'closed'); };
+  const handleMarkContacted = (id: string) => updateInquiryStatus(id, 'contacted');
+  const handleStatusChange = (id: string, status: Inquiry['status']) => updateInquiryStatus(id, status);
+  const handleCloseInquiry = (id: string) => updateInquiryStatus(id, 'closed');
 
   const handleAddNote = async (id: string, content: string) => {
     const inquiry = inquiries.find((item) => item.id === id);
