@@ -16,6 +16,8 @@ interface MobileNavProps {
 export function MobileNav({ isOpen, onClose }: MobileNavProps) {
   const pathname = usePathname();
   const dialogRef = useRef<HTMLDivElement>(null);
+  const onCloseRef = useRef(onClose);
+  useEffect(() => { onCloseRef.current = onClose; }, [onClose]);
 
   // Lock body scroll while open
   useEffect(() => {
@@ -40,7 +42,7 @@ export function MobileNav({ isOpen, onClose }: MobileNavProps) {
     const onKey = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
         event.preventDefault();
-        onClose();
+        onCloseRef.current();
         return;
       }
       if (event.key !== 'Tab') return;
@@ -64,7 +66,7 @@ export function MobileNav({ isOpen, onClose }: MobileNavProps) {
       document.removeEventListener('keydown', onKey);
       previousFocus?.focus();
     };
-  }, [isOpen, onClose]);
+  }, [isOpen]);
 
   if (!isOpen) return null;
 
@@ -76,6 +78,7 @@ export function MobileNav({ isOpen, onClose }: MobileNavProps) {
         className="fixed inset-0 bg-[var(--surface-overlay)] backdrop-blur-md transition-opacity cursor-default"
         onClick={onClose}
         aria-label="Close navigation menu"
+        tabIndex={-1}
       />
 
       {/* Drawer */}
