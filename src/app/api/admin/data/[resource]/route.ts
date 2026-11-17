@@ -22,6 +22,7 @@ import { AuditLogRepository } from '@/repositories/audit-log.repository';
 import { blogService } from '@/services/blog.service';
 import { adminNotificationsRepository } from '@/repositories/admin-notifications.repository';
 import { dashboardRepository } from '@/repositories/dashboard.repository';
+import { auditWarning, recordAuditSafely } from '@/lib/audit/write-outcome';
 
 export const dynamic = 'force-dynamic';
 
@@ -53,21 +54,17 @@ function getClientIp(request: NextRequest): string | undefined {
 }
 
 async function writeAudit(request: NextRequest, user: Awaited<ReturnType<typeof getServerUser>>, action: string, resource: string, saved?: any) {
-  if (!user) return;
-  try {
-    await auditRepo.create({
-      actorId: user.id,
-      actorName: user.name,
-      action: action as any,
-      resourceType: resource,
-      resourceId: saved?.id,
-      resourceName: saved?.name || saved?.title || saved?.question || saved?.organizationName || saved?.fileName,
-      ipAddress: getClientIp(request),
-      userAgent: request.headers.get('user-agent') || undefined,
-    });
-  } catch (error) {
-    console.error('[API audit]', error);
-  }
+  if (!user) return 'not_attempted' as const;
+  return recordAuditSafely(() => auditRepo.create({
+    actorId: user.id,
+    actorName: user.name,
+    action: action as any,
+    resourceType: resource,
+    resourceId: saved?.id,
+    resourceName: saved?.name || saved?.title || saved?.question || saved?.organizationName || saved?.fileName,
+    ipAddress: getClientIp(request),
+    userAgent: request.headers.get('user-agent') || undefined,
+  }), `admin.${resource}.${action}`);
 }
 
 export async function GET(request: NextRequest, context: RouteContext) {
@@ -179,8 +176,8 @@ export async function POST(request: NextRequest, context: RouteContext) {
           altText: formData.get('altText') as string,
         };
         const saved = await mediaService.uploadMedia(file, metadata, user.id);
-        await writeAudit(request, user, 'create', resource, saved);
-        return NextResponse.json({ success: true, data: saved });
+        const auditStatus = await writeAudit(request, user, 'create', resource, saved);
+        return NextResponse.json({ success: true, data: saved, auditStatus, auditWarning: auditWarning(auditStatus) });
       }
     } else {
       const rawBody = await request.json().catch(() => null);
@@ -240,8 +237,8 @@ export async function POST(request: NextRequest, context: RouteContext) {
         return NextResponse.json({ success: false, error: 'Invalid resource' }, { status: 400 });
     }
 
-    await writeAudit(request, user, 'create', resource, saved);
-    return NextResponse.json({ success: true, data: saved });
+    const auditStatus = await writeAudit(request, user, 'create', resource, saved);
+    return NextResponse.json({ success: true, data: saved, auditStatus, auditWarning: auditWarning(auditStatus) });
   } catch (error) {
     if (isBlogSlugConflict(error)) {
       return NextResponse.json({
@@ -314,8 +311,8 @@ export async function PUT(request: NextRequest, context: RouteContext) {
 
     if (resource === 'settings') {
       const updated = await settingsRepo.updateSettings(validated.data as Parameters<typeof settingsRepo.updateSettings>[0], user.id);
-      await writeAudit(request, user, 'update', resource, { id: 'general', name: 'site settings' });
-      return NextResponse.json({ success: true, data: updated });
+      const auditStatus = await writeAudit(request, user, 'update', resource, { id: 'general', name: 'site settings' });
+      return NextResponse.json({ success: true, data: updated, auditStatus, auditWarning: auditWarning(auditStatus) });
     }
 
     return NextResponse.json({ success: false, error: 'Resource requires ID for update' }, { status: 400 });
