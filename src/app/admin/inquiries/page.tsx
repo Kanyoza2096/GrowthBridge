@@ -401,8 +401,7 @@ function InquiryDetailModal({
 
           {tab === 'notes' && (
             <div className="space-y-3">
-              {canEdit && (
-                {inquiry.source === 'application' ? (
+              {canEdit && inquiry.source === 'application' && (
                 <div className="p-3 rounded-xl bg-[var(--gb-navy-800)]/20 border border-[var(--gb-navy-800)]/40 space-y-2">
                   <Textarea
                     placeholder="Add an internal note (not visible to sender)..."
@@ -423,11 +422,10 @@ function InquiryDetailModal({
                   </div>
                 </div>
               )}
-                ) : (
-                  <p className="rounded-xl border border-[var(--admin-border)] bg-[var(--admin-surface-card)]/40 p-3 text-xs text-[var(--admin-text-tertiary)]">
-                    Internal notes are available for application records only.
-                  </p>
-                )}
+              {canEdit && inquiry.source !== 'application' && (
+                <p className="rounded-xl border border-[var(--admin-border)] bg-[var(--admin-surface-card)]/40 p-3 text-xs text-[var(--admin-text-tertiary)]">
+                  Internal notes are available for application records only.
+                </p>
               )}
               {inquiry.notes.length === 0 ? (
                 <div className="p-8 text-center rounded-xl bg-[var(--admin-surface-card)]/40 border border-[var(--admin-border)]">
