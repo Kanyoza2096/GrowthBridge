@@ -31,4 +31,26 @@ describe('readFormDataBody', () => {
 
     await expect(readFormDataBody(request, 1024)).rejects.toThrow('INVALID_MULTIPART_BODY');
   });
+
+  it('cancels the request stream as soon as the multipart byte ceiling is exceeded', async () => {
+    let cancelled = false;
+    const stream = new ReadableStream<Uint8Array>({
+      start(controller) {
+        controller.enqueue(new Uint8Array(1024));
+      },
+      cancel() {
+        cancelled = true;
+      },
+    });
+    const request = new Request('https://growthbridge.test/upload', {
+      method: 'POST',
+      headers: { 'content-type': 'multipart/form-data; boundary=test' },
+      body: stream,
+      duplex: 'half',
+    } as RequestInit & { duplex: 'half' });
+
+    await expect(readFormDataBody(request, 512)).rejects.toThrow('REQUEST_BODY_TOO_LARGE');
+    expect(cancelled).toBe(true);
+  });
+
 });
