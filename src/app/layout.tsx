@@ -1,5 +1,7 @@
 import type { Metadata } from 'next';
-import { Montserrat } from 'next/font/google';
+import '@fontsource-variable/inter';
+import '@fontsource-variable/plus-jakarta-sans';
+import '@fontsource-variable/jetbrains-mono';
 import './globals.css';
 import { QueryProvider } from '@/components/providers/QueryProvider';
 import { ToastProvider } from '@/components/providers/ToastProvider';
@@ -10,13 +12,6 @@ import { ThemeFlashScript } from '@/components/providers/ThemeFlashScript';
 import { PublicShell } from '@/components/layout/PublicShell';
 import { defaultSeo } from '@/lib/constants/seo';
 
-const montserrat = Montserrat({
-  subsets: ['latin'],
-  display: 'swap',
-  variable: '--font-montserrat',
-  preload: true,
-  weight: ['400', '500', '600', '700', '800', '900'],
-});
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://www.growthbridge.org'),
@@ -49,7 +44,7 @@ export default function RootLayout({
         <ThemeFlashScript />
       </head>
       <body
-        className={`${montserrat.variable} antialiased min-h-screen flex flex-col transition-colors duration-300 bg-[var(--surface-page)] text-[var(--text-primary)]`}
+        className="antialiased min-h-screen flex flex-col transition-colors duration-300 bg-[var(--surface-page)] text-[var(--text-primary)]"
       >
         <script
           type="application/ld+json"
