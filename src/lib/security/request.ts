@@ -31,7 +31,10 @@ export async function readJsonBody<T = unknown>(request: NextRequest, maxBytes: 
       if (done) break;
       if (!value) continue;
       total += value.byteLength;
-      if (total > maxBytes) throw new Error('REQUEST_BODY_TOO_LARGE');
+      if (total > maxBytes) {
+        await reader.cancel().catch(() => undefined);
+        throw new Error('REQUEST_BODY_TOO_LARGE');
+      }
       chunks.push(value);
     }
   } finally {
@@ -56,6 +59,11 @@ export async function readFormDataBody(request: Request, maxBytes: number): Prom
   const contentLength = request.headers.get('content-length');
   if (contentLength && Number(contentLength) > maxBytes) {
     throw new Error('REQUEST_BODY_TOO_LARGE');
+  }
+
+  const contentType = request.headers.get('content-type');
+  if (!contentType?.toLowerCase().startsWith('multipart/form-data;')) {
+    throw new Error('INVALID_MULTIPART_BODY');
   }
 
   if (!request.body) return new FormData();
@@ -83,9 +91,5 @@ export async function readFormDataBody(request: Request, maxBytes: number): Prom
     offset += chunk.byteLength;
   }
 
-  const contentType = request.headers.get('content-type');
-  if (!contentType?.toLowerCase().startsWith('multipart/form-data;')) {
-    throw new Error('INVALID_MULTIPART_BODY');
-  }
   return new Response(bytes, { headers: { 'content-type': contentType } }).formData();
 }
