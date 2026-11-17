@@ -1,4 +1,4 @@
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import '@fontsource-variable/inter';
 import '@fontsource-variable/plus-jakarta-sans';
 import '@fontsource-variable/jetbrains-mono';
@@ -10,9 +10,15 @@ import GlobalErrorBoundary from '@/components/shared/ErrorBoundary';
 import { ThemeProvider } from '@/components/providers/ThemeProvider';
 import { ThemeFlashScript } from '@/components/providers/ThemeFlashScript';
 import { PublicShell } from '@/components/layout/PublicShell';
+import { ServiceWorkerRegistration } from '@/components/providers/ServiceWorkerRegistration';
 import { defaultSeo } from '@/lib/constants/seo';
 import { publicConfig } from '@/lib/config/public';
 
+
+export const viewport: Viewport = {
+  themeColor: '#123b5d',
+  colorScheme: 'light',
+};
 
 export const metadata: Metadata = {
   metadataBase: new URL(publicConfig.NEXT_PUBLIC_SITE_URL),
@@ -21,6 +27,15 @@ export const metadata: Metadata = {
   openGraph: defaultSeo.openGraph,
   twitter: defaultSeo.twitter,
   applicationName: 'Growthbridge',
+  manifest: '/manifest.webmanifest',
+  appleWebApp: { capable: true, statusBarStyle: 'default', title: 'GrowthBridge' },
+  icons: {
+    icon: [
+      { url: '/icons/icon-192.svg', type: 'image/svg+xml', sizes: '192x192' },
+      { url: '/icons/icon-512.svg', type: 'image/svg+xml', sizes: '512x512' },
+    ],
+    apple: [{ url: '/icons/icon-192.svg', type: 'image/svg+xml' }],
+  },
   authors: [{ name: 'Growthbridge', url: publicConfig.NEXT_PUBLIC_SITE_URL }],
   creator: 'Growthbridge',
   publisher: 'Growthbridge',
@@ -61,6 +76,7 @@ export default function RootLayout({
           }}
         />
         {/* Public-scoped theme (default light). Admin layout nests its own provider. */}
+        <ServiceWorkerRegistration />
         <ThemeProvider scope="public">
           <QueryProvider>
             <ToastProvider>
