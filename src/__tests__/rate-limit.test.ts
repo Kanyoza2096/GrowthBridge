@@ -1,5 +1,5 @@
-import { describe, it, expect, beforeEach } from 'vitest';
-import { InMemoryRateLimitStore } from '@/lib/security/rate-limit';
+import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
+import { InMemoryRateLimitStore, UpstashRateLimitStore } from '@/lib/security/rate-limit';
 
 describe('InMemoryRateLimitStore', () => {
   let store: InMemoryRateLimitStore;
@@ -32,5 +32,40 @@ describe('InMemoryRateLimitStore', () => {
     const okB = await store.check('b', 1, 60_000);
     expect(blockedA.limited).toBe(true);
     expect(okB.limited).toBe(false);
+  });
+});
+
+
+describe('UpstashRateLimitStore outage fallback', () => {
+  afterEach(() => {
+    vi.unstubAllGlobals();
+    vi.restoreAllMocks();
+  });
+
+  it('continues enforcing a per-instance limit when Redis is unavailable', async () => {
+    vi.stubGlobal('fetch', vi.fn().mockRejectedValue(new Error('Redis unavailable')));
+    vi.spyOn(console, 'error').mockImplementation(() => undefined);
+    const store = new UpstashRateLimitStore('https://redis.example', 'token');
+
+    const first = await store.check('form:contact:203.0.113.10', 1, 60_000);
+    const second = await store.check('form:contact:203.0.113.10', 1, 60_000);
+
+    expect(first.limited).toBe(false);
+    expect(first.remaining).toBe(0);
+    expect(second.limited).toBe(true);
+    expect(second.remaining).toBe(0);
+  });
+
+  it('isolates fallback counters by key', async () => {
+    vi.stubGlobal('fetch', vi.fn().mockRejectedValue(new Error('Redis unavailable')));
+    vi.spyOn(console, 'error').mockImplementation(() => undefined);
+    const store = new UpstashRateLimitStore('https://redis.example', 'token');
+
+    await store.check('form:contact:203.0.113.10', 1, 60_000);
+    const sameKey = await store.check('form:contact:203.0.113.10', 1, 60_000);
+    const otherKey = await store.check('form:apply:203.0.113.10', 1, 60_000);
+
+    expect(sameKey.limited).toBe(true);
+    expect(otherKey.limited).toBe(false);
   });
 });
