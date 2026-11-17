@@ -2,6 +2,7 @@
 
 import React, { createContext, useContext, useState, useCallback, useMemo, useEffect } from 'react';
 import { adminFetch } from '@/lib/api/admin-client';
+import { useAdminAuth } from '@/components/providers/AdminAuthProvider';
 import { toAdminBlogPost } from '@/lib/admin/blog-post-adapter';
 import type {
   Service,
@@ -96,73 +97,110 @@ export function AdminDataProvider({ children }: { children: React.ReactNode }) {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  const { hasPermission, isAuthenticated, isLoading: authLoading } = useAdminAuth();
+
   const load = useCallback(async () => {
+    if (!isAuthenticated) return;
+
     setIsLoading(true);
     setError(null);
+    const failedResources: string[] = [];
 
-    const read = async <T,>(resource: string, key?: string): Promise<T | null> => {
+    const read = async <T,>(
+      resource: string,
+      permission: string,
+      key?: string
+    ): Promise<T | null> => {
+      if (!hasPermission(permission, 'read')) return null;
       try {
         return unwrap<T>(await adminFetch(`/api/admin/data/${resource}`), key);
       } catch (e) {
-        console.warn(`[Admin] ${resource}:`, e);
+        console.warn(`[Admin] Unable to load ${resource}:`, e);
+        failedResources.push(resource);
         return null;
       }
     };
 
-    try {
-      const [s, p, t, a, b, te, f, an, m, mf, pa, al, st, ds, analytics] = await Promise.all([
-        read<Service[]>('services', 'services'),
-        read<Project[]>('projects', 'projects'),
-        read<TalentProfile[]>('talent', 'talent'),
-        read<Application[]>('applications', 'applications'),
-        read<BlogPost[]>('blog', 'posts'),
-        read<Testimonial[]>('testimonials', 'testimonials'),
-        read<FAQ[]>('faqs', 'faqs'),
-        read<Announcement[]>('announcements', 'announcements'),
-        read<MediaItem[]>('media', 'media'),
-        read<MediaFolder[]>('media-folders', 'folders'),
-        read<Partner[]>('partners', 'partners'),
-        read<AuditLogEntry[]>('audit-logs', 'logs'),
-        read<Settings>('settings'),
-        read<DashboardStats>('dashboard', 'stats'),
-        read<any>('analytics'),
-      ]);
+    const [
+      s, p, t, a, b, te, f, an, m, mf, pa, al, st, ds, analytics,
+    ] = await Promise.all([
+      read<Service[]>('services', 'services', 'services'),
+      read<Project[]>('projects', 'projects', 'projects'),
+      read<TalentProfile[]>('talent', 'talent', 'talent'),
+      read<Application[]>('applications', 'applications', 'applications'),
+      read<BlogPost[]>('blog', 'content', 'posts'),
+      read<Testimonial[]>('testimonials', 'content', 'testimonials'),
+      read<FAQ[]>('faqs', 'content', 'faqs'),
+      read<Announcement[]>('announcements', 'content', 'announcements'),
+      read<MediaItem[]>('media', 'media', 'media'),
+      read<MediaFolder[]>('media-folders', 'media', 'folders'),
+      read<Partner[]>('partners', 'partners', 'partners'),
+      read<AuditLogEntry[]>('audit-logs', 'audit', 'logs'),
+      read<Settings>('settings', 'settings'),
+      read<DashboardStats>('dashboard', 'dashboard', 'stats'),
+      read<any>('analytics', 'analytics'),
+    ]);
 
-      if (s) setServices(s);
-      if (p) setProjects(p);
-      if (t) setTalent(t);
-      if (a) setApplications(a);
-      if (b) setBlogPosts((b as unknown[]).map((post) => toAdminBlogPost(post as Record<string, unknown>)));
-      if (te) setTestimonials(te);
-      if (f) setFaqs(f);
-      if (an) setAnnouncements(an);
-      if (m) setMedia(m);
-      if (mf) setMediaFolders(mf);
-      if (pa) setPartners(pa);
-      if (al) setAuditLog(al);
-      if (st) setSettings(st);
-      if (ds) setDashboardStats(ds);
+    if (s) setServices(s);
+    if (p) setProjects(p);
+    if (t) setTalent(t);
+    if (a) setApplications(a);
+    if (b) setBlogPosts((b as unknown[]).map((post) => toAdminBlogPost(post as Record<string, unknown>)));
+    if (te) setTestimonials(te);
+    if (f) setFaqs(f);
+    if (an) setAnnouncements(an);
+    if (m) setMedia(m);
+    if (mf) setMediaFolders(mf);
+    if (pa) setPartners(pa);
+    if (al) setAuditLog(al);
+    if (st) setSettings(st);
+    if (ds) setDashboardStats(ds);
 
-      if (analytics) {
-        setVisitorTrend(analytics.visitorTrend ?? analytics.visitors ?? []);
-        setApplicationTrend(analytics.applicationTrend ?? analytics.applications ?? []);
-        setServicePopularity(analytics.servicePopularity ?? []);
-        setProjectEngagement(analytics.projectEngagement ?? []);
-      }
-    } catch (e) {
-      setError(e instanceof Error ? e.message : 'Failed to load admin data.');
-    } finally {
-      setIsLoading(false);
+    if (analytics) {
+      setVisitorTrend(analytics.visitorTrend ?? analytics.visitors ?? []);
+      setApplicationTrend(analytics.applicationTrend ?? analytics.applications ?? []);
+      setServicePopularity(analytics.servicePopularity ?? []);
+      setProjectEngagement(analytics.projectEngagement ?? []);
     }
-  }, []);
+
+    setError(
+      failedResources.length
+        ? `Some workspace data could not be loaded (${failedResources.join(', ')}). Affected sections may be incomplete.`
+        : null
+    );
+    setIsLoading(false);
+  }, [hasPermission, isAuthenticated]);
 
   useEffect(() => {
-    if (typeof window !== 'undefined' && window.location.pathname !== '/admin/login') {
+    if (authLoading) return;
+
+    if (isAuthenticated && typeof window !== 'undefined' && window.location.pathname !== '/admin/login') {
       void load();
-    } else {
-      setIsLoading(false);
+      return;
     }
-  }, [load]);
+
+    // Clear privileged data immediately when a session ends or is absent.
+    setServices([]);
+    setProjects([]);
+    setTalent([]);
+    setApplications([]);
+    setBlogPosts([]);
+    setTestimonials([]);
+    setFaqs([]);
+    setAnnouncements([]);
+    setMedia([]);
+    setMediaFolders([]);
+    setPartners([]);
+    setAuditLog([]);
+    setSettings(null);
+    setDashboardStats(null);
+    setVisitorTrend([]);
+    setApplicationTrend([]);
+    setServicePopularity([]);
+    setProjectEngagement([]);
+    setError(null);
+    setIsLoading(false);
+  }, [authLoading, isAuthenticated, load]);
 
   const mutate = useCallback(async <T extends { id?: string }>(resource: string, value: Partial<T>, setter: React.Dispatch<React.SetStateAction<T[]>>) => {
     const method = value.id ? 'PUT' : 'POST';
