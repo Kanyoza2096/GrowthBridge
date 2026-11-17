@@ -126,6 +126,7 @@ export default function AdminDashboardPage() {
     partners,
     auditLog,
     blogPosts,
+    error,
   } = useAdminData();
 
   // Merge with defaults so the UI always renders — zeros shown until
@@ -165,6 +166,18 @@ export default function AdminDashboardPage() {
 
   return (
     <div className="admin-page space-y-6 sm:space-y-8">
+      {error && (
+        <div
+          role="status"
+          className="rounded-xl border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-sm text-amber-200"
+        >
+          <p className="font-semibold">Some workspace information is unavailable</p>
+          <p className="mt-1 text-xs leading-relaxed text-amber-100/80">
+            {error} You can continue using the sections that loaded successfully.
+          </p>
+        </div>
+      )}
+
       {/* Welcome Banner */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 sm:p-6 rounded-2xl bg-[linear-gradient(135deg,rgba(18,59,93,.34),rgba(12,26,42,.96)_58%,rgba(22,163,106,.10))] border border-[var(--admin-border-strong)] relative overflow-hidden">
         <div className="absolute -top-24 -right-16 w-64 h-64 bg-[var(--gb-green-600)]/10 blur-3xl rounded-full pointer-events-none" />
