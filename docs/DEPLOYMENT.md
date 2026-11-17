@@ -3,7 +3,7 @@
 ## Render Deployment Setup
 1. **Repository**: Connect your GitHub repository to Render as a **Web Service**.
 2. **Runtime**: Node.
-3. **Build Command**: `npm install && npm run build`
+3. **Build Command**: `npm ci && npm run build`
 4. **Start Command**: `npm run start`
 
 ## Environment Variables on Render
