@@ -133,6 +133,10 @@ export class MediaService {
     if (error) throw error;
 
     const storagePath = storagePathFromUrl(data.url);
+    if (data.url.includes('/storage/v1/object/public/media/') && !storagePath) {
+      throw new Error('Unable to resolve the media Storage object path; deletion was not attempted.');
+    }
+
     const { data: cleanupJobs, error: deleteError } = await supabase.rpc(
       'delete_media_with_storage_cleanup',
       { p_media_id: id, p_object_path: storagePath }
