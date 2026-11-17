@@ -1062,7 +1062,7 @@ export type Database = {
       kdo_website_event_outbox: {
         Row: { id: string; integration_id: string; event_id: string; event_type: string; event_version: string; occurred_at: string; payload: Json; status: string; attempt_count: number; next_attempt_at: string; locked_until: string | null; lease_token: string | null; last_error: string | null; created_at: string; delivered_at: string | null }
         Insert: { id?: string; integration_id: string; event_id: string; event_type: string; event_version?: string; occurred_at: string; payload?: Json; status?: string; attempt_count?: number; next_attempt_at?: string; locked_until?: string | null; lease_token?: string | null; last_error?: string | null; created_at?: string; delivered_at?: string | null }
-        Update: { id?: string; integration_id?: string; event_id?: string; event_type?: string; event_version?: string; occurred_at?: string; payload?: Json; status?: string; attempt_count?: number; next_attempt_at?: string; locked_until?: string | null; last_error?: string | null; created_at?: string; delivered_at?: string | null }
+        Update: { id?: string; integration_id?: string; event_id?: string; event_type?: string; event_version?: string; occurred_at?: string; payload?: Json; status?: string; attempt_count?: number; next_attempt_at?: string; locked_until?: string | null; lease_token?: string | null; last_error?: string | null; created_at?: string; delivered_at?: string | null }
         Relationships: []
       }
       kdo_content_idempotency: {
