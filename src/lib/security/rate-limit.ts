@@ -83,6 +83,8 @@ class InMemoryRateLimitStore implements RateLimitStore {
 // ---------------------------------------------------------------------------
 
 class UpstashRateLimitStore implements RateLimitStore {
+  private readonly fallbackStore = new InMemoryRateLimitStore();
+
   constructor(
     private readonly url: string,
     private readonly token: string
@@ -127,9 +129,10 @@ class UpstashRateLimitStore implements RateLimitStore {
         limit: max,
       };
     } catch (err) {
-      // Fail open on Redis outage so the site stays available, but log loudly.
-      console.error('[rate-limit] Upstash unavailable, allowing request:', err);
-      return { limited: false, remaining: max, reset: Date.now() + windowMs, limit: max };
+      // Preserve local throttling during a Redis outage. This is not a
+      // distributed substitute, but it is safer than disabling limits entirely.
+      console.error('[rate-limit] Upstash unavailable; using per-instance fallback:', err);
+      return this.fallbackStore.check(key, max, windowMs);
     }
   }
 }
@@ -154,8 +157,8 @@ function positiveInt(value: string | undefined, fallback: number, max: number): 
 
 /** Singleton store — Upstash when configured, otherwise in-memory. */
 export const rateLimitStore: RateLimitStore = createRateLimitStore();
-// Emergency per-process limiter ensures login attempts remain throttled even
-// if the distributed Redis service is unavailable.
+// Additional emergency per-process limiter protects login attempts even
+// when the distributed store is healthy but a single account/IP needs a local ceiling.
 const emergencyLoginStore = new InMemoryRateLimitStore();
 
 export const RATE_LIMIT_WINDOW_MS = 60 * 1000;
@@ -182,7 +185,7 @@ export async function checkLoginRateLimit(key: string): Promise<RateLimitResult>
   const { adminLoginPerIp } = getRateLimitConfig();
   // key is typically "account:email:ip". Also enforce a pure-IP ceiling so
   // credential-stuffing across many accounts from one IP is still throttled.
-  // Both stores remain fail-open / in-memory when Redis is unavailable.
+  // The distributed store falls back to its own per-instance memory store on outage.
   const pureIp = key.includes(':') ? key.split(':').pop() || key : key;
   const [distributed, emergencyAccount, emergencyIp] = await Promise.all([
     rateLimitStore.check(`login:${key}`, adminLoginPerIp, RATE_LIMIT_WINDOW_MS),
