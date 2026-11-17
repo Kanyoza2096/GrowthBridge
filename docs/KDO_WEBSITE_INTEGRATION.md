@@ -35,7 +35,11 @@ create/update commands; those commands need their own domain-level idempotency
 key or a reconciliation path. Enqueue failures require operational monitoring.
 A Postgres claim function leases rows with
 `FOR UPDATE SKIP LOCKED`, allowing concurrent dispatch invocations without
-double-claiming active rows. The dispatcher sends the canonical KDO event
+double-claiming active rows. Each claim also receives a fresh `lease_token`.
+Every success, retry, and failure update must match that token, fencing off a
+stale worker if its lease expires and another dispatcher reclaims the event.
+The SQL regression script `supabase/tests/outbox-lease-fencing.sql` verifies
+that an expired worker cannot finalize a row after a new claim. The dispatcher sends the canonical KDO event
 envelope and retries transient failures with capped exponential backoff.
 KDO's event ledger provides a second idempotency boundary using the stable
 event ID. Permanent 4xx responses and events exceeding ten attempts are
