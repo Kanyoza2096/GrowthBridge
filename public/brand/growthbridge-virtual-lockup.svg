@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 112" role="img" aria-labelledby="title desc">
+<title id="title">GrowthBridge Virtual</title><desc id="desc">A bridge mark in navy, green and gold beside the GrowthBridge wordmark and Virtual descriptor.</desc>
+<g transform="translate(8 10)">
+<path d="M4 76C18 45 34 28 52 28s34 17 48 48" fill="none" stroke="#123B5D" stroke-width="7" stroke-linecap="round"/>
+<path d="M13 76c12-23 25-35 39-35s27 12 39 35" fill="none" stroke="#16A36A" stroke-width="5.5" stroke-linecap="round"/>
+<path d="M22 75V54" stroke="#123B5D" stroke-width="6" stroke-linecap="round"/><path d="M49 75V43" stroke="#16A36A" stroke-width="6" stroke-linecap="round"/><path d="M76 75V54" stroke="#F59E0B" stroke-width="6" stroke-linecap="round"/>
+<path d="M22 48V29m0 0-6 7m6-7 6 7" fill="none" stroke="#123B5D" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M49 37V15m0 0-6 7m6-7 6 7" fill="none" stroke="#16A36A" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M76 48V29m0 0-6 7m6-7 6 7" fill="none" stroke="#F59E0B" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M8 79h88" stroke="#F59E0B" stroke-width="4" stroke-linecap="round"/>
+</g>
+<text x="126" y="54" font-family="Montserrat,Arial,sans-serif" font-size="38" font-weight="800" letter-spacing="-1.7" fill="#123B5D">GROWTH<tspan fill="#16A36A">BRIDGE</tspan></text>
+<text x="129" y="82" font-family="Montserrat,Arial,sans-serif" font-size="15" font-weight="700" letter-spacing="4.2" fill="#123B5D">VIRTUAL  •  BRIDGING SKILLS. DRIVING GROWTH.</text>
+</svg>

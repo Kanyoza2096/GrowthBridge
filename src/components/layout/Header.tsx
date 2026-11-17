@@ -76,7 +76,7 @@ export function Header() {
                   onDark={overDarkHero}
                 />
                 <span className={cn('hidden sm:inline text-[10px] uppercase tracking-widest mt-0.5 font-semibold', overDarkHero ? 'text-white/70' : 'text-[var(--text-tertiary)]')}>
-                  Bridging Skills. Driving Growth.
+                  VIRTUAL · BRIDGING SKILLS. DRIVING GROWTH.
                 </span>
               </div>
             </Link>
