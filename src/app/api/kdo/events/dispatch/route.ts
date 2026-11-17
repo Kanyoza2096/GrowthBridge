@@ -69,11 +69,11 @@ export async function POST(request: NextRequest) {
         signal: AbortSignal.timeout(10000),
       });
       if (response.ok) {
-        const { error: updateError } = await admin.from('kdo_website_event_outbox')
+        const { data: finalized, error: updateError } = await admin.from('kdo_website_event_outbox')
           .update({ status: 'delivered', delivered_at: new Date().toISOString(), locked_until: null, lease_token: null, last_error: null })
           .eq('id', row.id).eq('status', 'processing').eq('lease_token', row.lease_token).select('id').maybeSingle();
         if (updateError) throw new Error(updateError.message);
-        if (!data) throw new Error('Outbox lease was lost before delivery could be finalized');
+        if (!finalized) throw new Error('Outbox lease was lost before delivery could be finalized');
         delivered++;
         continue;
       }
