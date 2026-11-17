@@ -8,6 +8,7 @@ import { useAdminData } from '@/components/providers/AdminDataProvider';
 import { useToast } from '@/components/providers/ToastProvider';
 import { Application, ApplicationType, ApplicationStatus } from '@/lib/types/admin';
 import { cn } from '@/lib/utils';
+import { escapeCsvCell } from '@/lib/utils/csv';
 import { AdminPageHeader, AdminToolbar } from '@/components/admin/AdminPageHeader';
 import { AdminEmptyState } from '@/components/admin/AdminEmptyState';
 import {
@@ -30,9 +31,8 @@ const STATUS_FILTERS: { key: 'all' | ApplicationStatus; label: string }[] = [
 
 function exportApplications(items: Application[]) {
   const headers = ['Name', 'Email', 'Phone', 'Type', 'Status', 'Subject', 'Submitted At'];
-  const escape = (value: string) => `"${value.replace(/"/g, '""')}"`;
-  const rows = items.map((item) => [item.name, item.email, item.phone || '', item.type, item.status, item.subject || '', item.submittedAt].map((v) => escape(String(v))).join(','));
-  const blob = new Blob([[headers.map(escape).join(','), ...rows].join('\n')], { type: 'text/csv;charset=utf-8' });
+  const rows = items.map((item) => [item.name, item.email, item.phone || '', item.type, item.status, item.subject || '', item.submittedAt].map((v) => escapeCsvCell(v)).join(','));
+  const blob = new Blob([[headers.map(escapeCsvCell).join(','), ...rows].join('\n')], { type: 'text/csv;charset=utf-8' });
   const url = URL.createObjectURL(blob);
   const link = document.createElement('a');
   link.href = url;
