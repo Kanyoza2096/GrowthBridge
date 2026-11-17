@@ -3,7 +3,6 @@ import { publicConfig } from '@/lib/config/public';
 import { createMiddlewareClient } from '@/lib/supabase/middleware-client';
 import {
   checkApiRateLimit,
-  checkFormRateLimit,
   checkLoginRateLimit,
   getRateLimitConfig,
 } from '@/lib/security/rate-limit';
@@ -13,13 +12,6 @@ const PUBLIC_PATHS = ['/admin/login'];
 const API_PATHS = ['/api'];
 
 const CSRF_COOKIE = 'gb_csrf_token';
-
-/** Public form endpoints that receive stricter rate limits */
-const FORM_PATHS: Record<string, string> = {
-  '/api/contact': 'contact',
-  '/api/apply': 'apply',
-  '/api/partner': 'partner',
-};
 
 const HARDENED_HEADERS: Record<string, string> = {
   'X-DNS-Prefetch-Control': 'on',
@@ -149,14 +141,8 @@ export async function middleware(request: NextRequest) {
       return rateLimitResponse(rate);
     }
 
-    // Stricter limit for public form endpoints (contact / apply / partner)
-    const formKey = FORM_PATHS[path];
-    if (formKey && method === 'POST') {
-      const formRate = await checkFormRateLimit(ip, formKey);
-      if (formRate.limited) {
-        return rateLimitResponse(formRate);
-      }
-    }
+    // Endpoint-specific form limits are enforced once inside each route handler.
+    // Keep only the global API limit here to avoid counting each submission twice.
 
     // Even stricter limit for admin login
     if (path === '/api/admin/login' && method === 'POST') {
