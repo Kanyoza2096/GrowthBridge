@@ -133,7 +133,7 @@ export async function middleware(request: NextRequest) {
   // 2. API Security & Rate Limiting
   if (API_PATHS.some((p) => path.startsWith(p))) {
     const contentLength = Number(request.headers.get('content-length') || 0);
-    const maxBytes = path === '/api/admin/data/media' ? 10 * 1024 * 1024 : 256 * 1024;
+    const maxBytes = path === '/api/admin/data/media' ? 10 * 1024 * 1024 + 64 * 1024 : 256 * 1024;
     if (Number.isFinite(contentLength) && contentLength > maxBytes) {
       return NextResponse.json(
         { success: false, error: 'Request body is too large.' },
