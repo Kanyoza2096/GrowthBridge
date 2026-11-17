@@ -2,11 +2,32 @@ import type { MetadataRoute } from 'next';
 import { createAdminClient } from '@/lib/supabase/server';
 import { publicConfig } from '@/lib/config/public';
 
-const SITE_URL = publicConfig.NEXT_PUBLIC_SITE_URL.replace(/\/+$/, '');
+const SITE_URL = new URL(publicConfig.NEXT_PUBLIC_SITE_URL).origin;
+const PAGE_SIZE = 1000;
+
+// Regenerate the sitemap at request time so newly published content is discoverable
+// without requiring an application deployment.
+export const dynamic = 'force-dynamic';
+
+type PageResult<T> = { data: T[] | null; error: unknown };
+
+async function fetchAllRows<T>(
+  fetchPage: (from: number, to: number) => PromiseLike<PageResult<T>>
+): Promise<T[]> {
+  const rows: T[] = [];
+  for (let from = 0; ; from += PAGE_SIZE) {
+    const { data, error } = await fetchPage(from, from + PAGE_SIZE - 1);
+    if (error) throw error;
+    const page = data ?? [];
+    rows.push(...page);
+    if (page.length < PAGE_SIZE) return rows;
+  }
+}
 
 /**
- * Dynamic sitemap: public content changes without requiring a deployment.
- * Only published/active public records are emitted.
+ * Dynamic sitemap: published public content is read from the canonical database.
+ * Any failed content query falls back to the complete static route list rather
+ * than silently returning a partially populated sitemap.
  */
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const staticPages: MetadataRoute.Sitemap = [
@@ -25,33 +46,53 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   try {
     const supabase = createAdminClient();
     const [blogs, projects, services, people] = await Promise.all([
-      supabase.from('blog_posts').select('slug, published_at, updated_at').eq('status', 'published').is('deleted_at', null),
-      supabase.from('projects').select('slug, updated_at').eq('status', 'published').is('deleted_at', null),
-      supabase.from('services').select('slug, updated_at').eq('status', 'published').is('deleted_at', null),
-      supabase.from('people').select('slug, updated_at').eq('active', true).is('deleted_at', null),
+      fetchAllRows((from, to) => supabase.from('blog_posts')
+        .select('slug, published_at, updated_at')
+        .eq('status', 'published')
+        .is('deleted_at', null)
+        .order('slug')
+        .range(from, to)),
+      fetchAllRows((from, to) => supabase.from('projects')
+        .select('slug, updated_at')
+        .eq('status', 'published')
+        .is('deleted_at', null)
+        .order('slug')
+        .range(from, to)),
+      fetchAllRows((from, to) => supabase.from('services')
+        .select('slug, updated_at')
+        .eq('status', 'published')
+        .is('deleted_at', null)
+        .order('slug')
+        .range(from, to)),
+      fetchAllRows((from, to) => supabase.from('people')
+        .select('slug, updated_at')
+        .eq('active', true)
+        .is('deleted_at', null)
+        .order('slug')
+        .range(from, to)),
     ]);
 
     return [
       ...staticPages,
-      ...(blogs.data || []).map((row) => ({
+      ...blogs.map((row) => ({
         url: `${SITE_URL}/blog/${encodeURIComponent(row.slug)}`,
         lastModified: row.updated_at || row.published_at || undefined,
         changeFrequency: 'monthly' as const,
         priority: 0.7,
       })),
-      ...(projects.data || []).map((row) => ({
+      ...projects.map((row) => ({
         url: `${SITE_URL}/projects/${encodeURIComponent(row.slug)}`,
         lastModified: row.updated_at || undefined,
         changeFrequency: 'monthly' as const,
         priority: 0.6,
       })),
-      ...(services.data || []).map((row) => ({
+      ...services.map((row) => ({
         url: `${SITE_URL}/services/${encodeURIComponent(row.slug)}`,
         lastModified: row.updated_at || undefined,
         changeFrequency: 'monthly' as const,
         priority: 0.7,
       })),
-      ...(people.data || []).map((row) => ({
+      ...people.map((row) => ({
         url: `${SITE_URL}/team/${encodeURIComponent(row.slug)}`,
         lastModified: row.updated_at || undefined,
         changeFrequency: 'monthly' as const,
