@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { mainNavigation } from '@/lib/constants/navigation';
@@ -15,6 +15,7 @@ interface MobileNavProps {
 
 export function MobileNav({ isOpen, onClose }: MobileNavProps) {
   const pathname = usePathname();
+  const dialogRef = useRef<HTMLDivElement>(null);
 
   // Lock body scroll while open
   useEffect(() => {
@@ -26,25 +27,55 @@ export function MobileNav({ isOpen, onClose }: MobileNavProps) {
     };
   }, [isOpen]);
 
-  // Close on Escape
+  // Keep keyboard focus inside the modal drawer and return it to the trigger on close.
   useEffect(() => {
     if (!isOpen) return;
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose();
+    const previousFocus = document.activeElement as HTMLElement | null;
+    const dialog = dialogRef.current;
+    const getFocusable = () => Array.from(
+      dialog?.querySelectorAll<HTMLElement>('a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])') ?? []
+    ).filter((element) => element.getAttribute('aria-hidden') !== 'true');
+    getFocusable()[0]?.focus();
+
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        event.preventDefault();
+        onClose();
+        return;
+      }
+      if (event.key !== 'Tab') return;
+      const focusable = getFocusable();
+      if (focusable.length === 0) {
+        event.preventDefault();
+        return;
+      }
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
     };
-    window.addEventListener('keydown', onKey);
-    return () => window.removeEventListener('keydown', onKey);
+    document.addEventListener('keydown', onKey);
+    return () => {
+      document.removeEventListener('keydown', onKey);
+      previousFocus?.focus();
+    };
   }, [isOpen, onClose]);
 
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 md:hidden" role="dialog" aria-modal="true" aria-label="Mobile navigation">
+    <div id="growthbridge-mobile-navigation" ref={dialogRef} className="fixed inset-0 z-50 md:hidden" role="dialog" aria-modal="true" aria-label="Mobile navigation">
       {/* Backdrop */}
-      <div
-        className="fixed inset-0 bg-[var(--surface-overlay)] backdrop-blur-md transition-opacity"
+      <button
+        type="button"
+        className="fixed inset-0 bg-[var(--surface-overlay)] backdrop-blur-md transition-opacity cursor-default"
         onClick={onClose}
-        aria-hidden="true"
+        aria-label="Close navigation menu"
       />
 
       {/* Drawer */}
@@ -65,6 +96,7 @@ export function MobileNav({ isOpen, onClose }: MobileNavProps) {
           <div className="flex items-center gap-1">
             <ThemeToggle size="sm" variant="ghost" />
             <button
+              type="button"
               onClick={onClose}
               className="gb-touch-target p-2 rounded-xl text-[var(--text-tertiary)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-subtle)] transition-colors cursor-pointer inline-flex items-center justify-center"
               aria-label="Close menu"
