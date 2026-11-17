@@ -1,10 +1,9 @@
 'use client';
 
-import React, { useState } from 'react';
+import React from 'react';
+import Link from 'next/link';
 import { Modal } from '@/components/ui/Modal';
 import { Button } from '@/components/ui/Button';
-import { Input } from '@/components/ui/Input';
-import { useToast } from '@/components/providers/ToastProvider';
 
 export function ImpactReportModal({
   isOpen,
@@ -13,67 +12,46 @@ export function ImpactReportModal({
   isOpen: boolean;
   onClose: () => void;
 }) {
-  const [email, setEmail] = useState('');
-  const [downloaded, setDownloaded] = useState(false);
-  const { success } = useToast();
-
-  const handleSubscribe = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!email) return;
-
-    setDownloaded(true);
-    success('Report Access Granted!', 'A download link has been sent to your email.');
-  };
-
   return (
     <Modal isOpen={isOpen} onClose={onClose} title="2026 African Youth Digital Impact Report">
-      {downloaded ? (
-        <div className="py-6 text-center space-y-4">
-          <div className="w-12 h-12 rounded-full bg-[var(--chip-success-bg)] text-[var(--chip-success-text)] flex items-center justify-center text-2xl mx-auto">
-            📄
-          </div>
-          <h3 className="text-xl font-bold text-[var(--text-primary)]">
-            Your Download is Ready
+      <div className="space-y-5">
+        <div className="p-4 rounded-2xl bg-gradient-to-br from-[#123B5D] to-[#16A36A] border border-white/15 space-y-2">
+          <span className="text-[10px] font-extrabold uppercase tracking-widest text-[var(--gb-orange-400)]">
+            GROWTHBRIDGE INSIGHTS
+          </span>
+          <h3 className="text-base font-bold text-white">
+            The State of Youth Digital Innovation in Africa
           </h3>
-          <p className="text-xs text-[var(--text-secondary)]">
-            Thank you for subscribing to Growthbridge Insights. We have dispatched the
-            report to{' '}
-            <span className="text-[var(--text-accent)] font-semibold">{email}</span>.
+          <p className="text-xs text-white/75 leading-relaxed">
+            The 2026 impact report is being prepared. Digital download and email delivery
+            are not available yet.
           </p>
-          <Button variant="primary" size="md" onClick={onClose}>
-            Explore Knowledge Hub
+        </div>
+
+        <div className="space-y-2">
+          <h4 className="text-sm font-bold text-[var(--text-primary)]">
+            Request an update
+          </h4>
+          <p className="text-sm text-[var(--text-secondary)] leading-relaxed">
+            We are not collecting email addresses through this panel because a report
+            delivery service is not connected. Contact our team to ask about publication
+            timing and availability.
+          </p>
+        </div>
+
+        <div className="flex flex-col sm:flex-row gap-3">
+          <Link
+            href="/contact"
+            onClick={onClose}
+            className="inline-flex min-h-12 flex-1 items-center justify-center rounded-xl bg-[var(--gb-green-600)] px-7 py-3.5 text-base font-medium text-[var(--action-primary-text)] shadow-[0_10px_25px_-10px_var(--gb-green-600)] transition-colors hover:bg-[var(--gb-green-700)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--gb-green-600)]"
+          >
+            Contact Growthbridge
+          </Link>
+          <Button variant="outline" size="lg" onClick={onClose}>
+            Close
           </Button>
         </div>
-      ) : (
-        <div className="space-y-4">
-          <div className="p-4 rounded-2xl bg-gradient-to-br from-[#123B5D] to-[#16A36A] border border-white/15 space-y-2">
-            <span className="text-[10px] font-extrabold uppercase tracking-widest text-[var(--gb-orange-400)]">
-              EXCLUSIVE WHITE PAPER
-            </span>
-            <h4 className="text-base font-bold text-white">
-              The State of Youth Digital Innovation in Africa (2026 Edition)
-            </h4>
-            <p className="text-xs text-white/75 leading-relaxed">
-              Explore key data on developer demographics, remote work trends, digital
-              skill demand, and community case studies across Southern Africa.
-            </p>
-          </div>
-
-          <form onSubmit={handleSubscribe} className="space-y-3 pt-2">
-            <Input
-              label="Enter Work Email for Instant Access *"
-              type="email"
-              placeholder="you@company.com"
-              required
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-            />
-            <Button type="submit" variant="primary" size="lg" className="w-full">
-              Download Free Report PDF →
-            </Button>
-          </form>
-        </div>
-      )}
+      </div>
     </Modal>
   );
 }
