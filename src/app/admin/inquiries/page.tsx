@@ -224,9 +224,9 @@ function InquiryDetailModal({
   onClose: () => void;
   inquiry: Inquiry | null;
   canEdit: boolean;
-  onMarkContacted: () => void;
-  onCloseInquiry: () => void;
-  onAddNote: (content: string) => void;
+  onMarkContacted: () => void | Promise<void>;
+  onCloseInquiry: () => void | Promise<void>;
+  onAddNote: (content: string) => void | Promise<void>;
   onSendReply: (message: string) => void;
   currentUserName?: string;
   currentUserId?: string;
@@ -242,24 +242,26 @@ function InquiryDetailModal({
   const inquiryType: 'general' | 'partnership' =
     inquiry.type === 'partnership' ? 'partnership' : 'general';
 
-  const doAction = async (label: string, fn: () => void) => {
+  const doAction = async (label: string, fn: () => void | Promise<void>) => {
     setLoadingAction(label);
-    await new Promise((r) => setTimeout(r, 250));
-    fn();
-    setLoadingAction(null);
+    try {
+      await fn();
+    } finally {
+      setLoadingAction(null);
+    }
   };
 
-  const submitNote = () => {
+  const submitNote = async () => {
     if (!noteText.trim()) return;
-    doAction('note', () => {
-      onAddNote(noteText.trim());
+    await doAction('note', async () => {
+      await onAddNote(noteText.trim());
       setNoteText('');
     });
   };
 
-  const submitReply = () => {
+  const submitReply = async () => {
     if (!replyText.trim()) return;
-    doAction('reply', () => {
+    await doAction('reply', () => {
       onSendReply(replyText.trim());
       setReplyText('');
     });
@@ -521,7 +523,7 @@ function InquiryDetailModal({
             <Button
               size="sm"
               variant="secondary"
-              onClick={() => doAction('contacted', onMarkContacted)}
+              onClick={() => void doAction('contacted', onMarkContacted)}
               isLoading={loadingAction === 'contacted'}
             >
               ✓ Mark as Contacted
@@ -531,7 +533,7 @@ function InquiryDetailModal({
             <Button
               size="sm"
               variant="accent"
-              onClick={() => doAction('close', onCloseInquiry)}
+              onClick={() => void doAction('close', onCloseInquiry)}
               isLoading={loadingAction === 'close'}
             >
               ✕ Close Inquiry
@@ -649,22 +651,27 @@ export default function AdminInquiriesPage() {
     try {
       await adminFetch('/api/admin/inquiries', { method:'PATCH', body: JSON.stringify({ id, source: current.source, status: next }) });
       setInquiries((items) => items.map((i) => i.id === id ? { ...i, status: next } : i));
+      setDetailInquiry((currentDetail) => currentDetail?.id === id ? { ...currentDetail, status: next } : currentDetail);
       success('Inquiry Updated', next === 'closed' ? 'The inquiry has been closed.' : next === 'new' ? 'The inquiry is back in NEW.' : 'Status changed to CONTACTED.');
-      refreshDetail(id);
     } catch { error('Update Failed', 'Could not update inquiry status.'); }
   };
   const handleMarkContacted = (id: string) => { void updateInquiryStatus(id, 'contacted'); };
   const handleStatusChange = (id: string, status: Inquiry['status']) => { void updateInquiryStatus(id, status); };
   const handleCloseInquiry = (id: string) => { void updateInquiryStatus(id, 'closed'); };
 
-  const handleAddNote = (id: string, content: string) => {
+  const handleAddNote = async (id: string, content: string) => {
+    const inquiry = inquiries.find((item) => item.id === id);
+    if (inquiry?.source !== 'application') {
+      info('Notes unavailable', 'Internal notes are currently supported for application records only.');
+      return;
+    }
     try {
-      const inquiry = inquiries.find((item) => item.id === id);
-      if (inquiry?.source !== 'application') { info('Notes unavailable', 'Internal notes are currently supported for application records only.'); return; }
-      addApplicationNote(id, content, user?.id || 'admin-1', user?.name || 'Admin User');
+      await addApplicationNote(id, content, user?.id || 'admin-1', user?.name || 'Admin User');
+      const refreshed = await adminFetch<Inquiry[]>('/api/admin/inquiries');
+      setInquiries(refreshed);
+      setDetailInquiry((currentDetail) => currentDetail?.id === id ? refreshed.find((item) => item.id === id) || currentDetail : currentDetail);
       success('Note Added', 'Internal note saved.');
-      refreshDetail(id);
-    } catch (e) {
+    } catch {
       error('Note Failed', 'Could not save the note.');
     }
   };
