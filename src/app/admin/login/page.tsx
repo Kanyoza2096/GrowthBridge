@@ -60,7 +60,7 @@ function AdminLoginForm() {
       <Link
         href="/"
         className="absolute left-4 top-4 sm:left-6 sm:top-6 z-20 inline-flex min-h-11 items-center gap-2 rounded-xl border border-[var(--admin-border-strong)] bg-[var(--admin-surface-card)]/90 px-3.5 text-xs sm:text-sm font-semibold text-[var(--admin-text-secondary)] shadow-lg backdrop-blur-sm transition-colors hover:border-[var(--admin-accent)]/50 hover:text-[var(--admin-text-primary)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--admin-focus)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--admin-surface-page)]"
-        aria-label="Back to Growthbridge public website"
+        aria-label="Back to website"
       >
         <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
           <path d="M19 12H5" />
