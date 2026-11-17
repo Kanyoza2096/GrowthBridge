@@ -97,8 +97,20 @@ export function Header() {
                       className="relative"
                       onMouseEnter={() => setActiveDropdown(item.label)}
                       onMouseLeave={() => setActiveDropdown(null)}
+                      onKeyDown={(event) => {
+                        if (event.key === 'Escape') {
+                          setActiveDropdown(null);
+                          (event.target as HTMLElement).closest('div.relative')?.querySelector('button')?.focus();
+                        }
+                      }}
                     >
                       <button
+                        type="button"
+                        aria-expanded={isDropdownOpen}
+                        aria-controls={`nav-dropdown-${item.label.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`}
+                        aria-haspopup="true"
+                        onFocus={() => setActiveDropdown(item.label)}
+                        onClick={() => setActiveDropdown(isDropdownOpen ? null : item.label)}
                         className={cn(
                           'flex items-center space-x-1 px-2.5 lg:px-4 py-2 text-xs lg:text-sm font-medium rounded-xl transition-colors cursor-pointer',
                           isActive
@@ -131,7 +143,7 @@ export function Header() {
 
                       {/* Dropdown Menu */}
                       {isDropdownOpen && (
-                        <div className="absolute top-full left-0 w-64 pt-2 animate-[gb-fade-in_0.2s_var(--ease-out)_both]">
+                        <div id={`nav-dropdown-${item.label.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`} className="absolute top-full left-0 w-64 pt-2 animate-[gb-fade-in_0.2s_var(--ease-out)_both]">
                           <div className="rounded-2xl bg-[var(--nav-dropdown-bg)] border border-[var(--nav-dropdown-border)] shadow-[var(--nav-dropdown-shadow)] p-2 space-y-1">
                             {item.children.map((child) => (
                               <Link
@@ -199,10 +211,12 @@ export function Header() {
             <div className="md:hidden flex items-center gap-1.5">
               <ThemeToggle size="sm" variant="ghost" />
               <button
+                type="button"
                 onClick={() => setMobileNavOpen(true)}
                 className={cn('gb-touch-target p-2.5 rounded-xl transition-colors cursor-pointer inline-flex items-center justify-center', overDarkHero ? 'text-white hover:bg-white/10' : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-subtle)]')}
                 aria-label="Open Mobile Menu"
                 aria-expanded={mobileNavOpen}
+                aria-controls="growthbridge-mobile-navigation"
               >
                 <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path
