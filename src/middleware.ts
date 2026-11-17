@@ -62,6 +62,13 @@ function withHardenedHeadersOnResponse(response: NextResponse): NextResponse {
   return response;
 }
 
+function copyResponseCookies(source: NextResponse, target: NextResponse): NextResponse {
+  // Supabase may rotate refresh tokens during getUser(). Preserve every cookie
+  // on redirects and rewritten responses, not only on the initial next() response.
+  source.cookies.getAll().forEach((cookie) => target.cookies.set(cookie));
+  return target;
+}
+
 function getClientIp(request: NextRequest): string {
   // Prefer the hosting edge's canonical client IP. These headers must be
   // overwritten by the trusted reverse proxy in production.
@@ -239,14 +246,16 @@ export async function middleware(request: NextRequest) {
     if (!user) {
       const loginUrl = new URL('/admin/login', request.url);
       loginUrl.searchParams.set('redirect', path);
-      return withHardenedHeadersOnResponse(NextResponse.redirect(loginUrl));
+      const redirectResponse = NextResponse.redirect(loginUrl);
+      copyResponseCookies(response, redirectResponse);
+      return withHardenedHeadersOnResponse(redirectResponse);
     }
 
     const requestHeaders = new Headers(request.headers);
     requestHeaders.set('x-admin-authenticated', 'true');
-    return withHardenedHeadersOnResponse(
-      NextResponse.next({ request: { headers: requestHeaders } })
-    );
+    const authenticatedResponse = NextResponse.next({ request: { headers: requestHeaders } });
+    copyResponseCookies(response, authenticatedResponse);
+    return withHardenedHeadersOnResponse(authenticatedResponse);
   }
 
   // 4. Ensure CSRF cookie is present for the rest of the site
