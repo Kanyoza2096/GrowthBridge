@@ -70,4 +70,21 @@ test.describe('Public SEO and PWA delivery', () => {
     await context.setOffline(false);
   });
 
+
+  test('keeps public light and admin dark theme preferences isolated', async ({ page }) => {
+    await page.goto('/');
+    await expect.poll(() => page.locator('html').evaluate((root) => (root as HTMLElement).style.colorScheme)).toBe('light');
+
+    await page.evaluate(() => localStorage.setItem('gb_theme', 'dark'));
+    await page.goto('/admin/login');
+    await expect.poll(() => page.locator('html').evaluate((root) => (root as HTMLElement).style.colorScheme)).toBe('dark');
+
+    await page.evaluate(() => localStorage.setItem('gb_admin_theme', 'light'));
+    await page.reload();
+    await expect.poll(() => page.locator('html').evaluate((root) => (root as HTMLElement).style.colorScheme)).toBe('light');
+
+    await page.goto('/');
+    await expect.poll(() => page.locator('html').evaluate((root) => (root as HTMLElement).style.colorScheme)).toBe('dark');
+  });
+
 });
