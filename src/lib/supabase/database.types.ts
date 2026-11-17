@@ -455,6 +455,51 @@ export type Database = {
         }
         Relationships: []
       }
+      media_storage_cleanup_outbox: {
+        Row: {
+          attempt_count: number
+          bucket_id: string
+          created_at: string
+          delivered_at: string | null
+          id: string
+          last_error: string | null
+          lease_token: string | null
+          locked_until: string | null
+          media_id: string
+          next_attempt_at: string
+          object_path: string
+          status: string
+        }
+        Insert: {
+          attempt_count?: number
+          bucket_id: string
+          created_at?: string
+          delivered_at?: string | null
+          id?: string
+          last_error?: string | null
+          lease_token?: string | null
+          locked_until?: string | null
+          media_id: string
+          next_attempt_at?: string
+          object_path: string
+          status?: string
+        }
+        Update: {
+          attempt_count?: number
+          bucket_id?: string
+          created_at?: string
+          delivered_at?: string | null
+          id?: string
+          last_error?: string | null
+          lease_token?: string | null
+          locked_until?: string | null
+          media_id?: string
+          next_attempt_at?: string
+          object_path?: string
+          status?: string
+        }
+        Relationships: []
+      }
       media: {
         Row: {
           alt_text: string | null
@@ -1168,6 +1213,18 @@ export type Database = {
       unaccent: { Args: { "": string }; Returns: string }
       claim_kdo_website_event_outbox: { Args: { p_limit?: number; p_lease_seconds?: number }; Returns: Database["public"]["Tables"]["kdo_website_event_outbox"]["Row"][] }
       publish_kdo_blog_content: { Args: { p_idempotency_key: string; p_workspace_id: string; p_request_sha256: string; p_title: string; p_slug: string; p_content: string; p_excerpt: string | null; p_cover_image: string | null; p_status: string }; Returns: Json }
+      delete_media_with_storage_cleanup: {
+        Args: { p_media_id: string; p_object_path?: string | null }
+        Returns: { job_id: string; bucket_id: string; object_path: string; lease_token: string }[]
+      }
+      claim_media_storage_cleanup_jobs: {
+        Args: { p_limit?: number; p_lease_seconds?: number }
+        Returns: Database["public"]["Tables"]["media_storage_cleanup_outbox"]["Row"][]
+      }
+      finish_media_storage_cleanup_job: {
+        Args: { p_job_id: string; p_lease_token: string; p_error?: string | null }
+        Returns: boolean
+      }
     }
     Enums: {
       user_role:

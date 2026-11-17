@@ -1,0 +1,34 @@
+name: GrowthBridge Media Storage Cleanup
+
+on:
+  schedule:
+    - cron: '*/10 * * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - name: Process queued media cleanup jobs
+        env:
+          CLEANUP_URL: ${{ vars.GROWTHBRIDGE_MEDIA_CLEANUP_URL }}
+          CLEANUP_SECRET: ${{ secrets.MEDIA_STORAGE_CLEANUP_SECRET }}
+        run: |
+          if [ -z "$CLEANUP_URL" ] || [ -z "$CLEANUP_SECRET" ]; then
+            echo "Media cleanup worker is not configured; skipping safely."
+            exit 0
+          fi
+          case "$CLEANUP_URL" in
+            https://*) ;;
+            *) echo "Cleanup URL must use HTTPS."; exit 1 ;;
+          esac
+          curl --fail-with-body --silent --show-error \
+            --connect-timeout 10 \
+            --max-time 50 \
+            --request POST \
+            --header "Authorization: Bearer $CLEANUP_SECRET" \
+            "$CLEANUP_URL"

@@ -133,12 +133,44 @@ export class MediaService {
     if (error) throw error;
 
     const storagePath = storagePathFromUrl(data.url);
-    if (storagePath) {
-      const { error: storageError } = await supabase.storage.from('media').remove([storagePath]);
-      if (storageError) throw storageError;
+    if (data.url.includes('/storage/v1/object/public/media/') && !storagePath) {
+      throw new Error('Unable to resolve the media Storage object path; deletion was not attempted.');
     }
 
-    return this.repo.delete(id);
+    const { data: cleanupJobs, error: deleteError } = await supabase.rpc(
+      'delete_media_with_storage_cleanup',
+      { p_media_id: id, p_object_path: storagePath }
+    );
+    if (deleteError) throw deleteError;
+
+    // The metadata deletion and cleanup enqueue are one database transaction.
+    // Attempt the Storage deletion immediately; if it fails, the leased outbox
+    // job remains recoverable by the scheduled cleanup worker.
+    const job = cleanupJobs?.[0];
+    if (job) {
+      const { error: storageError } = await supabase.storage
+        .from(job.bucket_id)
+        .remove([job.object_path]);
+
+      const { data: finalized, error: finalizeError } = await supabase.rpc(
+        'finish_media_storage_cleanup_job',
+        {
+          p_job_id: job.job_id,
+          p_lease_token: job.lease_token,
+          p_error: storageError?.message ?? null,
+        }
+      );
+
+      if (finalizeError || !finalized) {
+        console.error('[MediaService.deleteMedia] Cleanup remains queued for retry.', {
+          jobId: job.job_id,
+          storageError: storageError?.message,
+          finalizeError: finalizeError?.message,
+        });
+      }
+    }
+
+    return true;
   }
 }
 
