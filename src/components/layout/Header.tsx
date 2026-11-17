@@ -108,7 +108,6 @@ export function Header() {
                         type="button"
                         aria-expanded={isDropdownOpen}
                         aria-controls={`nav-dropdown-${item.label.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`}
-                        aria-haspopup="true"
                         onFocus={() => setActiveDropdown(item.label)}
                         onClick={() => setActiveDropdown(isDropdownOpen ? null : item.label)}
                         className={cn(
