@@ -544,7 +544,7 @@ function InquiryDetailModal({
 
 function exportInquiries(items: Inquiry[]) {
   const headers = ['Name', 'Email', 'Phone', 'Type', 'Status', 'Subject', 'Submitted At'];
-  const rows = items.map((item) => [item.name, item.email, item.phone, item.type, item.status, item.subject || '', item.submittedAt].map(escape).join(','));
+  const rows = items.map((item) => [item.name, item.email, item.phone, item.type, item.status, item.subject || '', item.submittedAt].map(escapeCsvCell).join(','));
   const blob = new Blob([[headers.map(escapeCsvCell).join(','), ...rows].join('\n')], { type: 'text/csv;charset=utf-8' });
   const url = URL.createObjectURL(blob);
   const link = document.createElement('a');
