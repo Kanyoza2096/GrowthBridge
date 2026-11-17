@@ -349,6 +349,7 @@ export default function ContactPage() {
                       size="lg"
                       fullWidth
                       disabled={isSubmitting}
+                      aria-busy={isSubmitting}
                       className="w-full"
                     >
                       {isSubmitting ? 'Submitting...' : 'Submit Partnership Request'}
