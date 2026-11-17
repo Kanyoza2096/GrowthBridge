@@ -27,7 +27,7 @@
     "clsx": "^2.1.1",
     "lucide-react": "^0.469.0",
     "motion": "^11.15.0",
-    "next": "15.5.24",
+    "next": "16.4.6",
     "next-themes": "^0.4.4",
     "react": "19.2.8",
     "react-dom": "19.2.8",
@@ -57,7 +57,7 @@
     "vitest": "^2.1.8"
   },
   "overrides": {
-    "next": "15.5.24",
+    "next": "16.4.6",
     "eslint-config-next": "15.5.24"
   },
   "engines": {
