@@ -11,6 +11,7 @@ import { useAdminAuth } from '@/components/providers/AdminAuthProvider';
 import { useAdminData } from '@/components/providers/AdminDataProvider';
 import { useToast } from '@/components/providers/ToastProvider';
 import { cn } from '@/lib/utils';
+import { escapeCsvCell } from '@/lib/utils/csv';
 import { AdminEmptyState } from '@/components/admin/AdminEmptyState';
 import { AdminPageHeader, AdminToolbar } from '@/components/admin/AdminPageHeader';
 import type { Inquiry } from '@/lib/types/inquiry';
@@ -543,9 +544,8 @@ function InquiryDetailModal({
 
 function exportInquiries(items: Inquiry[]) {
   const headers = ['Name', 'Email', 'Phone', 'Type', 'Status', 'Subject', 'Submitted At'];
-  const escape = (value: string) => `"${value.replace(/"/g, '""')}"`;
   const rows = items.map((item) => [item.name, item.email, item.phone, item.type, item.status, item.subject || '', item.submittedAt].map(escape).join(','));
-  const blob = new Blob([[headers.map(escape).join(','), ...rows].join('\n')], { type: 'text/csv;charset=utf-8' });
+  const blob = new Blob([[headers.map(escapeCsvCell).join(','), ...rows].join('\n')], { type: 'text/csv;charset=utf-8' });
   const url = URL.createObjectURL(blob);
   const link = document.createElement('a');
   link.href = url;
