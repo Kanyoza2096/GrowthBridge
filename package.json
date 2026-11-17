@@ -49,7 +49,7 @@
     "@typescript-eslint/parser": "^8.18.1",
     "@vitejs/plugin-react": "^4.3.4",
     "@vitest/ui": "^2.1.8",
-    "eslint": "^9.17.0",
+    "eslint": "^10.15.0",
     "eslint-config-next": "15.5.24",
     "jsdom": "^25.0.1",
     "tailwindcss": "^4",
