@@ -43,6 +43,12 @@ export async function POST(request: NextRequest) {
   let failed = 0;
 
   for (const job of jobs || []) {
+    if (!job.lease_token) {
+      console.error('[Media cleanup] claimed job has no lease token', job.id);
+      retried++;
+      continue;
+    }
+
     let storageError: string | null = null;
     try {
       const { error } = await admin.storage.from(job.bucket_id).remove([job.object_path]);
