@@ -77,7 +77,10 @@ export async function readFormDataBody(request: Request, maxBytes: number): Prom
       if (done) break;
       if (!value) continue;
       total += value.byteLength;
-      if (total > maxBytes) throw new Error('REQUEST_BODY_TOO_LARGE');
+      if (total > maxBytes) {
+        await reader.cancel().catch(() => undefined);
+        throw new Error('REQUEST_BODY_TOO_LARGE');
+      }
       chunks.push(value);
     }
   } finally {
