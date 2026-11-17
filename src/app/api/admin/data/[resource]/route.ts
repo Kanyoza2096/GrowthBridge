@@ -15,6 +15,7 @@ import { PartnersRepository } from '@/repositories/partners.repository';
 import { MediaRepository } from '@/repositories/media.repository';
 import { mediaService } from '@/services/media.service';
 import { adminJsonBodySchema } from '@/lib/security/validate';
+import { readFormDataBody } from '@/lib/security/request';
 import { validateAdminResourcePayload } from '@/lib/security/admin-validate';
 import { isBlogSlugConflict } from '@/lib/security/db-errors';
 import { SettingsRepository } from '@/repositories/settings.repository';
@@ -170,7 +171,16 @@ export async function POST(request: NextRequest, context: RouteContext) {
     const contentType = request.headers.get('content-type') || '';
 
     if (contentType.includes('multipart/form-data')) {
-      const formData = await request.formData();
+      let formData: FormData;
+      try {
+        formData = await readFormDataBody(request, 10 * 1024 * 1024 + 64 * 1024);
+      } catch (error) {
+        const tooLarge = error instanceof Error && error.message === 'REQUEST_BODY_TOO_LARGE';
+        return NextResponse.json(
+          { success: false, error: tooLarge ? 'Upload exceeds the 10 MB file limit.' : 'Invalid multipart upload.' },
+          { status: tooLarge ? 413 : 400, headers: { 'Cache-Control': 'no-store' } },
+        );
+      }
       const file = formData.get('file') as File;
       if (file && resource === 'media') {
         const metadata = {
