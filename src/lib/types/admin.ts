@@ -321,8 +321,5 @@ export interface Settings {
     trustItems?: string[];
     bridgeSlides?: { eyebrow: string; title: string; description: string }[];
     bridgeAutoplayMs?: number;
-    chatTitle?: string;
-    chatWelcome?: string;
-    chatContactEmail?: string;
   };
 }
