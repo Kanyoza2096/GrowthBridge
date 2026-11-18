@@ -37,7 +37,7 @@ const defaultSettings: Settings = {
     enableTalentHub: true,
     enableBlog: true,
     enablePartnerPortal: true,
-    enableAIAssistant: true,
+    enableAIAssistant: false,
     enableAnalytics: true,
     maintenanceMode: false,
   },
@@ -59,9 +59,6 @@ const defaultSettings: Settings = {
       { eyebrow: 'Community impact', title: 'Progress that connects', description: 'Creating measurable outcomes for businesses and communities.' },
     ],
     bridgeAutoplayMs: 6000,
-    chatTitle: 'Growthbridge Assistant',
-    chatWelcome: 'Hello! Welcome to Growthbridge. How can we help your business or community grow?',
-    chatContactEmail: 'hello@growthbridge.org',
   },
 };
 
