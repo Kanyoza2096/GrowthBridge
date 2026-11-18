@@ -21,16 +21,25 @@ export function AnimatedBridge({ className, slides, autoplayMs = 6000 }: Animate
   const items = useMemo(() => slides?.length ? slides.slice(0, 4) : DEFAULT_SLIDES, [slides]);
   const [activeIndex, setActiveIndex] = useState(0);
   const [paused, setPaused] = useState(false);
+  const [reducedMotion, setReducedMotion] = useState(false);
 
   useEffect(() => {
     setActiveIndex(0);
   }, [items.length]);
 
   useEffect(() => {
-    if (paused || items.length < 2 || autoplayMs <= 0) return;
+    const media = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const update = () => setReducedMotion(media.matches);
+    update();
+    media.addEventListener?.('change', update);
+    return () => media.removeEventListener?.('change', update);
+  }, []);
+
+  useEffect(() => {
+    if (paused || reducedMotion || items.length < 2 || autoplayMs <= 0) return;
     const timer = window.setInterval(() => setActiveIndex((current) => (current + 1) % items.length), Math.max(3500, autoplayMs));
     return () => window.clearInterval(timer);
-  }, [autoplayMs, items.length, paused]);
+  }, [autoplayMs, items.length, paused, reducedMotion]);
 
   const active = items[activeIndex] || DEFAULT_SLIDES[0];
 
@@ -64,6 +73,8 @@ export function AnimatedBridge({ className, slides, autoplayMs = 6000 }: Animate
           </filter>
         </defs>
         <path d="M50 320 Q400 60 750 320" stroke="url(#gb-bridge-gradient)" strokeWidth="7" strokeLinecap="round" filter="url(#gb-bridge-glow)" />
+        <path className="gb-bridge-flow-line" d="M50 320 Q400 60 750 320" stroke="#a5f3d0" strokeWidth="2.5" strokeLinecap="round" opacity=".85" />
+        <g className="gb-bridge-orbit" fill="none" stroke="#45d6a6" strokeOpacity=".18" strokeWidth="2"><ellipse cx="400" cy="220" rx="300" ry="112" strokeDasharray="3 12" /></g>
         <g stroke="#d8e8ef" strokeOpacity=".25" strokeWidth="1.5" strokeDasharray="5 6">
           <path d="M200 210V340M300 145V340M400 125V340M500 145V340M600 210V340" />
         </g>
@@ -71,9 +82,9 @@ export function AnimatedBridge({ className, slides, autoplayMs = 6000 }: Animate
         <path d="M50 340H750" stroke="#23b98a" strokeWidth="2" strokeDasharray="12 8" />
         <path d="M180 340L190 220H210L220 340ZM580 340L590 220H610L620 340Z" fill="url(#gb-bridge-gradient)" opacity=".28" />
         <g>
-          <circle cx="200" cy="210" r="25" fill="url(#gb-node-glow)" /><circle cx="200" cy="210" r="8" fill="#123b5d" stroke="#77c5ed" strokeWidth="3" />
-          <circle cx="400" cy="125" r="34" fill="url(#gb-node-glow)" /><circle cx="400" cy="125" r="12" fill="#20b887" stroke="white" strokeWidth="3" />
-          <circle cx="600" cy="210" r="25" fill="url(#gb-node-glow)" /><circle cx="600" cy="210" r="8" fill="#f5a623" stroke="#ffd17a" strokeWidth="3" />
+          <circle className="gb-bridge-node-glow" cx="200" cy="210" r="25" fill="url(#gb-node-glow)" /><circle cx="200" cy="210" r="8" fill="#123b5d" stroke="#77c5ed" strokeWidth="3" />
+          <circle className="gb-bridge-node-glow" cx="400" cy="125" r="34" fill="url(#gb-node-glow)" /><circle cx="400" cy="125" r="12" fill="#20b887" stroke="white" strokeWidth="3" />
+          <circle className="gb-bridge-node-glow" cx="600" cy="210" r="25" fill="url(#gb-node-glow)" /><circle cx="600" cy="210" r="8" fill="#f5a623" stroke="#ffd17a" strokeWidth="3" />
         </g>
         <g fill="#d5e4eb" textAnchor="middle" fontWeight="600">
           <text x="200" y="180" fontSize="12">Youth &amp; Skills</text>
@@ -82,7 +93,7 @@ export function AnimatedBridge({ className, slides, autoplayMs = 6000 }: Animate
         </g>
       </svg>
 
-      <div className="mt-1 min-h-[92px] sm:min-h-[104px]">
+      <div key={active.title} className="gb-bridge-slide-copy mt-1 min-h-[92px] sm:min-h-[104px]">
         <p className="text-[10px] font-bold uppercase tracking-[.16em] text-emerald-300/80"> {active.eyebrow} </p>
         <h3 className="mt-1 text-xl sm:text-2xl font-extrabold text-white">{active.title}</h3>
         <p className="mt-2 text-sm sm:text-base leading-relaxed text-white/65">{active.description}</p>
@@ -95,7 +106,7 @@ export function AnimatedBridge({ className, slides, autoplayMs = 6000 }: Animate
           ))}
         </div>
         <div className="flex items-center gap-2">
-          <button type="button" onClick={() => setActiveIndex((activeIndex - 1 + items.length) % items.length)} className="grid h-9 w-9 place-items-center rounded-full border border-white/20 text-white hover:bg-white/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-emerald-300" aria-label="Previous showcase slide">‹</button>
+          <button type="button" onClick={() => setActiveIndex((activeIndex - 1 + items.length) % items.length)} className="grid h-11 w-11 place-items-center rounded-full border border-white/20 text-white hover:bg-white/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-emerald-300" aria-label="Previous showcase slide">‹</button>
           <button type="button" onClick={() => setActiveIndex((activeIndex + 1) % items.length)} className="grid h-9 w-9 place-items-center rounded-full border border-white/20 text-white hover:bg-white/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-emerald-300" aria-label="Next showcase slide">›</button>
         </div>
       </div>
