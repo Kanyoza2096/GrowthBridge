@@ -8,6 +8,43 @@ import { Card } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
 
+type LifecycleStep = {
+  key: string;
+  number: number;
+  title: string;
+  description: string;
+};
+
+function normalizeLifecycle(process: unknown[]): LifecycleStep[] {
+  return process.flatMap((item, index) => {
+    if (typeof item === 'string') {
+      const description = item.trim();
+      return description
+        ? [{ key: `step-${index + 1}`, number: index + 1, title: '', description }]
+        : [];
+    }
+
+    if (!item || typeof item !== 'object' || Array.isArray(item)) return [];
+
+    const value = item as Record<string, unknown>;
+    const number =
+      typeof value.step === 'number' && Number.isFinite(value.step) && value.step > 0
+        ? Math.floor(value.step)
+        : index + 1;
+    const title = typeof value.title === 'string' ? value.title.trim() : '';
+    const description =
+      typeof value.description === 'string' ? value.description.trim() : '';
+
+    if (!title && !description) return [];
+
+    return [{
+      key: `step-${number}-${index}`,
+      number,
+      title,
+      description,
+    }];
+  });
+}
 
 export default function ServiceDetailPage(props: { service: Service }) {
   const service = props.service;
@@ -15,6 +52,7 @@ export default function ServiceDetailPage(props: { service: Service }) {
 
   const features = service.features || [];
   const process = service.process || [];
+  const lifecycleSteps = normalizeLifecycle(process as unknown[]);
 
   return (
     <div className="space-y-10 sm:space-y-16 pb-16 sm:pb-20">
@@ -56,9 +94,9 @@ export default function ServiceDetailPage(props: { service: Service }) {
                   Capabilities & Deliverables
                 </h3>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  {features.map((feature: string) => (
+                  {features.map((feature: string, index: number) => (
                     <div
-                      key={feature}
+                      key={`${feature}-${index}`}
                       className="p-3 rounded-xl bg-[var(--surface-soft)] border border-[var(--border-subtle)] text-xs text-[var(--text-secondary)] flex items-center min-h-11"
                     >
                       <span className="w-2 h-2 rounded-full bg-[var(--gb-brand-green)] mr-2.5 flex-shrink-0" />
@@ -68,19 +106,27 @@ export default function ServiceDetailPage(props: { service: Service }) {
                 </div>
               </Card>
 
-              {process.length > 0 && (
+              {lifecycleSteps.length > 0 && (
                 <div className="space-y-4">
                   <h3 className="text-lg sm:text-xl font-bold text-[var(--text-primary)]">
                     Execution Lifecycle
                   </h3>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
-                    {process.map((p: { step: number; title: string; description: string }) => (
-                      <Card key={p.step} variant="solid" className="p-4 space-y-2">
+                    {lifecycleSteps.map((step) => (
+                      <Card key={step.key} variant="solid" className="p-4 space-y-2">
                         <span className="text-xs font-bold text-[var(--text-accent)]">
-                          STEP {String(p.step).padStart(2, '0')}
+                          STEP {String(step.number).padStart(2, '0')}
                         </span>
-                        <h4 className="text-base font-bold text-[var(--text-primary)]">{p.title}</h4>
-                        <p className="text-xs text-[var(--text-secondary)]">{p.description}</p>
+                        {step.title && (
+                          <h4 className="text-base font-bold text-[var(--text-primary)]">
+                            {step.title}
+                          </h4>
+                        )}
+                        {step.description && (
+                          <p className="text-xs text-[var(--text-secondary)]">
+                            {step.description}
+                          </p>
+                        )}
                       </Card>
                     ))}
                   </div>
