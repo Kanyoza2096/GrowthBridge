@@ -10,7 +10,7 @@ import { ScrollReveal } from '@/components/shared/ScrollReveal';
 
 type PublicSiteConfig = {
   organization: { name: string; tagline: string; description: string; logo: string };
-  homepage: { heroImage: string; heroHeadline: string; heroSubheadline: string };
+  homepage: { heroImage: string; heroHeadline: string; heroSubheadline: string; heroBadge?: string; primaryCtaLabel?: string; primaryCtaUrl?: string; secondaryCtaLabel?: string; secondaryCtaUrl?: string; trustItems?: string[]; bridgeSlides?: { eyebrow: string; title: string; description: string }[]; bridgeAutoplayMs?: number };
   seo: { ogImage: string };
 };
 
@@ -34,6 +34,12 @@ export function HeroSection() {
 
   const heroImage = data?.homepage?.heroImage || '';
   const headline = data?.homepage?.heroHeadline || 'Bridging Skills. Driving Growth.';
+  const badge = data?.homepage?.heroBadge || '{badge}';
+  const primaryLabel = data?.homepage?.primaryCtaLabel || 'Start a conversation';
+  const primaryUrl = data?.homepage?.primaryCtaUrl || '/contact';
+  const secondaryLabel = data?.homepage?.secondaryCtaLabel || 'See our work';
+  const secondaryUrl = data?.homepage?.secondaryCtaUrl || '/projects';
+  const trustItems = data?.homepage?.trustItems?.length ? data.homepage.trustItems : ['Enterprise-ready delivery', 'African youth talent', 'Measured outcomes'];
   const sub = data?.homepage?.heroSubheadline ||
     'Growthbridge Virtual Organization is an enterprise ecosystem connecting young tech talent with corporate and community challenges. We deliver high-impact digital products while nurturing the next generation of African tech leaders.';
 
@@ -77,13 +83,13 @@ export function HeroSection() {
 
             <ScrollReveal delay={260}>
               <div className="mt-8 flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
-                <Link href="/contact">
+                <Link href={primaryUrl}>
                   <Button size="lg" variant="accent" fullWidth className="sm:w-auto">
                     Start a conversation
                     <svg className="ml-2 w-4 h-4" fill="none" viewBox="0 0 24 24" aria-hidden="true"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
                   </Button>
                 </Link>
-                <Link href="/projects">
+                <Link href={secondaryUrl}>
                   <Button size="lg" variant="outline" fullWidth className="sm:w-auto text-white border-white/20 hover:bg-white/8">
                     See our work
                   </Button>
@@ -93,7 +99,7 @@ export function HeroSection() {
 
             <ScrollReveal delay={340}>
               <div className="mt-8 flex flex-wrap gap-x-5 gap-y-2 text-xs font-semibold text-white/55">
-                <span>Enterprise-ready delivery</span><span>•</span><span>African youth talent</span><span>•</span><span>Measured outcomes</span>
+                {trustItems.map((item, index) => <React.Fragment key={`${item}-${index}`}><span>{item}</span>{index < trustItems.length - 1 && <span aria-hidden="true">•</span>}</React.Fragment>)}
               </div>
             </ScrollReveal>
           </div>
@@ -101,7 +107,7 @@ export function HeroSection() {
           <ScrollReveal delay={220} direction="left">
             <div className="hero-art-frame">
               <div className="hero-bridge-stage" aria-hidden="false">
-                <AnimatedBridge />
+                <AnimatedBridge slides={data?.homepage?.bridgeSlides} autoplayMs={data?.homepage?.bridgeAutoplayMs} />
               </div>
               <div className="absolute top-5 left-5 right-5 flex items-center justify-between text-[10px] font-bold uppercase tracking-[.14em] text-white/45">
                 <span>Growthbridge system</span><span>01 / 04</span>
