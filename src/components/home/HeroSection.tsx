@@ -55,7 +55,7 @@ export function HeroSection() {
           <div className="absolute inset-0 z-0 bg-gradient-to-r from-[#070F1B] via-[#0C2D47]/95 to-[#070F1B]/75" />
         </>
       ) : (
-        <div className="absolute inset-0 z-0 bg-[radial-gradient(circle_at_72%_30%,rgba(22,163,106,.18),transparent_28%),radial-gradient(circle_at_18%_20%,rgba(245,158,11,.10),transparent_22%),linear-gradient(135deg,#123B5D_0%,#0C2D47_48%,#070F1B_100%)]" />
+        <div className="absolute inset-0 z-0 gb-hero-atmosphere bg-[radial-gradient(circle_at_72%_30%,rgba(22,163,106,.18),transparent_28%),radial-gradient(circle_at_18%_20%,rgba(245,158,11,.10),transparent_22%),linear-gradient(135deg,#123B5D_0%,#0C2D47_48%,#070F1B_100%)]" />
       )}
       <div className="absolute inset-0 z-0 opacity-20 [background-image:linear-gradient(rgba(255,255,255,.07)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,.07)_1px,transparent_1px)] [background-size:48px_48px] [mask-image:linear-gradient(to_bottom,black,transparent_88%)]" aria-hidden />
 
@@ -64,7 +64,7 @@ export function HeroSection() {
           <div className="max-w-3xl">
             <ScrollReveal direction="down">
               <div className="inline-flex items-center gap-2 px-3.5 py-2 rounded-full bg-white/7 border border-white/12 text-white/80 text-[10px] sm:text-xs font-bold uppercase tracking-[.13em]">
-                <span className="w-2 h-2 rounded-full bg-[var(--gb-green-400)] shadow-[0_0_0_5px_rgba(52,211,153,.10)]" />
+                <span className="gb-hero-status-dot w-2 h-2 rounded-full bg-[var(--gb-green-400)] shadow-[0_0_0_5px_rgba(52,211,153,.10)]" />
                 {badge}
               </div>
             </ScrollReveal>
@@ -84,7 +84,7 @@ export function HeroSection() {
             <ScrollReveal delay={260}>
               <div className="mt-8 flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
                 <Link href={primaryUrl}>
-                  <Button size="lg" variant="accent" fullWidth className="sm:w-auto">
+                  <Button size="lg" variant="accent" fullWidth className="sm:w-auto gb-hero-primary-cta">
                     {primaryLabel}
                     <svg className="ml-2 w-4 h-4" fill="none" viewBox="0 0 24 24" aria-hidden="true"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
                   </Button>
@@ -99,7 +99,7 @@ export function HeroSection() {
 
             <ScrollReveal delay={340}>
               <div className="mt-8 flex flex-wrap gap-x-5 gap-y-2 text-xs font-semibold text-white/55">
-                {trustItems.map((item, index) => <React.Fragment key={`${item}-${index}`}><span>{item}</span>{index < trustItems.length - 1 && <span aria-hidden="true">•</span>}</React.Fragment>)}
+                {trustItems.map((item, index) => <React.Fragment key={`${item}-${index}`}><span className="gb-hero-trust-item" style={{ animationDelay: `${index * 120}ms` }}>{item}</span>{index < trustItems.length - 1 && <span aria-hidden="true">•</span>}</React.Fragment>)}
               </div>
             </ScrollReveal>
           </div>
