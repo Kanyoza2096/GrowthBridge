@@ -37,7 +37,7 @@ const defaultSettings: Settings = {
     enableTalentHub: true,
     enableBlog: true,
     enablePartnerPortal: true,
-    enableAIAssistant: false,
+    enableAIAssistant: true,
     enableAnalytics: true,
     maintenanceMode: false,
   },
