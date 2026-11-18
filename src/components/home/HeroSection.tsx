@@ -34,7 +34,7 @@ export function HeroSection() {
 
   const heroImage = data?.homepage?.heroImage || '';
   const headline = data?.homepage?.heroHeadline || 'Bridging Skills. Driving Growth.';
-  const badge = data?.homepage?.heroBadge || '{badge}';
+  const badge = data?.homepage?.heroBadge || 'Youth talent · Digital execution · Community impact';
   const primaryLabel = data?.homepage?.primaryCtaLabel || 'Start a conversation';
   const primaryUrl = data?.homepage?.primaryCtaUrl || '/contact';
   const secondaryLabel = data?.homepage?.secondaryCtaLabel || 'See our work';
@@ -65,7 +65,7 @@ export function HeroSection() {
             <ScrollReveal direction="down">
               <div className="inline-flex items-center gap-2 px-3.5 py-2 rounded-full bg-white/7 border border-white/12 text-white/80 text-[10px] sm:text-xs font-bold uppercase tracking-[.13em]">
                 <span className="w-2 h-2 rounded-full bg-[var(--gb-green-400)] shadow-[0_0_0_5px_rgba(52,211,153,.10)]" />
-                Youth talent · Digital execution · Community impact
+                {badge}
               </div>
             </ScrollReveal>
 
@@ -85,13 +85,13 @@ export function HeroSection() {
               <div className="mt-8 flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
                 <Link href={primaryUrl}>
                   <Button size="lg" variant="accent" fullWidth className="sm:w-auto">
-                    Start a conversation
+                    {primaryLabel}
                     <svg className="ml-2 w-4 h-4" fill="none" viewBox="0 0 24 24" aria-hidden="true"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
                   </Button>
                 </Link>
                 <Link href={secondaryUrl}>
                   <Button size="lg" variant="outline" fullWidth className="sm:w-auto text-white border-white/20 hover:bg-white/8">
-                    See our work
+                    {secondaryLabel}
                   </Button>
                 </Link>
               </div>
@@ -108,9 +108,6 @@ export function HeroSection() {
             <div className="hero-art-frame">
               <div className="hero-bridge-stage" aria-hidden="false">
                 <AnimatedBridge slides={data?.homepage?.bridgeSlides} autoplayMs={data?.homepage?.bridgeAutoplayMs} />
-              </div>
-              <div className="absolute top-5 left-5 right-5 flex items-center justify-between text-[10px] font-bold uppercase tracking-[.14em] text-white/45">
-                <span>Growthbridge system</span><span>01 / 04</span>
               </div>
               <div className="hero-proof-card">
                 <div className="flex items-end justify-between gap-4">
