@@ -340,12 +340,6 @@ export default function AdminSettingsPage() {
            </div>
           ))}
          </div>
-         <div className="pt-5 border-t border-[var(--admin-border)] space-y-4">
-          <div><p className="text-xs font-bold uppercase tracking-wider text-[var(--admin-text-secondary)]">Floating assistant</p><p className="text-[11px] text-[var(--admin-text-tertiary)] mt-1">Configure the visitor-facing assistant. Enable or disable it under Dynamic Features.</p></div>
-          <div><label className="text-xs font-semibold text-[var(--admin-text-secondary)] mb-1 block">Assistant title</label><Input value={settings.homepage?.chatTitle || ''} onChange={(e) => updateHomepageField('chatTitle', e.target.value)} /></div>
-          <div><label className="text-xs font-semibold text-[var(--admin-text-secondary)] mb-1 block">Welcome message</label><Textarea rows={3} value={settings.homepage?.chatWelcome || ''} onChange={(e) => updateHomepageField('chatWelcome', e.target.value)} /></div>
-          <div><label className="text-xs font-semibold text-[var(--admin-text-secondary)] mb-1 block">Contact email shown by assistant</label><Input type="email" value={settings.homepage?.chatContactEmail || ''} onChange={(e) => updateHomepageField('chatContactEmail', e.target.value)} /></div>
-         </div>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
