@@ -74,6 +74,8 @@ export function AIAssistantButton() {
     }, 600);
   };
 
+  if (configLoaded && !config.enabled) return null;
+
   return (
     <>
       {/* Floating Action Button */}
