@@ -23,6 +23,17 @@ export async function GET() {
             heroHeadline: settings.homepage?.heroHeadline || settings.organization.tagline,
             heroSubheadline:
               settings.homepage?.heroSubheadline || settings.organization.description,
+            heroBadge: settings.homepage?.heroBadge || 'Youth talent · Digital execution · Community impact',
+            primaryCtaLabel: settings.homepage?.primaryCtaLabel || 'Start a conversation',
+            primaryCtaUrl: settings.homepage?.primaryCtaUrl || '/contact',
+            secondaryCtaLabel: settings.homepage?.secondaryCtaLabel || 'See our work',
+            secondaryCtaUrl: settings.homepage?.secondaryCtaUrl || '/projects',
+            trustItems: settings.homepage?.trustItems || [],
+            bridgeSlides: settings.homepage?.bridgeSlides || [],
+            bridgeAutoplayMs: settings.homepage?.bridgeAutoplayMs || 6000,
+            chatTitle: settings.homepage?.chatTitle || 'Growthbridge Assistant',
+            chatWelcome: settings.homepage?.chatWelcome || 'Hello! Welcome to Growthbridge. How can we help?',
+            chatContactEmail: settings.homepage?.chatContactEmail || settings.organization.email,
           },
           seo: {
             ogImage: settings.seo.ogImage || '',
