@@ -90,7 +90,8 @@ export default function AdminSettingsPage() {
  const updateBridgeSlide = (index: number, field: 'eyebrow' | 'title' | 'description', value: string) => {
   if (!settings) return;
   const slides = [...(settings.homepage?.bridgeSlides || [])];
-  slides[index] = { eyebrow: '', title: '', description: '', ...slides[index], [field]: value };
+  const current = slides[index] || { eyebrow: '', title: '', description: '' };
+  slides[index] = { ...current, [field]: value };
   updateHomepageField('bridgeSlides', slides);
  };
 
