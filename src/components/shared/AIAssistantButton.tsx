@@ -18,6 +18,18 @@ export function AIAssistantButton() {
   const [config, setConfig] = useState<AssistantConfig>(DEFAULT_CONFIG);
   const [configLoaded, setConfigLoaded] = useState(false);
 
+  const [isOpen, setIsOpen] = useState(false);
+  const [messages, setMessages] = useState<
+    Array<{ sender: 'ai' | 'user'; text: string }>
+  >([
+    {
+      sender: 'ai',
+      text: 'Hello! I am Growthbridge Virtual AI Assistant. How can I help you learn about our digital solutions, talent hub, or community initiatives today?',
+    },
+  ]);
+  const [input, setInput] = useState('');
+  const chatEndRef = useRef<HTMLDivElement>(null);
+
   useEffect(() => {
     let active = true;
     fetch('/api/public/site-config')
@@ -37,18 +49,6 @@ export function AIAssistantButton() {
       .finally(() => { if (active) setConfigLoaded(true); });
     return () => { active = false; };
   }, []);
-  const [isOpen, setIsOpen] = useState(false);
-  const [messages, setMessages] = useState<
-    Array<{ sender: 'ai' | 'user'; text: string }>
-  >([
-    {
-      sender: 'ai',
-      text: 'Hello! I am Growthbridge Virtual AI Assistant. How can I help you learn about our digital solutions, talent hub, or community initiatives today?',
-    },
-  ]);
-  const [input, setInput] = useState('');
-  const chatEndRef = useRef<HTMLDivElement>(null);
-
   // Auto-scroll to bottom when new messages arrive
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
