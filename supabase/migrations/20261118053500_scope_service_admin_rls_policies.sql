@@ -2,14 +2,10 @@
 -- Admin policies call a SECURITY DEFINER helper that is intentionally executable
 -- only by authenticated users. Restrict those policies to authenticated so
 -- anonymous visitors evaluate only the published-services public SELECT policy.
-
+--
+-- Remove this legacy policy entirely: it granted every authenticated account
+-- broad access, bypassing the role-specific service administration checks.
 DROP POLICY IF EXISTS "Allow authenticated full access" ON public.services;
-CREATE POLICY "Allow authenticated full access"
-  ON public.services
-  FOR ALL
-  TO authenticated
-  USING ((select auth.role()) = 'authenticated')
-  WITH CHECK ((select auth.role()) = 'authenticated');
 
 DROP POLICY IF EXISTS "services admin read" ON public.services;
 CREATE POLICY "services admin read"
