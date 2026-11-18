@@ -313,5 +313,16 @@ export interface Settings {
     heroImage?: string;
     heroHeadline?: string;
     heroSubheadline?: string;
+    heroBadge?: string;
+    primaryCtaLabel?: string;
+    primaryCtaUrl?: string;
+    secondaryCtaLabel?: string;
+    secondaryCtaUrl?: string;
+    trustItems?: string[];
+    bridgeSlides?: { eyebrow: string; title: string; description: string }[];
+    bridgeAutoplayMs?: number;
+    chatTitle?: string;
+    chatWelcome?: string;
+    chatContactEmail?: string;
   };
 }
