@@ -11,7 +11,7 @@ const DEFAULT_CONFIG: AssistantConfig = {
   enabled: true,
   title: 'Growthbridge Assistant',
   welcome: 'Hello! Welcome to Growthbridge. How can we help your business or community grow?',
-  contactEmail: 'hello@growthbridgevirtual.org',
+  contactEmail: 'hello@growthbridge.org',
 };
 
 export function AIAssistantButton() {
