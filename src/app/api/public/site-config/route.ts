@@ -31,9 +31,6 @@ export async function GET() {
             trustItems: settings.homepage?.trustItems || [],
             bridgeSlides: settings.homepage?.bridgeSlides || [],
             bridgeAutoplayMs: settings.homepage?.bridgeAutoplayMs || 6000,
-            chatTitle: settings.homepage?.chatTitle || 'Growthbridge Assistant',
-            chatWelcome: settings.homepage?.chatWelcome || 'Hello! Welcome to Growthbridge. How can we help?',
-            chatContactEmail: settings.homepage?.chatContactEmail || settings.organization.email,
           },
           seo: {
             ogImage: settings.seo.ogImage || '',
@@ -42,7 +39,6 @@ export async function GET() {
             enablePartnerCarousel: settings.features.enablePartnerCarousel ?? true,
             enableBlog: settings.features.enableBlog,
             enableTalentHub: settings.features.enableTalentHub,
-            enableAIAssistant: settings.features.enableAIAssistant,
           },
         },
       },
