@@ -55,8 +55,9 @@ export function HeroSection() {
           <div className="absolute inset-0 z-0 bg-gradient-to-r from-[#070F1B] via-[#0C2D47]/95 to-[#070F1B]/75" />
         </>
       ) : (
-        <div className="absolute inset-0 z-0 gb-hero-atmosphere bg-[radial-gradient(circle_at_72%_30%,rgba(22,163,106,.18),transparent_28%),radial-gradient(circle_at_18%_20%,rgba(245,158,11,.10),transparent_22%),linear-gradient(135deg,#123B5D_0%,#0C2D47_48%,#070F1B_100%)]" />
+        <div className="absolute inset-0 z-0 gb-hero-atmosphere bg-[linear-gradient(135deg,#123B5D_0%,#0C2D47_48%,#070F1B_100%)]" />
       )}
+      <div className="absolute inset-0 z-0 gb-hero-atmosphere pointer-events-none bg-[radial-gradient(circle_at_72%_30%,rgba(22,163,106,.20),transparent_30%),radial-gradient(circle_at_18%_20%,rgba(245,158,11,.12),transparent_24%)]" aria-hidden />
       <div className="absolute inset-0 z-0 opacity-20 [background-image:linear-gradient(rgba(255,255,255,.07)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,.07)_1px,transparent_1px)] [background-size:48px_48px] [mask-image:linear-gradient(to_bottom,black,transparent_88%)]" aria-hidden />
 
       <Container size="lg" className="relative z-10">
