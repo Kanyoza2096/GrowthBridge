@@ -884,7 +884,8 @@
 .gb-hero-primary-cta { animation: gb-cta-glow 4.5s ease-in-out infinite; }
 .gb-hero-trust-item { animation: gb-trust-rise .65s both; }
 .gb-bridge-flow-line { stroke-dasharray: 14 12; animation: gb-bridge-flow 8s linear infinite; }
-.gb-bridge-node-glow { transform-box: fill-box; transform-origin: center; animation: gb-bridge-pulse 3s ease-in-out infinite; }
+.gb-bridge-node-glow { transform-box: fill-box; transform-origin: center; animation: gb-bridge-pulse 3s ease-in-out infinite; opacity: .45; }
+.gb-bridge-node-active { opacity: 1; filter: drop-shadow(0 0 12px rgba(52,211,153,.8)); }
 .gb-bridge-orbit { transform-origin: 400px 220px; animation: gb-bridge-orbit 36s linear infinite; }
 .gb-bridge-slide-copy { animation: gb-trust-rise .45s ease-out both; }
 @media (prefers-reduced-motion: reduce) {
