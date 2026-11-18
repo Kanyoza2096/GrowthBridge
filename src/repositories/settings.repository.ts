@@ -61,7 +61,7 @@ const defaultSettings: Settings = {
     bridgeAutoplayMs: 6000,
     chatTitle: 'Growthbridge Assistant',
     chatWelcome: 'Hello! Welcome to Growthbridge. How can we help your business or community grow?',
-    chatContactEmail: 'hello@growthbridgevirtual.org',
+    chatContactEmail: 'hello@growthbridge.org',
   },
 };
 
