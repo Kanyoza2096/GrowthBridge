@@ -82,9 +82,9 @@ export function AnimatedBridge({ className, slides, autoplayMs = 6000 }: Animate
         <path d="M50 340H750" stroke="#23b98a" strokeWidth="2" strokeDasharray="12 8" />
         <path d="M180 340L190 220H210L220 340ZM580 340L590 220H610L620 340Z" fill="url(#gb-bridge-gradient)" opacity=".28" />
         <g>
-          <circle className="gb-bridge-node-glow" cx="200" cy="210" r="25" fill="url(#gb-node-glow)" /><circle cx="200" cy="210" r="8" fill="#123b5d" stroke="#77c5ed" strokeWidth="3" />
-          <circle className="gb-bridge-node-glow" cx="400" cy="125" r="34" fill="url(#gb-node-glow)" /><circle cx="400" cy="125" r="12" fill="#20b887" stroke="white" strokeWidth="3" />
-          <circle className="gb-bridge-node-glow" cx="600" cy="210" r="25" fill="url(#gb-node-glow)" /><circle cx="600" cy="210" r="8" fill="#f5a623" stroke="#ffd17a" strokeWidth="3" />
+          <circle className={`gb-bridge-node-glow ${activeIndex === 0 || activeIndex === 3 ? "gb-bridge-node-active" : ""}`} cx="200" cy="210" r="25" fill="url(#gb-node-glow)" /><circle cx="200" cy="210" r="8" fill="#123b5d" stroke="#77c5ed" strokeWidth="3" />
+          <circle className={`gb-bridge-node-glow ${activeIndex === 1 || activeIndex === 3 ? "gb-bridge-node-active" : ""}`} cx="400" cy="125" r="34" fill="url(#gb-node-glow)" /><circle cx="400" cy="125" r="12" fill="#20b887" stroke="white" strokeWidth="3" />
+          <circle className={`gb-bridge-node-glow ${activeIndex === 2 || activeIndex === 3 ? "gb-bridge-node-active" : ""}`} cx="600" cy="210" r="25" fill="url(#gb-node-glow)" /><circle cx="600" cy="210" r="8" fill="#f5a623" stroke="#ffd17a" strokeWidth="3" />
         </g>
         <g fill="#d5e4eb" textAnchor="middle" fontWeight="600">
           <text x="200" y="180" fontSize="12">Youth &amp; Skills</text>
