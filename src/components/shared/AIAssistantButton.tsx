@@ -5,7 +5,38 @@ import { Modal } from '@/components/ui/Modal';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 
+type AssistantConfig = { enabled: boolean; title: string; welcome: string; contactEmail: string };
+
+const DEFAULT_CONFIG: AssistantConfig = {
+  enabled: true,
+  title: 'Growthbridge Assistant',
+  welcome: 'Hello! Welcome to Growthbridge. How can we help your business or community grow?',
+  contactEmail: 'hello@growthbridgevirtual.org',
+};
+
 export function AIAssistantButton() {
+  const [config, setConfig] = useState<AssistantConfig>(DEFAULT_CONFIG);
+  const [configLoaded, setConfigLoaded] = useState(false);
+
+  useEffect(() => {
+    let active = true;
+    fetch('/api/public/site-config')
+      .then((response) => response.ok ? response.json() : null)
+      .then((payload) => {
+        if (!active || !payload?.data) return;
+        const data = payload.data;
+        setConfig({
+          enabled: data.features?.enableAIAssistant ?? true,
+          title: data.homepage?.chatTitle || DEFAULT_CONFIG.title,
+          welcome: data.homepage?.chatWelcome || DEFAULT_CONFIG.welcome,
+          contactEmail: data.homepage?.chatContactEmail || data.organization?.email || DEFAULT_CONFIG.contactEmail,
+        });
+        setMessages([{ sender: 'ai', text: data.homepage?.chatWelcome || DEFAULT_CONFIG.welcome }]);
+      })
+      .catch(() => undefined)
+      .finally(() => { if (active) setConfigLoaded(true); });
+    return () => { active = false; };
+  }, []);
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<
     Array<{ sender: 'ai' | 'user'; text: string }>
@@ -37,7 +68,7 @@ export function AIAssistantButton() {
         ...prev,
         {
           sender: 'ai',
-          text: `Thank you for asking about "${userText}". Our Growthbridge AI engine is currently in preview mode. You can explore our Services tab or contact our team directly at kmadalitso01@gmail.com!`,
+          text: `Thanks for reaching out about "${userText}". This assistant is currently in preview mode, so our team can give you the most accurate guidance. Contact us at ${config.contactEmail}.`,
         },
       ]);
     }, 600);
@@ -49,7 +80,7 @@ export function AIAssistantButton() {
       <button
         onClick={() => setIsOpen(true)}
         className="fixed bottom-[max(1rem,env(safe-area-inset-bottom))] right-[max(1rem,env(safe-area-inset-right))] z-40 p-3.5 sm:p-4 rounded-full bg-gradient-brand text-white shadow-2xl shadow-[var(--gb-green-600)]/40 hover:scale-110 active:scale-95 transition-all duration-300 group cursor-pointer border border-white/20"
-        aria-label="Open AI Assistant"
+        aria-label={`Open ${config.title}`}
       >
         <span
           aria-hidden="true"
@@ -76,7 +107,7 @@ export function AIAssistantButton() {
       <Modal
         isOpen={isOpen}
         onClose={() => setIsOpen(false)}
-        title="Growthbridge AI Assistant"
+        title={config.title}
       >
         <div className="flex flex-col h-[min(70vh,400px)] min-h-[300px]">
           {/* Chat Messages */}
@@ -108,7 +139,7 @@ export function AIAssistantButton() {
             <Input
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              placeholder="Ask Growthbridge AI..."
+              placeholder="Write your message..."
               className="py-2 text-xs flex-1 min-w-0"
             />
             <Button type="submit" size="sm" variant="primary" className="shrink-0 px-3 sm:px-4">
