@@ -42,6 +42,7 @@ export async function GET() {
             enablePartnerCarousel: settings.features.enablePartnerCarousel ?? true,
             enableBlog: settings.features.enableBlog,
             enableTalentHub: settings.features.enableTalentHub,
+            enableAIAssistant: settings.features.enableAIAssistant,
           },
         },
       },
