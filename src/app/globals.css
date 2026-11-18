@@ -853,3 +853,45 @@
   .public-filter:hover { transform: none; }
   .public-image-placeholder::after { display: none; }
 }
+
+
+/* Growthbridge homepage motion system */
+@keyframes gb-hero-drift {
+  0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
+  50% { transform: translate3d(-1.2%, 1%, 0) scale(1.04); }
+}
+@keyframes gb-bridge-flow {
+  to { stroke-dashoffset: -120; }
+}
+@keyframes gb-bridge-pulse {
+  0%, 100% { opacity: .55; transform: scale(.88); }
+  50% { opacity: 1; transform: scale(1.12); }
+}
+@keyframes gb-bridge-orbit {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+@keyframes gb-cta-glow {
+  0%, 100% { box-shadow: 0 8px 24px rgba(245,158,11,.12); }
+  50% { box-shadow: 0 12px 34px rgba(245,158,11,.28); }
+}
+@keyframes gb-trust-rise {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.gb-hero-atmosphere { animation: gb-hero-drift 18s ease-in-out infinite; transform-origin: center; }
+.gb-hero-status-dot { animation: gb-bridge-pulse 2.4s ease-in-out infinite; }
+.gb-hero-primary-cta { animation: gb-cta-glow 4.5s ease-in-out infinite; }
+.gb-hero-trust-item { animation: gb-trust-rise .65s both; }
+.gb-bridge-flow-line { stroke-dasharray: 14 12; animation: gb-bridge-flow 8s linear infinite; }
+.gb-bridge-node-glow { transform-box: fill-box; transform-origin: center; animation: gb-bridge-pulse 3s ease-in-out infinite; }
+.gb-bridge-orbit { transform-origin: 400px 220px; animation: gb-bridge-orbit 36s linear infinite; }
+.gb-bridge-slide-copy { animation: gb-trust-rise .45s ease-out both; }
+@media (prefers-reduced-motion: reduce) {
+  .gb-hero-atmosphere, .gb-hero-status-dot, .gb-hero-primary-cta,
+  .gb-hero-trust-item, .gb-bridge-flow-line, .gb-bridge-node-glow,
+  .gb-bridge-orbit, .gb-bridge-slide-copy {
+    animation: none !important;
+    transition: none !important;
+  }
+}
