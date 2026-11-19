@@ -70,9 +70,8 @@ export function AnimatedBridge({ className, slides, autoplayMs = 6000 }: Animate
             <feGaussianBlur stdDeviation="7" result="blur" /><feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge>
           </filter>
         </defs>
-        <path d="M50 320 Q400 60 750 320" stroke="url(#gb-bridge-gradient)" strokeWidth="7" strokeLinecap="round" filter="url(#gb-bridge-glow)" />
-        <path className="gb-bridge-flow-line" d="M50 320 Q400 60 750 320" stroke="#a5f3d0" strokeWidth="2.5" strokeLinecap="round" opacity=".85" />
-        <g className="gb-bridge-orbit" fill="none" stroke="#45d6a6" strokeOpacity=".18" strokeWidth="2"><ellipse cx="400" cy="220" rx="300" ry="112" strokeDasharray="3 12" /></g>
+        <path className="gb-bridge-flow-line" d="M50 320 Q400 60 750 320" stroke="url(#gb-bridge-gradient)" strokeWidth="8" strokeLinecap="round" filter="url(#gb-bridge-glow)" />
+        <path d="M88 320 Q400 120 712 320" stroke="#d8e8ef" strokeWidth="2" strokeLinecap="round" opacity=".34" />
         <g stroke="#d8e8ef" strokeOpacity=".25" strokeWidth="1.5" strokeDasharray="5 6">
           <path d="M200 210V340M300 145V340M400 125V340M500 145V340M600 210V340" />
         </g>
