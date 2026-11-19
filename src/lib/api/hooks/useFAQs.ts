@@ -25,7 +25,8 @@ export function useFAQs() {
         throw new Error('We could not load the help centre right now.');
       }
 
-      return (data ?? []).map((row) => ({
+      const rows = (data ?? []) as unknown as Array<{ id: string; question: string; answer: string; category: string | null; display_order: number | null }>;
+      return rows.map((row) => ({
         id: row.id,
         question: row.question,
         answer: row.answer,
