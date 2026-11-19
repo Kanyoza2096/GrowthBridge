@@ -654,20 +654,6 @@
     filter: blur(42px);
   }
 
-  .hero-proof-card {
-    position: absolute;
-    z-index: 3;
-    left: 1.25rem;
-    right: 1.25rem;
-    bottom: 1.25rem;
-    padding: 1rem 1.1rem;
-    border: 1px solid rgba(255,255,255,.13);
-    border-radius: 1rem;
-    background: rgba(5,13,23,.72);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-  }
-
   .public-rule {
     height: 1px;
     background: linear-gradient(90deg, transparent, var(--border-default), transparent);
@@ -681,7 +667,6 @@
 
 @media (max-width: 640px) {
   .hero-art-frame { min-height: 20rem; border-radius: 1.5rem; }
-  .hero-proof-card { left: .75rem; right: .75rem; bottom: .75rem; }
 }
 
 /* Admin controls: one operational language across legacy CRUD screens. */
@@ -773,13 +758,13 @@
  * Keep the full bridge visible by reserving space for its lower deck and
  * allowing the SVG to breathe inside the hero art frame. */
 .animated-bridge__label { transition: none !important; }
-.hero-bridge-stage { position: absolute; inset: 1.25rem 1.25rem 7.5rem; display: flex; align-items: center; justify-content: center; z-index: 1; }
+.hero-bridge-stage { position: absolute; inset: 1.25rem; display: flex; align-items: center; justify-content: center; z-index: 1; }
 .hero-bridge-stage > div { width: 100%; max-width: 38rem; }
 @media (max-width: 900px) {
   .hero-bridge-stage > div { max-width: 28rem; }
 }
 @media (max-width: 640px) {
-  .hero-bridge-stage { inset: 1rem .75rem 7.25rem; }
+  .hero-bridge-stage { inset: 1rem .75rem; }
   .hero-bridge-stage > div { max-width: 23rem; }
 }
 @media (prefers-reduced-motion: reduce) {
