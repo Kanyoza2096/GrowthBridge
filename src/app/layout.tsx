@@ -30,10 +30,8 @@ export const metadata: Metadata = {
   manifest: '/manifest.webmanifest',
   appleWebApp: { capable: true, statusBarStyle: 'default', title: 'GrowthBridge' },
   icons: {
-    icon: [
-      { url: '/icons/icon-192.svg', type: 'image/svg+xml', sizes: '192x192' },
-      { url: '/icons/icon-512.svg', type: 'image/svg+xml', sizes: '512x512' },
-    ],
+    icon: [{ url: '/favicon.svg', type: 'image/svg+xml', sizes: 'any' }],
+    shortcut: [{ url: '/favicon.svg', type: 'image/svg+xml' }],
     apple: [{ url: '/icons/apple-touch-icon.png', type: 'image/png', sizes: '180x180' }],
   },
   authors: [{ name: 'Growthbridge', url: publicConfig.NEXT_PUBLIC_SITE_URL }],
@@ -72,6 +70,7 @@ export default function RootLayout({
               url: publicConfig.NEXT_PUBLIC_SITE_URL,
               description: defaultSeo.description,
               slogan: 'Bridging Skills. Driving Growth.',
+              logo: new URL('/icons/icon-512.svg', publicConfig.NEXT_PUBLIC_SITE_URL).toString(),
             }),
           }}
         />
