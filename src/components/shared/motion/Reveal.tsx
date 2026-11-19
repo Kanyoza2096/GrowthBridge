@@ -7,6 +7,7 @@ type RevealProps = {
   duration?: number;
   distance?: number;
   once?: boolean;
+  direction?: 'up' | 'down' | 'left' | 'right' | 'none';
 };
 
 /** Progressive-enhancement reveal: content remains visible until the observer activates. */
@@ -17,11 +18,14 @@ export function Reveal({
   duration = 650,
   distance = 18,
   once = true,
+  direction = 'up',
 }: RevealProps) {
   const style = {
     '--gb-reveal-delay': `${Math.max(0, delay)}ms`,
     '--gb-reveal-duration': `${Math.max(150, duration)}ms`,
     '--gb-reveal-distance': `${Math.max(0, distance)}px`,
+    '--gb-reveal-x': direction === 'left' ? `${Math.max(0, distance)}px` : direction === 'right' ? `${-Math.max(0, distance)}px` : '0px',
+    '--gb-reveal-y': direction === 'up' ? `${Math.max(0, distance)}px` : direction === 'down' ? `${-Math.max(0, distance)}px` : '0px',
   } as CSSProperties;
 
   return (
