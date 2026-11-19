@@ -152,7 +152,7 @@ export default function ServiceDetailPage(props: { service: Service }) {
                   </Button>
                 </Link>
               </Card>
-            </div>
+            </ScrollReveal>
           </div>
         </Container>
       </section>
