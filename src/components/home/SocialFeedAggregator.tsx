@@ -7,6 +7,7 @@ import type { SocialPlatform } from '@/lib/types/social-feed';
 import { SectionHeading } from '@/components/ui/SectionHeading';
 import { Button } from '@/components/ui/Button';
 import { cn } from '@/lib/utils';
+import { ScrollReveal } from '@/components/shared/ScrollReveal';
 
 const PLATFORM_FILTERS: { id: SocialPlatform | 'all'; label: string; icon: string }[] = [
   { id: 'all', label: 'All Channels', icon: 'ALL' },
@@ -84,8 +85,10 @@ export function SocialFeedAggregator() {
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6 items-stretch">
-            {feed.map((item) => (
-              <SocialFeedCard key={item.id} item={item} />
+            {feed.map((item, index) => (
+              <ScrollReveal key={item.id} delay={Math.min(index, 4) * 90}>
+                <SocialFeedCard item={item} />
+              </ScrollReveal>
             ))}
           </div>
         )}
