@@ -923,3 +923,8 @@
 @media (prefers-reduced-motion: reduce) {
   .gb-animated-text [data-gb-word] { animation: none !important; }
 }
+
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-marquee { animation: none !important; transform: none !important; }
+}
