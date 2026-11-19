@@ -90,7 +90,7 @@ export default function ProjectDetailPage(props: { project: Project }) {
                   </Button>
                 </Link>
               </Card>
-            </div>
+            </ScrollReveal>
           </div>
         </Container>
       </section>
