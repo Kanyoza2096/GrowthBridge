@@ -110,15 +110,6 @@ export function HeroSection() {
               <div className="hero-bridge-stage" aria-hidden="false">
                 <AnimatedBridge slides={data?.homepage?.bridgeSlides} autoplayMs={data?.homepage?.bridgeAutoplayMs} />
               </div>
-              <div className="hero-proof-card">
-                <div className="flex items-end justify-between gap-4">
-                  <div>
-                    <p className="text-[10px] font-bold uppercase tracking-[.14em] text-white/45">Our promise</p>
-                    <p className="mt-1 text-sm font-semibold text-white">Build useful things. Create opportunity. Leave measurable impact.</p>
-                  </div>
-                  <span className="shrink-0 w-9 h-9 rounded-full grid place-items-center bg-[var(--gb-green-600)] text-white" aria-hidden="true">↗</span>
-                </div>
-              </div>
             </div>
           </ScrollReveal>
         </div>
