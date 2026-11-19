@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { Container } from '@/components/ui/Container';
 import { Button } from '@/components/ui/Button';
 import { ScrollReveal } from '@/components/shared/ScrollReveal';
+import { AnimatedText } from '@/components/shared/motion/AnimatedText';
 
 export function CTASection() {
   return (
@@ -19,9 +20,12 @@ export function CTASection() {
               Let&apos;s Build Together
             </span>
 
-            <h2 className="text-2xl sm:text-4xl md:text-5xl font-extrabold text-white tracking-tight max-w-2xl mx-auto leading-tight">
-              Have a Problem That Needs a Solution? Let&apos;s Build the Bridge.
-            </h2>
+            <AnimatedText
+              as="h2"
+              text="Have a Problem That Needs a Solution? Let’s Build the Bridge."
+              staggerMs={42}
+              className="text-2xl sm:text-4xl md:text-5xl font-extrabold text-white tracking-tight max-w-2xl mx-auto leading-tight"
+            />
 
             <p className="text-white/70 text-sm sm:text-base max-w-xl mx-auto leading-relaxed">
               Whether you need software engineering, strategic brand consulting, youth talent
