@@ -23,43 +23,59 @@ export function CountUp({
   const hasAnimated = useRef(false);
 
   useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting && !hasAnimated.current) {
-          hasAnimated.current = true;
-          let startTimestamp: number | null = null;
+    const element = ref.current;
+    if (!element) return;
 
-          const step = (timestamp: number) => {
-            if (!startTimestamp) startTimestamp = timestamp;
-            const progress = Math.min((timestamp - startTimestamp) / duration, 1);
-            const easeOutQuart = 1 - Math.pow(1 - progress, 4);
-            setCount(Math.floor(easeOutQuart * end));
-
-            if (progress < 1) {
-              window.requestAnimationFrame(step);
-            } else {
-              setCount(end);
-            }
-          };
-
-          window.requestAnimationFrame(step);
-        }
-      },
-      { threshold: 0.2 }
-    );
-
-    const currentRef = ref.current;
-    if (currentRef) {
-      observer.observe(currentRef);
+    const reducedMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+    if (reducedMotion || !('IntersectionObserver' in window)) {
+      hasAnimated.current = true;
+      setCount(end);
+      return;
     }
 
+    // If the verified value updates after the first reveal, keep the display truthful.
+    if (hasAnimated.current) {
+      setCount(end);
+      return;
+    }
+
+    let frameId = 0;
+    let startTimestamp: number | null = null;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry.isIntersecting || hasAnimated.current) return;
+        hasAnimated.current = true;
+
+        const step = (timestamp: number) => {
+          if (startTimestamp === null) startTimestamp = timestamp;
+          const progress = Math.min((timestamp - startTimestamp) / Math.max(250, duration), 1);
+          const easeOutQuart = 1 - Math.pow(1 - progress, 4);
+          setCount(Math.floor(easeOutQuart * end));
+
+          if (progress < 1) {
+            frameId = window.requestAnimationFrame(step);
+          } else {
+            setCount(end);
+          }
+        };
+
+        frameId = window.requestAnimationFrame(step);
+        observer.unobserve(entry.target);
+      },
+      { threshold: 0.2 },
+    );
+
+    observer.observe(element);
+
     return () => {
-      if (currentRef) observer.unobserve(currentRef);
+      observer.disconnect();
+      if (frameId) window.cancelAnimationFrame(frameId);
     };
   }, [end, duration]);
 
   return (
-    <span ref={ref} className={className}>
+    <span ref={ref} className={className} aria-label={`${prefix}${formatNumber(end)}${suffix}`}>
       {prefix}
       {formatNumber(count)}
       {suffix}

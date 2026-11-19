@@ -5,6 +5,7 @@ import { usePathname } from 'next/navigation';
 import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
 import { AIAssistantButton } from '@/components/shared/AIAssistantButton';
+import { MotionProvider } from '@/components/shared/motion/MotionProvider';
 
 /**
  * Renders the public marketing chrome (header / footer / assistant).
@@ -19,6 +20,7 @@ export function PublicShell({ children }: { children: React.ReactNode }) {
   }
 
   return (
+    <MotionProvider>
     <div className="public-site">
       <a href="#main-content" className="skip-to-content">Skip to main content</a>
       <Header />
@@ -26,5 +28,6 @@ export function PublicShell({ children }: { children: React.ReactNode }) {
       <Footer />
       <AIAssistantButton />
     </div>
+    </MotionProvider>
   );
 }
