@@ -909,3 +909,15 @@
     transition: none !important;
   }
 }
+
+@keyframes gb-word-rise {
+  from { opacity: 0; transform: translate3d(0, .45em, 0); }
+  to { opacity: 1; transform: translate3d(0, 0, 0); }
+}
+.gb-animated-text[data-gb-reveal='visible'] [data-gb-word] {
+  display: inline-block;
+  animation: gb-word-rise var(--gb-word-duration, 520ms) cubic-bezier(.2,.7,.2,1) var(--gb-word-delay, 0ms) both;
+}
+@media (prefers-reduced-motion: reduce) {
+  .gb-animated-text [data-gb-word] { animation: none !important; }
+}
