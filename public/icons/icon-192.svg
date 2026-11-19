@@ -1,6 +1,12 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192">
-  <rect width="192" height="192" rx="38" fill="#123b5d"/>
-  <path d="M42 55h108v18H42zm0 32h72v18H42zm0 32h50v18H42z" fill="#fff" opacity=".22"/>
-  <path d="M48 48h38c22 0 35 11 35 29 0 11-6 20-16 24 14 3 22 13 22 27 0 20-15 32-39 32H48zm25 20v25h12c8 0 13-5 13-13s-5-12-13-12zm0 44v28h14c9 0 15-5 15-14s-6-14-15-14z" fill="#fff"/>
-  <path d="M125 52h20v108h-20z" fill="#5bd3c7"/>
+<rect width="192" height="192" rx="38" fill="#123B5D"/>
+<circle cx="96" cy="96" r="75" fill="#F8FAFC"/>
+<g transform="translate(48 48) scale(2)"><path d="M6 34c6-12 12-18 18-18s12 6 18 18" fill="none" stroke="#123B5D" stroke-width="3.2" stroke-linecap="round"/>
+<path d="M10 34c5-9 10-13.5 14-13.5S33 25 38 34" fill="none" stroke="#16A36A" stroke-width="2.6" stroke-linecap="round"/>
+<rect x="14.2" y="22" width="2.8" height="12" rx="1" fill="#123B5D"/>
+<rect x="22.6" y="18" width="2.8" height="16" rx="1" fill="#16A36A"/>
+<rect x="31" y="22" width="2.8" height="12" rx="1" fill="#F59E0B"/>
+<path d="M15.6 20v-6 M15.6 14l-2.2 2.4 M15.6 14l2.2 2.4" stroke="#123B5D" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+<path d="M24 16V9 M24 9l-2.2 2.4 M24 9l2.2 2.4" stroke="#16A36A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+<path d="M32.4 20v-6 M32.4 14l-2.2 2.4 M32.4 14l2.2 2.4" stroke="#F59E0B" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" fill="none"/></g>
 </svg>
