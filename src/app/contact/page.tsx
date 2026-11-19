@@ -160,7 +160,7 @@ export default function ContactPage() {
                   Virtual operations 24/7 for urgent client requests.
                 </p>
               </Card>
-            </div>
+            </ScrollReveal>
 
             {/* Forms Container */}
             <ScrollReveal className="lg:col-span-2 space-y-6" delay={100}>
