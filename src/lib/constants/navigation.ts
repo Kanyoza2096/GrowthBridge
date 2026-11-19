@@ -45,11 +45,13 @@ export const footerNavigation = {
     { label: 'Projects', href: '/projects' },
     { label: 'Talent Hub', href: '/talent-hub' },
     { label: 'Blog', href: '/blog' },
+    { label: 'FAQs', href: '/faq' },
     { label: 'Contact', href: '/contact' },
   ],
   resources: [
     { label: 'Case Studies', href: '/blog?category=case-study' },
     { label: 'Skills Resources', href: '/blog?category=skills-development' },
+    { label: 'Frequently Asked Questions', href: '/faq' },
     { label: 'Partner With Us', href: '/contact?type=partnership' },
     { label: 'Join Our Team', href: '/talent-hub' },
   ],
