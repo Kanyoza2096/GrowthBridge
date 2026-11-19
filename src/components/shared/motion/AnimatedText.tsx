@@ -1,6 +1,6 @@
 'use client';
 
-import type { CSSProperties, ElementType } from 'react';
+import type { CSSProperties } from 'react';
 
 type AnimatedTextProps = {
   text: string;
