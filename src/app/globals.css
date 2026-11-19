@@ -888,10 +888,12 @@
   --gb-reveal-delay: 0ms;
   --gb-reveal-duration: 650ms;
   --gb-reveal-distance: 18px;
+  --gb-reveal-x: 0px;
+  --gb-reveal-y: var(--gb-reveal-distance);
 }
 .gb-motion-ready .gb-reveal[data-gb-reveal='hidden'] {
   opacity: 0;
-  transform: translate3d(0, var(--gb-reveal-distance), 0);
+  transform: translate3d(var(--gb-reveal-x), var(--gb-reveal-y), 0);
 }
 .gb-motion-ready .gb-reveal[data-gb-reveal='visible'] {
   opacity: 1;
