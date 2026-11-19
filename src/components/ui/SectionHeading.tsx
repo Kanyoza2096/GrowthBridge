@@ -30,7 +30,7 @@ export function SectionHeading({
 
   return (
     <div className={cn('flex flex-col space-y-4 mb-10 sm:mb-12', alignments[align], className)}>
-      <Reveal className="w-full flex flex-col items-inherit gap-4" delay={70} duration={620}>
+      <Reveal className={cn("w-full flex flex-col gap-4", align === 'left' ? 'items-start' : align === 'right' ? 'items-end' : 'items-center')} delay={70} duration={620}>
       {badge && (
         <Badge variant={badgeVariant} className="uppercase tracking-[.16em] text-[10px] font-extrabold">
           {badge}
