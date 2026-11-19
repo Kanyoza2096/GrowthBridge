@@ -7,6 +7,7 @@ import { Container } from '@/components/ui/Container';
 import { Card } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
+import { ScrollReveal } from '@/components/shared/ScrollReveal';
 
 type LifecycleStep = {
   key: string;
@@ -58,7 +59,7 @@ export default function ServiceDetailPage(props: { service: Service }) {
     <div className="space-y-10 sm:space-y-16 pb-16 sm:pb-20">
       <section className="py-8 sm:py-12 bg-gradient-to-b from-[var(--gb-brand-navy)]/40 to-transparent">
         <Container size="lg">
-          <div className="space-y-4 max-w-3xl">
+          <ScrollReveal className="space-y-4 max-w-3xl">
             <Link
               href="/services"
               className="inline-flex items-center min-h-10 text-xs font-semibold text-[var(--text-accent)] hover:underline"
@@ -81,14 +82,14 @@ export default function ServiceDetailPage(props: { service: Service }) {
             <p className="text-sm sm:text-base text-[var(--text-secondary)] leading-relaxed">
               {service.description}
             </p>
-          </div>
+          </ScrollReveal>
         </Container>
       </section>
 
       <section>
         <Container size="lg">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
-            <div className="lg:col-span-2 space-y-6 sm:space-y-8">
+            <ScrollReveal className="lg:col-span-2 space-y-6 sm:space-y-8">
               <Card variant="glass" className="p-4 sm:p-6 space-y-4">
                 <h3 className="text-lg sm:text-xl font-bold text-[var(--text-primary)]">
                   Capabilities & Deliverables
@@ -132,9 +133,9 @@ export default function ServiceDetailPage(props: { service: Service }) {
                   </div>
                 </div>
               )}
-            </div>
+            </ScrollReveal>
 
-            <div className="space-y-6">
+            <ScrollReveal className="space-y-6" delay={120}>
               <Card
                 variant="solid"
                 className="p-4 sm:p-6 space-y-4 border-[var(--gb-brand-green)]/50 lg:sticky lg:top-28"
