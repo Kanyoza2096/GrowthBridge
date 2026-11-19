@@ -881,3 +881,31 @@
     transition: none !important;
   }
 }
+
+
+/* GrowthBridge Motion System — progressive, accessible scroll reveals */
+.gb-reveal {
+  --gb-reveal-delay: 0ms;
+  --gb-reveal-duration: 650ms;
+  --gb-reveal-distance: 18px;
+}
+.gb-motion-ready .gb-reveal[data-gb-reveal='hidden'] {
+  opacity: 0;
+  transform: translate3d(0, var(--gb-reveal-distance), 0);
+}
+.gb-motion-ready .gb-reveal[data-gb-reveal='visible'] {
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+  transition:
+    opacity var(--gb-reveal-duration) cubic-bezier(.2,.7,.2,1) var(--gb-reveal-delay),
+    transform var(--gb-reveal-duration) cubic-bezier(.2,.7,.2,1) var(--gb-reveal-delay);
+}
+@media (prefers-reduced-motion: reduce) {
+  .gb-reveal,
+  .gb-motion-ready .gb-reveal[data-gb-reveal='hidden'],
+  .gb-motion-ready .gb-reveal[data-gb-reveal='visible'] {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+}
