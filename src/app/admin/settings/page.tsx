@@ -77,7 +77,7 @@ export default function AdminSettingsPage() {
   });
  };
 
- const updateHomepageField = (field: keyof NonNullable<Settings['homepage']>, value: string) => {
+ const updateHomepageField = (field: keyof NonNullable<Settings['homepage']>, value: any) => {
   if (!settings) return;
   setSettings({
    ...settings,
@@ -85,6 +85,15 @@ export default function AdminSettingsPage() {
   });
  };
 
+
+ 
+ const updateBridgeSlide = (index: number, field: 'eyebrow' | 'title' | 'description', value: string) => {
+  if (!settings) return;
+  const slides = [...(settings.homepage?.bridgeSlides || [])];
+  const current = slides[index] || { eyebrow: '', title: '', description: '' };
+  slides[index] = { ...current, [field]: value };
+  updateHomepageField('bridgeSlides', slides);
+ };
 
  const updateFeatureToggle = (field: keyof Settings['features'], value: boolean) => {
   if (!settings) return;
@@ -296,6 +305,40 @@ export default function AdminSettingsPage() {
             onChange={(e) => updateHomepageField('heroSubheadline', e.target.value)}
             placeholder="Short supporting line under the headline"
           />
+         </div>
+         <div className="pt-5 mt-5 border-t border-[var(--admin-border)] space-y-4">
+          <div>
+           <p className="text-xs font-bold uppercase tracking-wider text-[var(--admin-text-secondary)]">Hero controls</p>
+           <p className="text-[11px] text-[var(--admin-text-tertiary)] mt-1">Manage the public message, calls to action and proof points.</p>
+          </div>
+          <div>
+           <label className="text-xs font-semibold text-[var(--admin-text-secondary)] mb-1 block">Hero badge</label>
+           <Input value={settings.homepage?.heroBadge || ''} onChange={(e) => updateHomepageField('heroBadge', e.target.value)} placeholder="Youth talent · Digital execution · Community impact" />
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+           <div><label className="text-xs font-semibold text-[var(--admin-text-secondary)] mb-1 block">Primary button label</label><Input value={settings.homepage?.primaryCtaLabel || ''} onChange={(e) => updateHomepageField('primaryCtaLabel', e.target.value)} /></div>
+           <div><label className="text-xs font-semibold text-[var(--admin-text-secondary)] mb-1 block">Primary button destination</label><Input value={settings.homepage?.primaryCtaUrl || ''} onChange={(e) => updateHomepageField('primaryCtaUrl', e.target.value)} placeholder="/contact" /></div>
+           <div><label className="text-xs font-semibold text-[var(--admin-text-secondary)] mb-1 block">Secondary button label</label><Input value={settings.homepage?.secondaryCtaLabel || ''} onChange={(e) => updateHomepageField('secondaryCtaLabel', e.target.value)} /></div>
+           <div><label className="text-xs font-semibold text-[var(--admin-text-secondary)] mb-1 block">Secondary button destination</label><Input value={settings.homepage?.secondaryCtaUrl || ''} onChange={(e) => updateHomepageField('secondaryCtaUrl', e.target.value)} placeholder="/projects" /></div>
+          </div>
+          <div>
+           <label className="text-xs font-semibold text-[var(--admin-text-secondary)] mb-1 block">Trust indicators (one per line)</label>
+           <Textarea rows={3} value={(settings.homepage?.trustItems || []).join('\n')} onChange={(e) => updateHomepageField('trustItems', e.target.value.split('\n').map((v) => v.trim()).filter(Boolean))} placeholder={'Enterprise-ready delivery\nAfrican youth talent\nMeasured outcomes'} />
+          </div>
+         </div>
+         <div className="pt-5 border-t border-[var(--admin-border)] space-y-4">
+          <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-2">
+           <div><p className="text-xs font-bold uppercase tracking-wider text-[var(--admin-text-secondary)]">Animated bridge showcase</p><p className="text-[11px] text-[var(--admin-text-tertiary)] mt-1">Edit the four stories shown inside the animated Growthbridge bridge.</p></div>
+           <div className="w-full sm:w-40"><label className="text-xs font-semibold text-[var(--admin-text-secondary)] mb-1 block">Rotation (milliseconds)</label><Input type="number" min={3500} max={30000} value={settings.homepage?.bridgeAutoplayMs || 6000} onChange={(e) => updateHomepageField('bridgeAutoplayMs', Math.min(30000, Math.max(3500, Number(e.target.value) || 6000)))} /></div>
+          </div>
+          {(settings.homepage?.bridgeSlides || []).map((slide, index) => (
+           <div key={index} className="rounded-xl border border-[var(--admin-border)] bg-[var(--admin-surface-soft)]/50 p-4 space-y-3">
+            <div className="flex items-center justify-between"><p className="text-xs font-bold uppercase tracking-wider text-[var(--admin-text-secondary)]">Slide {String(index + 1).padStart(2, '0')}</p><Badge>Bridge showcase</Badge></div>
+            <div><label className="text-xs font-semibold text-[var(--admin-text-secondary)] mb-1 block">Eyebrow</label><Input value={slide.eyebrow} onChange={(e) => updateBridgeSlide(index, 'eyebrow', e.target.value)} /></div>
+            <div><label className="text-xs font-semibold text-[var(--admin-text-secondary)] mb-1 block">Title</label><Input value={slide.title} onChange={(e) => updateBridgeSlide(index, 'title', e.target.value)} /></div>
+            <div><label className="text-xs font-semibold text-[var(--admin-text-secondary)] mb-1 block">Description</label><Textarea rows={2} value={slide.description} onChange={(e) => updateBridgeSlide(index, 'description', e.target.value)} /></div>
+           </div>
+          ))}
          </div>
         </div>
 

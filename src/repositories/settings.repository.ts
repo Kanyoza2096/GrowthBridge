@@ -46,6 +46,19 @@ const defaultSettings: Settings = {
     heroHeadline: "Bridging Skills. Driving Growth.",
     heroSubheadline:
       'Growthbridge connects young talent with real projects that grow businesses and communities across Africa.',
+    heroBadge: 'Youth talent · Digital execution · Community impact',
+    primaryCtaLabel: 'Start a conversation',
+    primaryCtaUrl: '/contact',
+    secondaryCtaLabel: 'See our work',
+    secondaryCtaUrl: '/projects',
+    trustItems: ['Enterprise-ready delivery', 'African youth talent', 'Measured outcomes'],
+    bridgeSlides: [
+      { eyebrow: 'Growthbridge system', title: 'Youth & Skills', description: 'Connecting emerging African talent with meaningful opportunities.' },
+      { eyebrow: 'Digital solutions', title: 'Ideas into execution', description: 'Building useful digital products that solve real business challenges.' },
+      { eyebrow: 'Business growth', title: 'Stronger organisations', description: 'Helping organisations grow through strategy, technology and delivery.' },
+      { eyebrow: 'Community impact', title: 'Progress that connects', description: 'Creating measurable outcomes for businesses and communities.' },
+    ],
+    bridgeAutoplayMs: 6000,
   },
 };
 

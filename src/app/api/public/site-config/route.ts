@@ -23,6 +23,14 @@ export async function GET() {
             heroHeadline: settings.homepage?.heroHeadline || settings.organization.tagline,
             heroSubheadline:
               settings.homepage?.heroSubheadline || settings.organization.description,
+            heroBadge: settings.homepage?.heroBadge || 'Youth talent · Digital execution · Community impact',
+            primaryCtaLabel: settings.homepage?.primaryCtaLabel || 'Start a conversation',
+            primaryCtaUrl: settings.homepage?.primaryCtaUrl || '/contact',
+            secondaryCtaLabel: settings.homepage?.secondaryCtaLabel || 'See our work',
+            secondaryCtaUrl: settings.homepage?.secondaryCtaUrl || '/projects',
+            trustItems: settings.homepage?.trustItems || [],
+            bridgeSlides: settings.homepage?.bridgeSlides || [],
+            bridgeAutoplayMs: settings.homepage?.bridgeAutoplayMs || 6000,
           },
           seo: {
             ogImage: settings.seo.ogImage || '',
