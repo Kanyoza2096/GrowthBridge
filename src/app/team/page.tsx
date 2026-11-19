@@ -10,6 +10,7 @@ import { Button } from '@/components/ui/Button';
 import { usePeople } from '@/lib/api/hooks/usePeople';
 import { BackendUnavailable } from '@/components/shared/BackendUnavailable';
 import { GrowthbridgeVisual } from '@/components/brand/GrowthbridgeVisual';
+import { ScrollReveal } from '@/components/shared/ScrollReveal';
 import {
   PERSON_CATEGORIES,
   PERSON_CATEGORY_LABELS,
@@ -46,7 +47,7 @@ export default function TeamPage() {
       <section className="public-page-hero relative py-12 sm:py-16 md:py-20 overflow-hidden">
         <div className="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_top,_var(--gb-green-600)/10_0%,_transparent_70%)] pointer-events-none" />
         <Container size="lg">
-          <div className="text-center max-w-3xl mx-auto space-y-4">
+          <ScrollReveal className="text-center max-w-3xl mx-auto space-y-4">
             <Badge variant="green" className="uppercase tracking-widest text-[11px] px-3 py-1">
               Ecosystem People & Leadership
             </Badge>
@@ -57,10 +58,10 @@ export default function TeamPage() {
               Meet the core team, advisory leaders, board members, alumni fellows, partner
               delegates, and community contributors shaping digital opportunities across Africa.
             </p>
-          </div>
+          </ScrollReveal>
 
           {/* Search & Filter Bar */}
-          <div className="mt-12 space-y-6">
+          <ScrollReveal className="mt-12 space-y-6" delay={100}>
             <div className="max-w-md mx-auto">
               <Input
                 type="search"
@@ -109,7 +110,7 @@ export default function TeamPage() {
                 {PERSON_CATEGORY_DESCRIPTIONS[selectedCategory]}
               </p>
             )}
-          </div>
+          </ScrollReveal>
         </Container>
         <div className="mt-8 max-w-5xl mx-auto"><GrowthbridgeVisual compact label="Growthbridge people and opportunity visual" /></div>
       </section>
@@ -166,8 +167,10 @@ export default function TeamPage() {
             </div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-              {filteredPeople.map((person) => (
-                <PersonCard key={person.id} person={person} />
+              {filteredPeople.map((person, index) => (
+                <ScrollReveal key={person.id} delay={Math.min(index, 5) * 75}>
+                  <PersonCard person={person} />
+                </ScrollReveal>
               ))}
             </div>
           )}

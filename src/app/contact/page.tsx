@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { Container } from '@/components/ui/Container';
+import { ScrollReveal } from '@/components/shared/ScrollReveal';
 import { SectionHeading } from '@/components/ui/SectionHeading';
 import { Card } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
@@ -94,7 +95,7 @@ export default function ContactPage() {
       {/* Hero */}
       <section className="public-page-hero py-12 sm:py-16 md:py-20">
         <Container size="lg">
-          <div className="max-w-3xl mx-auto text-center space-y-4">
+          <ScrollReveal className="max-w-3xl mx-auto text-center space-y-4">
             <Badge variant="green" className="uppercase tracking-widest text-[10px]">
               Get in Touch
             </Badge>
@@ -105,7 +106,7 @@ export default function ContactPage() {
               Have a digital project, partnership inquiry, or looking to join Growthbridge?
               We&apos;d love to hear from you.
             </p>
-          </div>
+          </ScrollReveal>
         </Container>
       </section>
 
@@ -114,7 +115,7 @@ export default function ContactPage() {
         <Container size="lg">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-12">
             {/* Contact Info Sidebar */}
-            <div className="space-y-6">
+            <ScrollReveal className="space-y-6">
               <GrowthbridgeVisual compact label="Growthbridge contact bridge visual" />
               <Card variant="glass" className="public-card p-4 sm:p-6 space-y-6 border-l-4 border-l-[var(--border-accent)]">
                 <h3 className="text-xl font-bold text-[var(--text-primary)]">
@@ -159,10 +160,10 @@ export default function ContactPage() {
                   Virtual operations 24/7 for urgent client requests.
                 </p>
               </Card>
-            </div>
+            </ScrollReveal>
 
             {/* Forms Container */}
-            <div className="lg:col-span-2 space-y-6">
+            <ScrollReveal className="lg:col-span-2 space-y-6" delay={100}>
               {/* Tab Switcher */}
               <div className="grid grid-cols-2 gap-2 p-1 rounded-2xl bg-[var(--surface-soft)] border border-[var(--border-subtle)]">
                 <button
@@ -357,7 +358,7 @@ export default function ContactPage() {
                   </form>
                 </Card>
               )}
-            </div>
+            </ScrollReveal>
           </div>
         </Container>
       </section>

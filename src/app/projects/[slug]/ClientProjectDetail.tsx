@@ -8,6 +8,7 @@ import { Card } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
 import { GrowthbridgeVisual } from '@/components/brand/GrowthbridgeVisual';
+import { ScrollReveal } from '@/components/shared/ScrollReveal';
 
 
 export default function ProjectDetailPage(props: { project: Project }) {
@@ -18,7 +19,7 @@ export default function ProjectDetailPage(props: { project: Project }) {
     <div className="space-y-10 sm:space-y-16 pb-16 sm:pb-20">
       <section className="py-8 sm:py-12 bg-gradient-to-b from-[var(--gb-brand-navy)]/40 to-transparent">
         <Container size="lg">
-          <div className="space-y-4 max-w-4xl">
+          <ScrollReveal className="space-y-4 max-w-4xl">
             <Link
               href="/projects"
               className="inline-flex items-center min-h-10 text-xs font-semibold text-[var(--text-accent)] hover:underline"
@@ -42,14 +43,14 @@ export default function ProjectDetailPage(props: { project: Project }) {
                 <GrowthbridgeVisual compact label={`${project.title} Growthbridge project visual`} className="h-full" />
               )}
             </div>
-          </div>
+          </ScrollReveal>
         </Container>
       </section>
 
       <section>
         <Container size="lg">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
-            <div className="lg:col-span-2 space-y-6 sm:space-y-8">
+            <ScrollReveal className="lg:col-span-2 space-y-6 sm:space-y-8">
               <Card variant="glass" className="p-4 sm:p-6 space-y-3 border-l-4 border-l-[var(--gb-brand-green)]">
                 <h3 className="text-xs font-bold uppercase tracking-wider text-[var(--text-accent)]">
                   Outcome & Impact
@@ -73,9 +74,9 @@ export default function ProjectDetailPage(props: { project: Project }) {
                   ))}
                 </div>
               </Card>
-            </div>
+            </ScrollReveal>
 
-            <div>
+            <ScrollReveal delay={120}>
               <Card variant="glass" className="p-4 sm:p-6 space-y-4 lg:sticky lg:top-28">
                 <h3 className="text-lg sm:text-xl font-bold text-[var(--text-primary)]">
                   Need a Similar Solution?
@@ -89,7 +90,7 @@ export default function ProjectDetailPage(props: { project: Project }) {
                   </Button>
                 </Link>
               </Card>
-            </div>
+            </ScrollReveal>
           </div>
         </Container>
       </section>
