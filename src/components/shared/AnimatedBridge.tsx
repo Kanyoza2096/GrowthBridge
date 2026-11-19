@@ -23,9 +23,7 @@ export function AnimatedBridge({ className, slides, autoplayMs = 6000 }: Animate
   const [paused, setPaused] = useState(false);
   const [reducedMotion, setReducedMotion] = useState(false);
 
-  useEffect(() => {
-    setActiveIndex(0);
-  }, [items.length]);
+  useEffect(() => setActiveIndex(0), [items.length]);
 
   useEffect(() => {
     const media = window.matchMedia('(prefers-reduced-motion: reduce)');
@@ -45,7 +43,7 @@ export function AnimatedBridge({ className, slides, autoplayMs = 6000 }: Animate
 
   return (
     <section
-      className={`relative w-full max-w-2xl mx-auto rounded-[1.75rem] border border-white/15 bg-gradient-to-br from-white/[.09] via-[#0d3548]/65 to-[#0b5146]/45 p-5 sm:p-7 shadow-[0_25px_80px_rgba(0,0,0,.22)] backdrop-blur-sm ${className || ''}`}
+      className={`relative box-border w-full min-w-0 max-w-full mx-auto rounded-[1.5rem] sm:rounded-[1.75rem] border border-white/15 bg-gradient-to-br from-white/[.09] via-[#0d3548]/65 to-[#0b5146]/45 p-4 sm:p-6 lg:p-7 shadow-[0_25px_80px_rgba(0,0,0,.22)] backdrop-blur-sm ${className || ''}`}
       data-motion="signature-bridge"
       aria-label="Growthbridge system showcase"
       onMouseEnter={() => setPaused(true)}
@@ -55,12 +53,12 @@ export function AnimatedBridge({ className, slides, autoplayMs = 6000 }: Animate
         if (!event.currentTarget.contains(event.relatedTarget as Node | null)) setPaused(false);
       }}
     >
-      <div className="flex items-center justify-between gap-3 text-[10px] sm:text-xs font-bold uppercase tracking-[.16em] text-white/55">
-        <span>{active.eyebrow}</span>
-        <span aria-live="polite" className="tabular-nums">{String(activeIndex + 1).padStart(2, '0')} / {String(items.length).padStart(2, '0')}</span>
+      <div className="flex min-w-0 items-center justify-between gap-2 text-[9px] sm:text-xs font-bold uppercase tracking-[.12em] sm:tracking-[.16em] text-white/55">
+        <span className="min-w-0 truncate">{active.eyebrow}</span>
+        <span aria-live="polite" className="shrink-0 tabular-nums">{String(activeIndex + 1).padStart(2, '0')} / {String(items.length).padStart(2, '0')}</span>
       </div>
 
-      <svg viewBox="0 0 800 400" fill="none" xmlns="http://www.w3.org/2000/svg" className="mt-4 w-full h-auto drop-shadow-[0_10px_35px_rgba(22,163,106,0.18)]" role="img" aria-label="An illuminated bridge connecting people, digital solutions and communities">
+      <svg viewBox="0 0 800 400" fill="none" xmlns="http://www.w3.org/2000/svg" className="mt-3 sm:mt-4 block w-full h-auto max-w-full drop-shadow-[0_10px_35px_rgba(22,163,106,0.18)]" role="img" aria-label="An illuminated bridge connecting people, digital solutions and communities">
         <defs>
           <linearGradient id="gb-bridge-gradient" x1="50" y1="0" x2="750" y2="0" gradientUnits="userSpaceOnUse">
             <stop stopColor="#17608a" /><stop offset=".52" stopColor="#20b887" /><stop offset="1" stopColor="#f5a623" />
@@ -82,9 +80,9 @@ export function AnimatedBridge({ className, slides, autoplayMs = 6000 }: Animate
         <path d="M50 340H750" stroke="#23b98a" strokeWidth="2" strokeDasharray="12 8" />
         <path d="M180 340L190 220H210L220 340ZM580 340L590 220H610L620 340Z" fill="url(#gb-bridge-gradient)" opacity=".28" />
         <g>
-          <circle className={`gb-bridge-node-glow ${activeIndex === 0 || activeIndex === 3 ? "gb-bridge-node-active" : ""}`} cx="200" cy="210" r="25" fill="url(#gb-node-glow)" /><circle cx="200" cy="210" r="8" fill="#123b5d" stroke="#77c5ed" strokeWidth="3" />
-          <circle className={`gb-bridge-node-glow ${activeIndex === 1 || activeIndex === 3 ? "gb-bridge-node-active" : ""}`} cx="400" cy="125" r="34" fill="url(#gb-node-glow)" /><circle cx="400" cy="125" r="12" fill="#20b887" stroke="white" strokeWidth="3" />
-          <circle className={`gb-bridge-node-glow ${activeIndex === 2 || activeIndex === 3 ? "gb-bridge-node-active" : ""}`} cx="600" cy="210" r="25" fill="url(#gb-node-glow)" /><circle cx="600" cy="210" r="8" fill="#f5a623" stroke="#ffd17a" strokeWidth="3" />
+          <circle className={`gb-bridge-node-glow ${activeIndex === 0 || activeIndex === 3 ? 'gb-bridge-node-active' : ''}`} cx="200" cy="210" r="25" fill="url(#gb-node-glow)" /><circle cx="200" cy="210" r="8" fill="#123b5d" stroke="#77c5ed" strokeWidth="3" />
+          <circle className={`gb-bridge-node-glow ${activeIndex === 1 || activeIndex === 3 ? 'gb-bridge-node-active' : ''}`} cx="400" cy="125" r="34" fill="url(#gb-node-glow)" /><circle cx="400" cy="125" r="12" fill="#20b887" stroke="white" strokeWidth="3" />
+          <circle className={`gb-bridge-node-glow ${activeIndex === 2 || activeIndex === 3 ? 'gb-bridge-node-active' : ''}`} cx="600" cy="210" r="25" fill="url(#gb-node-glow)" /><circle cx="600" cy="210" r="8" fill="#f5a623" stroke="#ffd17a" strokeWidth="3" />
         </g>
         <g fill="#d5e4eb" textAnchor="middle" fontWeight="600">
           <text x="200" y="180" fontSize="12">Youth &amp; Skills</text>
@@ -93,22 +91,15 @@ export function AnimatedBridge({ className, slides, autoplayMs = 6000 }: Animate
         </g>
       </svg>
 
-      <div key={active.title} className="gb-bridge-slide-copy mt-1 min-h-[92px] sm:min-h-[104px]">
-        <p className="text-[10px] font-bold uppercase tracking-[.16em] text-emerald-300/80"> {active.eyebrow} </p>
-        <h3 className="mt-1 text-xl sm:text-2xl font-extrabold text-white">{active.title}</h3>
-        <p className="mt-2 text-sm sm:text-base leading-relaxed text-white/65">{active.description}</p>
+      <div key={active.title} className="gb-bridge-slide-copy mt-1 min-w-0 min-h-[88px] sm:min-h-[104px]">
+        <p className="text-[10px] font-bold uppercase tracking-[.16em] text-emerald-300/80">{active.eyebrow}</p>
+        <h3 className="mt-1 break-words text-xl sm:text-2xl font-extrabold leading-tight text-white">{active.title}</h3>
+        <p className="mt-2 break-words text-sm sm:text-base leading-relaxed text-white/65">{active.description}</p>
       </div>
 
-      <div className="mt-4 flex items-center justify-between gap-4">
-        <div className="flex items-center gap-2" role="group" aria-label="Choose Growthbridge showcase slide">
-          {items.map((item, index) => (
-            <button key={`${item.title}-${index}`} type="button" onClick={() => setActiveIndex(index)} aria-label={`Show slide ${index + 1}: ${item.title}`} aria-current={index === activeIndex ? 'true' : undefined} className={`h-2.5 rounded-full transition-all focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-emerald-300 ${index === activeIndex ? 'w-8 bg-emerald-300' : 'w-2.5 bg-white/35 hover:bg-white/65'}`} />
-          ))}
-        </div>
-        <div className="flex items-center gap-2">
-          <button type="button" onClick={() => setActiveIndex((activeIndex - 1 + items.length) % items.length)} className="grid h-11 w-11 place-items-center rounded-full border border-white/20 text-white hover:bg-white/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-emerald-300" aria-label="Previous showcase slide">‹</button>
-          <button type="button" onClick={() => setActiveIndex((activeIndex + 1) % items.length)} className="grid h-9 w-9 place-items-center rounded-full border border-white/20 text-white hover:bg-white/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-emerald-300" aria-label="Next showcase slide">›</button>
-        </div>
+      <div className="mt-4 flex items-center justify-end gap-2">
+        <button type="button" onClick={() => setActiveIndex((activeIndex - 1 + items.length) % items.length)} className="grid h-10 w-10 sm:h-11 sm:w-11 shrink-0 place-items-center rounded-full border border-white/20 text-xl text-white hover:bg-white/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-300" aria-label="Previous showcase slide">‹</button>
+        <button type="button" onClick={() => setActiveIndex((activeIndex + 1) % items.length)} className="grid h-10 w-10 sm:h-11 sm:w-11 shrink-0 place-items-center rounded-full border border-white/20 text-xl text-white hover:bg-white/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-300" aria-label="Next showcase slide">›</button>
       </div>
       <p className="sr-only" aria-live="polite">Slide {activeIndex + 1} of {items.length}: {active.title}</p>
     </section>
