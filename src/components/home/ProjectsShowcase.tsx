@@ -54,7 +54,7 @@ export function ProjectsShowcase() {
                 <Card variant="glass" hoverEffect className="h-full flex flex-col justify-between group p-0 overflow-hidden">
                   {/* Selected Media Library cover, with branded fallback */}
                   <div className="h-44 bg-gradient-brand p-6 flex flex-col justify-between relative overflow-hidden">
-                    {project.image ? (
+                    {project.images?.[0] ? (
                       // eslint-disable-next-line @next/next/no-img-element
                       <img src={project.image} alt={project.title} loading="lazy" className="absolute inset-0 w-full h-full object-cover" />
                     ) : null}
