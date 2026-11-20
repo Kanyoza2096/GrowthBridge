@@ -198,6 +198,20 @@ export async function POST(request: NextRequest, context: RouteContext) {
       body = parsedBody.data;
     }
 
+    // Team profile forms submit a person's name, not an internal URL slug.
+    // Generate the required slug server-side so every admin client follows the same contract.
+    if ((resource === 'people' || resource === 'team') && !body.slug && typeof body.fullName === 'string') {
+      const baseSlug = body.fullName
+        .normalize('NFKD')
+        .replace(/[\\u0300-\\u036f]/g, '')
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-+|-+$/g, '')
+        .slice(0, 160)
+        .replace(/-+$/g, '');
+      body.slug = baseSlug || `team-member-${crypto.randomUUID().slice(0, 8)}`;
+    }
+
     if (resource !== 'settings') {
       const validated = validateAdminResourcePayload(resource, body, 'create');
       if (!validated.success) {
