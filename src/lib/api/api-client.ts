@@ -47,7 +47,7 @@ function mapProject(row: any): Project {
     category: row.category,
     description: row.description || '',
     shortDescription: row.short_description || row.description?.slice(0, 150) || '',
-    image: row.image || '/images/project-placeholder.jpg',
+    image: row.image || (Array.isArray(row.images) ? row.images[0] : undefined) || '/images/project-placeholder.jpg',
     gallery: Array.isArray(row.gallery) ? row.gallery : [],
     technologies: Array.isArray(row.technologies) ? row.technologies : [],
     impact: row.impact || { metric: '', value: '', description: '' },
