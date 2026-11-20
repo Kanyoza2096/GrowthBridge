@@ -95,7 +95,7 @@ export default function AdminProjectsPage() {
       status: proj.status,
       startDate: proj.startDate || '',
       endDate: proj.endDate || '',
-      image: proj.images?.[0] || '',
+      image: proj.image || '',
     });
     setIsEditing(true);
     setModalOpen(true);
@@ -135,7 +135,7 @@ export default function AdminProjectsPage() {
       status: form.status,
       startDate: form.startDate || undefined,
       endDate: form.endDate || undefined,
-      images: form.image ? [form.image] : [],
+      image: form.image || undefined,
     });
 
     success(isEditing ? 'Project Updated' : 'Project Created', `${form.title} has been saved.`);
