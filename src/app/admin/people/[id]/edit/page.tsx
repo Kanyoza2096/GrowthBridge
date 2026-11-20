@@ -198,6 +198,7 @@ export default function AdminEditPersonPage() {
         <details className="group rounded-2xl border border-[var(--admin-border)] bg-[var(--admin-surface-deep)]/30 px-4 py-3">
           <summary className="flex cursor-pointer list-none items-center justify-between gap-3 text-sm font-bold text-[var(--admin-text-primary)] [&::-webkit-details-marker]:hidden">
             <span>Contact & Location</span>
+            <span className="ml-auto mr-2 text-[10px] font-medium uppercase tracking-wider text-[var(--admin-text-tertiary)]">Optional</span>
             <span className="text-[var(--admin-text-tertiary)] transition-transform group-open:rotate-180" aria-hidden="true">⌄</span>
           </summary>
           <div className="mt-4 space-y-4">
@@ -241,6 +242,7 @@ export default function AdminEditPersonPage() {
         <details className="group rounded-2xl border border-[var(--admin-border)] bg-[var(--admin-surface-deep)]/30 px-4 py-3">
           <summary className="flex cursor-pointer list-none items-center justify-between gap-3 text-sm font-bold text-[var(--admin-text-primary)] [&::-webkit-details-marker]:hidden">
             <span>Biography & Photo</span>
+            <span className="ml-auto mr-2 text-[10px] font-medium uppercase tracking-wider text-[var(--admin-text-tertiary)]">Optional</span>
             <span className="text-[var(--admin-text-tertiary)] transition-transform group-open:rotate-180" aria-hidden="true">⌄</span>
           </summary>
           <div className="mt-4 space-y-4">
@@ -280,6 +282,7 @@ export default function AdminEditPersonPage() {
         <details className="group rounded-2xl border border-[var(--admin-border)] bg-[var(--admin-surface-deep)]/30 px-4 py-3">
           <summary className="flex cursor-pointer list-none items-center justify-between gap-3 text-sm font-bold text-[var(--admin-text-primary)] [&::-webkit-details-marker]:hidden">
             <span>Skills & Certifications</span>
+            <span className="ml-auto mr-2 text-[10px] font-medium uppercase tracking-wider text-[var(--admin-text-tertiary)]">Optional</span>
             <span className="text-[var(--admin-text-tertiary)] transition-transform group-open:rotate-180" aria-hidden="true">⌄</span>
           </summary>
           <div className="mt-4 space-y-4">
@@ -313,6 +316,7 @@ export default function AdminEditPersonPage() {
         <details className="group rounded-2xl border border-[var(--admin-border)] bg-[var(--admin-surface-deep)]/30 px-4 py-3">
           <summary className="flex cursor-pointer list-none items-center justify-between gap-3 text-sm font-bold text-[var(--admin-text-primary)] [&::-webkit-details-marker]:hidden">
             <span>Social Profiles</span>
+            <span className="ml-auto mr-2 text-[10px] font-medium uppercase tracking-wider text-[var(--admin-text-tertiary)]">Optional</span>
             <span className="text-[var(--admin-text-tertiary)] transition-transform group-open:rotate-180" aria-hidden="true">⌄</span>
           </summary>
           <div className="mt-4 space-y-4">
@@ -361,6 +365,7 @@ export default function AdminEditPersonPage() {
         <details className="group rounded-2xl border border-[var(--admin-border)] bg-[var(--admin-surface-deep)]/30 px-4 py-3">
           <summary className="flex cursor-pointer list-none items-center justify-between gap-3 text-sm font-bold text-[var(--admin-text-primary)] [&::-webkit-details-marker]:hidden">
             <span>Display Settings</span>
+            <span className="ml-auto mr-2 text-[10px] font-medium uppercase tracking-wider text-[var(--admin-text-tertiary)]">Optional</span>
             <span className="text-[var(--admin-text-tertiary)] transition-transform group-open:rotate-180" aria-hidden="true">⌄</span>
           </summary>
           <div className="mt-4 space-y-4">
