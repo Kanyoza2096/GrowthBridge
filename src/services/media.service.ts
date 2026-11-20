@@ -3,7 +3,7 @@ import { MediaRepository } from '@/repositories/media.repository';
 import { createAdminClient } from '@/lib/supabase/server';
 import type { MediaItem, MediaFolder } from '@/lib/types/admin';
 
-const MAX_MEDIA_BYTES = 10 * 1024 * 1024;
+const MAX_MEDIA_BYTES = 2 * 1024 * 1024;
 const ALLOWED_MEDIA_TYPES = new Set([
   'image/jpeg',
   'image/png',
@@ -29,9 +29,9 @@ function safeBaseName(name: string): string {
 
 async function validateFile(file: File): Promise<void> {
   if (!(file instanceof File) || file.size <= 0) throw new Error('A valid file is required.');
-  if (file.size > MAX_MEDIA_BYTES) throw new Error('File exceeds the 10 MB upload limit.');
+  if (file.size > MAX_MEDIA_BYTES) throw new Error('Image exceeds the 2 MB upload limit.');
   if (!ALLOWED_MEDIA_TYPES.has(file.type)) {
-    throw new Error('Unsupported file type. Allowed: JPEG, PNG, WebP, and GIF.');
+    throw new Error('Unsupported file type. Only JPEG, PNG, WebP, and GIF images are allowed. Videos and documents are not accepted.');
   }
 
   const bytes = new Uint8Array(await file.slice(0, 12).arrayBuffer());
