@@ -114,7 +114,7 @@ export default function AdminBlogPage() {
       content: formContent, category: formCategory.trim() || 'General',
       tags: tagsArr, status: formStatus,
       scheduledAt: formStatus === 'scheduled' ? new Date(formScheduledAt).toISOString() : undefined,
-      author: formAuthor.trim() || 'Admin', authorId: 'admin-1',
+      author: formAuthor.trim() || 'Admin', authorId: 'admin-1', coverImage: formCoverImage || undefined,
     };
 
     if (editingPost) payload.id = editingPost.id;
