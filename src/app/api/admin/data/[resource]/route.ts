@@ -170,11 +170,11 @@ export async function POST(request: NextRequest, context: RouteContext) {
     if (contentType.includes('multipart/form-data')) {
       let formData: FormData;
       try {
-        formData = await readFormDataBody(request, 10 * 1024 * 1024 + 64 * 1024);
+        formData = await readFormDataBody(request, 2 * 1024 * 1024 + 64 * 1024);
       } catch (error) {
         const tooLarge = error instanceof Error && error.message === 'REQUEST_BODY_TOO_LARGE';
         return NextResponse.json(
-          { success: false, error: tooLarge ? 'Upload exceeds the 10 MB file limit.' : 'Invalid multipart upload.' },
+          { success: false, error: tooLarge ? 'Upload exceeds the 2 MB image limit.' : 'Invalid multipart upload.' },
           { status: tooLarge ? 413 : 400, headers: { 'Cache-Control': 'no-store' } },
         );
       }
