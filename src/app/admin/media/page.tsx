@@ -286,7 +286,6 @@ export default function AdminMediaPage() {
           {/* Media Grid */}
           <div className="grid gap-4 grid-cols-2 sm:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4">
             {filtered.map((item) => {
-              const { icon, color } = iconForMime(item.mimeType);
               return (
                 <Card
                   key={item.id}
@@ -294,7 +293,7 @@ export default function AdminMediaPage() {
                   className="p-0 overflow-hidden group flex flex-col"
                 >
                   <div className="aspect-square bg-gradient-to-br from-slate-900 via-[var(--admin-surface-deep)] to-[var(--gb-navy-800)]/30 flex items-center justify-center border-b border-[var(--admin-border)] relative">
-                    <div className={`text-6xl ${color}`}>{icon}</div>
+                    {/* eslint-disable-next-line @next/next/no-img-element */}\n                    <img src={item.url} alt={item.altText || item.name} loading="lazy" className="w-full h-full object-cover" />
                     <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
                       <Button
                         size="sm"
