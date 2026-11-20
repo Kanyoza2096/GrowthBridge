@@ -54,7 +54,7 @@ export class MediaRepository {
     }));
   }
 
-  async create(media: Partial<MediaItem> & { folderId?: string; uploadedBy?: string }): Promise<MediaItem> {
+  async create(media: Partial<MediaItem> & { folderId?: string; uploadedBy?: string; contentHash?: string }): Promise<MediaItem> {
     const supabase = createAdminClient();
     const { data, error } = await supabase
       .from('media')
@@ -69,6 +69,7 @@ export class MediaRepository {
         folder_id: media.folderId,
         uploaded_by: media.uploadedBy,
         alt_text: media.altText,
+        content_hash: media.contentHash,
       } as any)
       .select()
       .single();
