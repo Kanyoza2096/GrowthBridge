@@ -57,7 +57,7 @@ export default function BlogPage() {
                     variant="glass"
                     className="public-card h-full flex flex-col justify-between p-4 sm:p-6 space-y-4 group"
                   >
-                    {post.coverImage ? (
+                    {post.image ? (
                       // eslint-disable-next-line @next/next/no-img-element
                       <img src={post.image} alt={post.title} loading="lazy" className="w-full h-48 rounded-xl object-cover" />
                     ) : null}
