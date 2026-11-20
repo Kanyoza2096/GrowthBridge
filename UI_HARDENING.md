@@ -162,7 +162,7 @@ Poster / board cores now match live tokens:
 
 **One pattern for all public images:**
 
-1. **Admin → Media** — upload JPEG/PNG/WebP/GIF (max 10 MB) to Supabase Storage bucket `media`.
+1. **Admin → Media** — upload JPEG/PNG/WebP/GIF images only (max 2 MB after optimization) to the public Supabase Storage bucket `media`. JPEG/PNG/WebP are resized to a 1920px longest edge and converted to WebP in the browser; animated GIFs are preserved. Videos and documents are rejected.
 2. **Pick the asset** with `MediaPicker` (not ad-hoc random URLs only):
    - **Settings → Organization** — logo
    - **Settings → Homepage hero** — hero background + headline copy

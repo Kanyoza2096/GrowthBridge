@@ -11,6 +11,7 @@ import { useAdminAuth } from '@/components/providers/AdminAuthProvider';
 import { useAdminData } from '@/components/providers/AdminDataProvider';
 import { useToast } from '@/components/providers/ToastProvider';
 import { MediaItem, MediaFolder } from '@/lib/types/admin';
+import { optimizeImageForUpload } from '@/lib/media/optimize-image';
 
 type FolderFilter = string | 'all';
 
@@ -18,17 +19,6 @@ function formatSize(bytes: number): string {
   if (bytes < 1024) return `${bytes} B`;
   if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
   return `${(bytes / (1024 * 1024)).toFixed(2)} MB`;
-}
-
-function iconForMime(mimeType: string): { icon: string; color: string } {
-  if (mimeType.startsWith('image/')) return { icon: 'IMG', color: 'text-[var(--gb-green-400)]' };
-  if (mimeType.startsWith('video/')) return { icon: 'VID', color: 'text-rose-400' };
-  if (mimeType.startsWith('audio/')) return { icon: 'AUD', color: 'text-amber-400' };
-  if (mimeType.includes('pdf')) return { icon: 'PDF', color: 'text-rose-400' };
-  if (mimeType.includes('word') || mimeType.includes('document')) return { icon: 'DOC', color: 'text-blue-400' };
-  if (mimeType.includes('sheet') || mimeType.includes('excel')) return { icon: 'XLS', color: 'text-[var(--gb-green-400)]' };
-  if (mimeType.includes('zip') || mimeType.includes('compressed')) return { icon: 'ZIP', color: 'text-amber-400' };
-  return { icon: 'FILE', color: 'text-[var(--admin-text-secondary)]' };
 }
 
 const emptyUpload = {
@@ -108,15 +98,16 @@ export default function AdminMediaPage() {
     if (!selectedFile) { error('File Required', 'Select a file before uploading.'); return; }
     if (!uploadForm.name.trim()) { error('Validation Error', 'Display name is required.'); return; }
     try {
-      const saved = await uploadMedia(selectedFile, {
+      const optimized = await optimizeImageForUpload(selectedFile);
+      const saved = await uploadMedia(optimized.file, {
         name: uploadForm.name.trim(),
-        fileName: selectedFile.name,
+        fileName: optimized.file.name,
         folder: uploadForm.folder,
         altText: uploadForm.altText.trim() || undefined,
-        mimeType: selectedFile.type || uploadForm.mimeType,
-        size: selectedFile.size,
-        width: uploadForm.width || undefined,
-        height: uploadForm.height || undefined,
+        mimeType: optimized.file.type,
+        size: optimized.file.size,
+        width: optimized.width || uploadForm.width || undefined,
+        height: optimized.height || uploadForm.height || undefined,
       });
       success('Upload Complete', `${saved.name || uploadForm.name} has been added to ${uploadForm.folder}.`);
       setUploadModalOpen(false);
@@ -205,8 +196,7 @@ export default function AdminMediaPage() {
             <div className="my-2 border-t border-[var(--admin-border)]" />
             {allFolders.map((f) => {
               const count = folderCounts[f.name] || f.itemCount || 0;
-              const icon =
-                f.name === 'images' ? 'IMG' : f.name === 'videos' ? 'VID' : f.name === 'documents' ? 'FILE' : 'FOLDER';
+              const icon = f.name === 'images' ? 'IMG' : 'FOLDER';
               return (
                 <button
                   key={f.id}
@@ -243,21 +233,12 @@ export default function AdminMediaPage() {
                 </span>
               </div>
               <div className="flex justify-between">
-                <span className="text-[var(--admin-text-secondary)]">Documents</span>
-                <span className="font-bold text-blue-400">
-                  {media.filter(
-                    (m) =>
-                      !m.mimeType.startsWith('image/') &&
-                      !m.mimeType.startsWith('video/') &&
-                      !m.mimeType.startsWith('audio/')
-                  ).length}
-                </span>
+                <span className="text-[var(--admin-text-secondary)]">Storage used</span>
+                <span className="font-bold text-white">{formatSize(media.reduce((total, item) => total + item.size, 0))}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-[var(--admin-text-secondary)]">Videos</span>
-                <span className="font-bold text-rose-400">
-                  {media.filter((m) => m.mimeType.startsWith('video/')).length}
-                </span>
+                <span className="text-[var(--admin-text-secondary)]">Upload limit</span>
+                <span className="font-bold text-[var(--gb-green-400)]">2 MB / image</span>
               </div>
             </div>
           </Card>
@@ -287,14 +268,13 @@ export default function AdminMediaPage() {
               Drag &amp; drop files here, or click to upload
             </div>
             <div className="text-xs text-[var(--admin-text-secondary)] mt-1">
-              Supports images, documents, videos. Max 25MB per file.
+              JPEG, PNG, WebP and GIF images only · Max 2 MB after optimization.
             </div>
           </div>
 
           {/* Media Grid */}
           <div className="grid gap-4 grid-cols-2 sm:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4">
             {filtered.map((item) => {
-              const { icon, color } = iconForMime(item.mimeType);
               return (
                 <Card
                   key={item.id}
@@ -302,7 +282,8 @@ export default function AdminMediaPage() {
                   className="p-0 overflow-hidden group flex flex-col"
                 >
                   <div className="aspect-square bg-gradient-to-br from-slate-900 via-[var(--admin-surface-deep)] to-[var(--gb-navy-800)]/30 flex items-center justify-center border-b border-[var(--admin-border)] relative">
-                    <div className={`text-6xl ${color}`}>{icon}</div>
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={item.url} alt={item.altText || item.name} loading="lazy" className="w-full h-full object-cover" />
                     <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
                       <Button
                         size="sm"
@@ -378,7 +359,7 @@ export default function AdminMediaPage() {
             <div className="text-3xl mb-2">↑</div>
             <div className="text-sm font-semibold text-white">Secure Media Upload</div>
             <div className="text-xs text-[var(--admin-text-secondary)] mt-1">
-              The selected file is sent to the authenticated media backend. No fake metadata is created.
+              Images are optimized in your browser before upload. Raster images become WebP; animated GIFs stay animated. Videos and documents are blocked.
             </div>
           </div>
 
@@ -387,6 +368,7 @@ export default function AdminMediaPage() {
               <label className="block text-xs font-semibold text-[var(--admin-text-secondary)] uppercase tracking-wider">File *</label>
               <input
                 type="file"
+                accept="image/jpeg,image/png,image/webp,image/gif"
                 onChange={(e) => setSelectedFile(e.target.files?.[0] ?? null)}
                 className="block w-full text-sm text-[var(--admin-text-secondary)] file:mr-4 file:rounded-lg file:border-0 file:bg-emerald-600 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-white hover:file:bg-[var(--gb-green-600)]"
               />
@@ -436,25 +418,9 @@ export default function AdminMediaPage() {
             />
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              <div className="space-y-1.5">
-                <label className="block text-xs font-semibold text-[var(--admin-text-secondary)] uppercase tracking-wider">
-                  File Type
-                </label>
-                <select
-                  value={uploadForm.mimeType}
-                  onChange={(e) => setUploadForm({ ...uploadForm, mimeType: e.target.value })}
-                  className="w-full rounded-xl bg-[var(--admin-surface-card)]/60 border border-[var(--admin-border)] text-[var(--admin-text-primary)] px-4 py-3 text-sm focus:outline-none focus:border-[var(--gb-green-600)] focus:ring-1 focus:ring-[var(--gb-green-600)]"
-                >
-                  <option value="image/jpeg">Image (JPG)</option>
-                  <option value="image/png">Image (PNG)</option>
-                  <option value="image/svg+xml">Image (SVG)</option>
-                  <option value="image/webp">Image (WebP)</option>
-                  <option value="video/mp4">Video (MP4)</option>
-                  <option value="application/pdf">PDF Document</option>
-                  <option value="application/msword">Word Document</option>
-                  <option value="application/vnd.ms-excel">Excel Sheet</option>
-                  <option value="application/zip">ZIP Archive</option>
-                </select>
+              <div className="rounded-xl border border-[var(--admin-border)] bg-[var(--admin-surface-card)]/50 px-4 py-3 text-xs text-[var(--admin-text-secondary)]">
+                <span className="block font-semibold text-[var(--admin-text-primary)]">Automatic optimization</span>
+                JPEG, PNG and WebP are resized and converted to WebP. Animated GIFs are preserved.
               </div>
               <Input
                 type="number"

@@ -1,9 +1,10 @@
 // Server-only media service. Handles validation, Storage, and database metadata.
+import { createHash } from 'node:crypto';
 import { MediaRepository } from '@/repositories/media.repository';
 import { createAdminClient } from '@/lib/supabase/server';
 import type { MediaItem, MediaFolder } from '@/lib/types/admin';
 
-const MAX_MEDIA_BYTES = 10 * 1024 * 1024;
+const MAX_MEDIA_BYTES = 2 * 1024 * 1024;
 const ALLOWED_MEDIA_TYPES = new Set([
   'image/jpeg',
   'image/png',
@@ -29,9 +30,9 @@ function safeBaseName(name: string): string {
 
 async function validateFile(file: File): Promise<void> {
   if (!(file instanceof File) || file.size <= 0) throw new Error('A valid file is required.');
-  if (file.size > MAX_MEDIA_BYTES) throw new Error('File exceeds the 10 MB upload limit.');
+  if (file.size > MAX_MEDIA_BYTES) throw new Error('Image exceeds the 2 MB upload limit.');
   if (!ALLOWED_MEDIA_TYPES.has(file.type)) {
-    throw new Error('Unsupported file type. Allowed: JPEG, PNG, WebP, and GIF.');
+    throw new Error('Unsupported file type. Only JPEG, PNG, WebP, and GIF images are allowed. Videos and documents are not accepted.');
   }
 
   const bytes = new Uint8Array(await file.slice(0, 12).arrayBuffer());
@@ -69,6 +70,18 @@ export class MediaService {
     await validateFile(file);
 
     const supabase = createAdminClient();
+    const contentHash = createHash('sha256').update(Buffer.from(await file.arrayBuffer())).digest('hex');
+    const { data: duplicate, error: duplicateError } = await supabase
+      .from('media')
+      .select('id, name')
+      .eq('content_hash', contentHash)
+      .limit(1)
+      .maybeSingle();
+    if (duplicateError) throw duplicateError;
+    if (duplicate) {
+      throw new Error(`This image is already in the Media Library as "${duplicate.name}". Reuse the existing asset instead of uploading it again.`);
+    }
+
     const folderName = String(metadata.folder || 'root').trim().replace(/^\/+|\/+$/g, '');
     const safeFolder = folderName && /^[a-zA-Z0-9][a-zA-Z0-9/_ -]{0,80}$/.test(folderName)
       ? folderName
@@ -120,6 +133,7 @@ export class MediaService {
         altText: safeAltText,
         folderId,
         uploadedBy,
+        contentHash,
       });
     } catch (error) {
       await supabase.storage.from('media').remove([filePath]).catch(() => undefined);
