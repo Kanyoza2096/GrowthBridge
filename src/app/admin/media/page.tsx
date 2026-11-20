@@ -11,6 +11,7 @@ import { useAdminAuth } from '@/components/providers/AdminAuthProvider';
 import { useAdminData } from '@/components/providers/AdminDataProvider';
 import { useToast } from '@/components/providers/ToastProvider';
 import { MediaItem, MediaFolder } from '@/lib/types/admin';
+import { optimizeImageForUpload } from '@/lib/media/optimize-image';
 
 type FolderFilter = string | 'all';
 
@@ -108,15 +109,16 @@ export default function AdminMediaPage() {
     if (!selectedFile) { error('File Required', 'Select a file before uploading.'); return; }
     if (!uploadForm.name.trim()) { error('Validation Error', 'Display name is required.'); return; }
     try {
-      const saved = await uploadMedia(selectedFile, {
+      const optimized = await optimizeImageForUpload(selectedFile);
+      const saved = await uploadMedia(optimized.file, {
         name: uploadForm.name.trim(),
-        fileName: selectedFile.name,
+        fileName: optimized.file.name,
         folder: uploadForm.folder,
         altText: uploadForm.altText.trim() || undefined,
-        mimeType: selectedFile.type || uploadForm.mimeType,
-        size: selectedFile.size,
-        width: uploadForm.width || undefined,
-        height: uploadForm.height || undefined,
+        mimeType: optimized.file.type,
+        size: optimized.file.size,
+        width: optimized.width || uploadForm.width || undefined,
+        height: optimized.height || uploadForm.height || undefined,
       });
       success('Upload Complete', `${saved.name || uploadForm.name} has been added to ${uploadForm.folder}.`);
       setUploadModalOpen(false);
@@ -205,8 +207,7 @@ export default function AdminMediaPage() {
             <div className="my-2 border-t border-[var(--admin-border)]" />
             {allFolders.map((f) => {
               const count = folderCounts[f.name] || f.itemCount || 0;
-              const icon =
-                f.name === 'images' ? 'IMG' : f.name === 'videos' ? 'VID' : f.name === 'documents' ? 'FILE' : 'FOLDER';
+              const icon = f.name === 'images' ? 'IMG' : 'FOLDER';
               return (
                 <button
                   key={f.id}
@@ -243,21 +244,12 @@ export default function AdminMediaPage() {
                 </span>
               </div>
               <div className="flex justify-between">
-                <span className="text-[var(--admin-text-secondary)]">Documents</span>
-                <span className="font-bold text-blue-400">
-                  {media.filter(
-                    (m) =>
-                      !m.mimeType.startsWith('image/') &&
-                      !m.mimeType.startsWith('video/') &&
-                      !m.mimeType.startsWith('audio/')
-                  ).length}
-                </span>
+                <span className="text-[var(--admin-text-secondary)]">Storage used</span>
+                <span className="font-bold text-white">{formatSize(media.reduce((total, item) => total + item.size, 0))}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-[var(--admin-text-secondary)]">Videos</span>
-                <span className="font-bold text-rose-400">
-                  {media.filter((m) => m.mimeType.startsWith('video/')).length}
-                </span>
+                <span className="text-[var(--admin-text-secondary)]">Upload limit</span>
+                <span className="font-bold text-[var(--gb-green-400)]">2 MB / image</span>
               </div>
             </div>
           </Card>
@@ -287,7 +279,7 @@ export default function AdminMediaPage() {
               Drag &amp; drop files here, or click to upload
             </div>
             <div className="text-xs text-[var(--admin-text-secondary)] mt-1">
-              Supports images, documents, videos. Max 25MB per file.
+              JPEG, PNG, WebP and GIF images only · Max 2 MB after optimization.
             </div>
           </div>
 
@@ -378,7 +370,7 @@ export default function AdminMediaPage() {
             <div className="text-3xl mb-2">↑</div>
             <div className="text-sm font-semibold text-white">Secure Media Upload</div>
             <div className="text-xs text-[var(--admin-text-secondary)] mt-1">
-              The selected file is sent to the authenticated media backend. No fake metadata is created.
+              Images are optimized in your browser before upload. Raster images become WebP; animated GIFs stay animated. Videos and documents are blocked.
             </div>
           </div>
 
@@ -387,6 +379,7 @@ export default function AdminMediaPage() {
               <label className="block text-xs font-semibold text-[var(--admin-text-secondary)] uppercase tracking-wider">File *</label>
               <input
                 type="file"
+                accept="image/jpeg,image/png,image/webp,image/gif"
                 onChange={(e) => setSelectedFile(e.target.files?.[0] ?? null)}
                 className="block w-full text-sm text-[var(--admin-text-secondary)] file:mr-4 file:rounded-lg file:border-0 file:bg-emerald-600 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-white hover:file:bg-[var(--gb-green-600)]"
               />
@@ -447,13 +440,13 @@ export default function AdminMediaPage() {
                 >
                   <option value="image/jpeg">Image (JPG)</option>
                   <option value="image/png">Image (PNG)</option>
-                  <option value="image/svg+xml">Image (SVG)</option>
+                  
                   <option value="image/webp">Image (WebP)</option>
-                  <option value="video/mp4">Video (MP4)</option>
-                  <option value="application/pdf">PDF Document</option>
-                  <option value="application/msword">Word Document</option>
-                  <option value="application/vnd.ms-excel">Excel Sheet</option>
-                  <option value="application/zip">ZIP Archive</option>
+                  
+                  
+                  
+                  
+                  
                 </select>
               </div>
               <Input
