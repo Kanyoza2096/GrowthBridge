@@ -41,7 +41,10 @@ export default function AdminMediaPage() {
   const [search, setSearch] = useState('');
   const [uploadModalOpen, setUploadModalOpen] = useState(false);
   const [uploadForm, setUploadForm] = useState(emptyUpload);
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+  const [isUploading, setIsUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState({ completed: 0, total: 0 });
+  const MAX_BATCH_FILES = 20;
 
   const canCreate = hasPermission('media', 'create');
   const canDelete = hasPermission('media', 'delete');
@@ -90,31 +93,66 @@ export default function AdminMediaPage() {
       warning('Permission Denied', 'You do not have permission to upload media.');
       return;
     }
+    setSelectedFiles([]);
+    setUploadProgress({ completed: 0, total: 0 });
     setUploadForm({ ...emptyUpload, folder: folderFilter !== 'all' ? folderFilter : 'images' });
     setUploadModalOpen(true);
   };
 
   const handleUpload = async () => {
-    if (!selectedFile) { error('File Required', 'Select a file before uploading.'); return; }
-    if (!uploadForm.name.trim()) { error('Validation Error', 'Display name is required.'); return; }
+    if (selectedFiles.length === 0) { error('Files Required', 'Choose one or more images before uploading.'); return; }
+    if (selectedFiles.length > MAX_BATCH_FILES) {
+      error('Batch Too Large', `Choose no more than ${MAX_BATCH_FILES} images per batch.`);
+      return;
+    }
+    if (selectedFiles.length === 1 && !uploadForm.name.trim()) {
+      error('Validation Error', 'Display name is required.');
+      return;
+    }
+
+    setIsUploading(true);
+    setUploadProgress({ completed: 0, total: selectedFiles.length });
+    const failures: string[] = [];
+    let uploaded = 0;
+
     try {
-      const optimized = await optimizeImageForUpload(selectedFile);
-      const saved = await uploadMedia(optimized.file, {
-        name: uploadForm.name.trim(),
-        fileName: optimized.file.name,
-        folder: uploadForm.folder,
-        altText: uploadForm.altText.trim() || undefined,
-        mimeType: optimized.file.type,
-        size: optimized.file.size,
-        width: optimized.width || uploadForm.width || undefined,
-        height: optimized.height || uploadForm.height || undefined,
-      });
-      success('Upload Complete', `${saved.name || uploadForm.name} has been added to ${uploadForm.folder}.`);
-      setUploadModalOpen(false);
-      setUploadForm(emptyUpload);
-      setSelectedFile(null);
-    } catch (e) {
-      error('Upload Failed', e instanceof Error ? e.message : 'The media backend rejected the upload.');
+      for (const [index, sourceFile] of selectedFiles.entries()) {
+        const baseName = sourceFile.name.replace(/\\.[^.]+$/, '').replace(/[_-]+/g, ' ').trim();
+        try {
+          const optimized = await optimizeImageForUpload(sourceFile);
+          await uploadMedia(optimized.file, {
+            name: selectedFiles.length === 1 ? uploadForm.name.trim() : baseName || 'Uploaded image',
+            fileName: optimized.file.name,
+            folder: uploadForm.folder,
+            altText: selectedFiles.length === 1
+              ? uploadForm.altText.trim() || undefined
+              : baseName || undefined,
+            mimeType: optimized.file.type,
+            size: optimized.file.size,
+            width: optimized.width || (selectedFiles.length === 1 ? uploadForm.width : undefined) || undefined,
+            height: optimized.height || (selectedFiles.length === 1 ? uploadForm.height : undefined) || undefined,
+          });
+          uploaded += 1;
+        } catch (uploadError) {
+          failures.push(`${sourceFile.name}: ${uploadError instanceof Error ? uploadError.message : 'Upload failed'}`);
+        } finally {
+          setUploadProgress({ completed: index + 1, total: selectedFiles.length });
+        }
+      }
+
+      if (uploaded > 0) {
+        success('Batch Upload Complete', `${uploaded} of ${selectedFiles.length} images added to ${uploadForm.folder}.`);
+      }
+      if (failures.length > 0) {
+        error('Some Images Were Not Uploaded', failures.slice(0, 3).join(' • ') + (failures.length > 3 ? ` • and ${failures.length - 3} more` : ''));
+      }
+      if (failures.length === 0) {
+        setUploadModalOpen(false);
+        setUploadForm(emptyUpload);
+        setSelectedFiles([]);
+      }
+    } finally {
+      setIsUploading(false);
     }
   };
 
@@ -141,21 +179,22 @@ export default function AdminMediaPage() {
       openUpload();
       return;
     }
-    const file = files[0];
-    setSelectedFile(file);
-    const displayName = file.name.replace(/\.[^.]+$/, '').replace(/[_\-]+/g, ' ');
+    const images = files.filter((file) => file.type.startsWith('image/')).slice(0, MAX_BATCH_FILES);
+    if (images.length === 0) {
+      warning('No Supported Images', 'Drop JPEG, PNG, WebP or GIF images to upload.');
+      return;
+    }
+    setSelectedFiles(images);
+    const firstName = images[0].name.replace(/\.[^.]+$/, '').replace(/[_-]+/g, ' ');
     setUploadForm({
-      name: displayName,
-      fileName: file.name,
+      ...emptyUpload,
+      name: firstName,
+      fileName: images[0].name,
       folder: folderFilter !== 'all' ? folderFilter : 'images',
-      altText: displayName,
-      mimeType: file.type || 'application/octet-stream',
-      size: file.size,
-      width: 0,
-      height: 0,
+      altText: firstName,
     });
     setUploadModalOpen(true);
-    info('Preparing Upload', `${file.name} (${formatSize(file.size)}) ready to upload.`);
+    info('Images Ready', `${images.length} image${images.length === 1 ? '' : 's'} selected for upload.`);
   };
 
   return (
@@ -350,7 +389,7 @@ export default function AdminMediaPage() {
 
       <Modal
         isOpen={uploadModalOpen}
-        onClose={() => setUploadModalOpen(false)}
+        onClose={() => { if (!isUploading) setUploadModalOpen(false); }}
         title="Upload Media"
         className="max-w-lg"
       >
@@ -368,30 +407,59 @@ export default function AdminMediaPage() {
               <label className="block text-xs font-semibold text-[var(--admin-text-secondary)] uppercase tracking-wider">File *</label>
               <input
                 type="file"
+                multiple
                 accept="image/jpeg,image/png,image/webp,image/gif"
-                onChange={(e) => setSelectedFile(e.target.files?.[0] ?? null)}
+                disabled={isUploading}
+                onChange={(e) => {
+                  const files = Array.from(e.target.files || []).slice(0, MAX_BATCH_FILES);
+                  setSelectedFiles(files);
+                  if (files.length > 0) {
+                    const firstName = files[0].name.replace(/\.[^.]+$/, '').replace(/[_-]+/g, ' ');
+                    setUploadForm((current) => ({
+                      ...current,
+                      name: firstName,
+                      fileName: files[0].name,
+                      altText: firstName,
+                    }));
+                  }
+                }}
                 className="block w-full text-sm text-[var(--admin-text-secondary)] file:mr-4 file:rounded-lg file:border-0 file:bg-emerald-600 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-white hover:file:bg-[var(--gb-green-600)]"
               />
-              {selectedFile && (
-                <p className="text-[11px] text-[var(--admin-text-tertiary)]">
-                  {selectedFile.name} · {formatSize(selectedFile.size)}
-                </p>
+              <p className="text-[11px] text-[var(--admin-text-tertiary)]">
+                Select up to {MAX_BATCH_FILES} images at once. Each image is optimized and uploaded separately.
+              </p>
+              {selectedFiles.length > 0 && (
+                <div className="rounded-xl border border-[var(--admin-border)] bg-[var(--admin-surface-card)]/40 p-3 space-y-1">
+                  <p className="text-xs font-semibold text-white">{selectedFiles.length} image{selectedFiles.length === 1 ? '' : 's'} selected · {formatSize(selectedFiles.reduce((total, file) => total + file.size, 0))} total</p>
+                  <ul className="max-h-28 overflow-y-auto text-[11px] text-[var(--admin-text-secondary)] space-y-1">
+                    {selectedFiles.map((file) => <li key={file.name + file.lastModified}>{file.name} · {formatSize(file.size)}</li>)}
+                  </ul>
+                </div>
               )}
             </div>
 
-            <Input
-              label="Display Name *"
-              value={uploadForm.name}
-              onChange={(e) => setUploadForm({ ...uploadForm, name: e.target.value })}
-              placeholder="Hero banner - about page"
-            />
+            {selectedFiles.length <= 1 && (
+              <>
+                <Input
+                  label="Display Name *"
+                  value={uploadForm.name}
+                  onChange={(e) => setUploadForm({ ...uploadForm, name: e.target.value })}
+                  placeholder="Hero banner - about page"
+                />
+                <Input
+                  label="Alt Text"
+                  value={uploadForm.altText}
+                  onChange={(e) => setUploadForm({ ...uploadForm, altText: e.target.value })}
+                  placeholder="Accessibility description"
+                />
+              </>
+            )}
+            {selectedFiles.length > 1 && (
+              <p className="text-xs text-[var(--admin-text-secondary)]">
+                Each image will use its filename as its display name and draft alt text. You can edit individual details after upload.
+              </p>
+            )}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <Input
-                label="File Name"
-                value={uploadForm.fileName}
-                onChange={(e) => setUploadForm({ ...uploadForm, fileName: e.target.value })}
-                placeholder="hero-about.jpg"
-              />
               <div className="space-y-1.5">
                 <label className="block text-xs font-semibold text-[var(--admin-text-secondary)] uppercase tracking-wider">
                   Folder
@@ -410,44 +478,57 @@ export default function AdminMediaPage() {
               </div>
             </div>
 
-            <Input
-              label="Alt Text"
-              value={uploadForm.altText}
-              onChange={(e) => setUploadForm({ ...uploadForm, altText: e.target.value })}
-              placeholder="Accessibility description"
-            />
-
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <div className="rounded-xl border border-[var(--admin-border)] bg-[var(--admin-surface-card)]/50 px-4 py-3 text-xs text-[var(--admin-text-secondary)]">
                 <span className="block font-semibold text-[var(--admin-text-primary)]">Automatic optimization</span>
                 JPEG, PNG and WebP are resized and converted to WebP. Animated GIFs are preserved.
               </div>
-              <Input
-                type="number"
-                label="Width (px)"
-                value={uploadForm.width || ''}
-                onChange={(e) =>
-                  setUploadForm({ ...uploadForm, width: parseInt(e.target.value || '0', 10) || 0 })
-                }
-                placeholder="1920"
-              />
-              <Input
-                type="number"
-                label="Height (px)"
-                value={uploadForm.height || ''}
-                onChange={(e) =>
-                  setUploadForm({ ...uploadForm, height: parseInt(e.target.value || '0', 10) || 0 })
-                }
-                placeholder="1080"
-              />
+              {selectedFiles.length <= 1 && (
+                <Input
+                  type="number"
+                  label="Width (px)"
+                  value={uploadForm.width || ''}
+                  onChange={(e) =>
+                    setUploadForm({ ...uploadForm, width: parseInt(e.target.value || '0', 10) || 0 })
+                  }
+                  placeholder="1920"
+                />
+              )}
+              {selectedFiles.length <= 1 && (
+                <Input
+                  type="number"
+                  label="Height (px)"
+                  value={uploadForm.height || ''}
+                  onChange={(e) =>
+                    setUploadForm({ ...uploadForm, height: parseInt(e.target.value || '0', 10) || 0 })
+                  }
+                  placeholder="1080"
+                />
+              )}
             </div>
           </div>
 
+          {isUploading && (
+            <div className="space-y-2" aria-live="polite">
+              <div className="flex justify-between text-xs text-[var(--admin-text-secondary)]">
+                <span>Uploading images…</span>
+                <span>{uploadProgress.completed} / {uploadProgress.total}</span>
+              </div>
+              <div className="h-2 rounded-full bg-[var(--admin-surface-soft)] overflow-hidden">
+                <div
+                  className="h-full bg-[var(--gb-green-600)] transition-all"
+                  style={{ width: `${uploadProgress.total ? (uploadProgress.completed / uploadProgress.total) * 100 : 0}%` }}
+                />
+              </div>
+            </div>
+          )}
           <div className="flex justify-end gap-3 pt-2">
-            <Button variant="outline" onClick={() => setUploadModalOpen(false)}>
+            <Button variant="outline" disabled={isUploading} onClick={() => setUploadModalOpen(false)}>
               Cancel
             </Button>
-            <Button onClick={handleUpload}>Upload to Library</Button>
+            <Button onClick={handleUpload} disabled={isUploading || selectedFiles.length === 0}>
+              {isUploading ? 'Uploading…' : selectedFiles.length > 1 ? `Upload ${selectedFiles.length} Images` : 'Upload to Library'}
+            </Button>
           </div>
         </div>
       </Modal>
