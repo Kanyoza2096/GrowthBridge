@@ -21,17 +21,6 @@ function formatSize(bytes: number): string {
   return `${(bytes / (1024 * 1024)).toFixed(2)} MB`;
 }
 
-function iconForMime(mimeType: string): { icon: string; color: string } {
-  if (mimeType.startsWith('image/')) return { icon: 'IMG', color: 'text-[var(--gb-green-400)]' };
-  if (mimeType.startsWith('video/')) return { icon: 'VID', color: 'text-rose-400' };
-  if (mimeType.startsWith('audio/')) return { icon: 'AUD', color: 'text-amber-400' };
-  if (mimeType.includes('pdf')) return { icon: 'PDF', color: 'text-rose-400' };
-  if (mimeType.includes('word') || mimeType.includes('document')) return { icon: 'DOC', color: 'text-blue-400' };
-  if (mimeType.includes('sheet') || mimeType.includes('excel')) return { icon: 'XLS', color: 'text-[var(--gb-green-400)]' };
-  if (mimeType.includes('zip') || mimeType.includes('compressed')) return { icon: 'ZIP', color: 'text-amber-400' };
-  return { icon: 'FILE', color: 'text-[var(--admin-text-secondary)]' };
-}
-
 const emptyUpload = {
   name: '',
   fileName: '',
@@ -428,25 +417,9 @@ export default function AdminMediaPage() {
             />
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              <div className="space-y-1.5">
-                <label className="block text-xs font-semibold text-[var(--admin-text-secondary)] uppercase tracking-wider">
-                  File Type
-                </label>
-                <select
-                  value={uploadForm.mimeType}
-                  onChange={(e) => setUploadForm({ ...uploadForm, mimeType: e.target.value })}
-                  className="w-full rounded-xl bg-[var(--admin-surface-card)]/60 border border-[var(--admin-border)] text-[var(--admin-text-primary)] px-4 py-3 text-sm focus:outline-none focus:border-[var(--gb-green-600)] focus:ring-1 focus:ring-[var(--gb-green-600)]"
-                >
-                  <option value="image/jpeg">Image (JPG)</option>
-                  <option value="image/png">Image (PNG)</option>
-                  
-                  <option value="image/webp">Image (WebP)</option>
-                  
-                  
-                  
-                  
-                  
-                </select>
+              <div className="rounded-xl border border-[var(--admin-border)] bg-[var(--admin-surface-card)]/50 px-4 py-3 text-xs text-[var(--admin-text-secondary)]">
+                <span className="block font-semibold text-[var(--admin-text-primary)]">Automatic optimization</span>
+                JPEG, PNG and WebP are resized and converted to WebP. Animated GIFs are preserved.
               </div>
               <Input
                 type="number"
