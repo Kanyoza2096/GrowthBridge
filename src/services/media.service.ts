@@ -1,4 +1,5 @@
 // Server-only media service. Handles validation, Storage, and database metadata.
+import { createHash } from 'node:crypto';
 import { MediaRepository } from '@/repositories/media.repository';
 import { createAdminClient } from '@/lib/supabase/server';
 import type { MediaItem, MediaFolder } from '@/lib/types/admin';
@@ -69,6 +70,18 @@ export class MediaService {
     await validateFile(file);
 
     const supabase = createAdminClient();
+    const contentHash = createHash('sha256').update(Buffer.from(await file.arrayBuffer())).digest('hex');
+    const { data: duplicate, error: duplicateError } = await supabase
+      .from('media')
+      .select('id, name')
+      .eq('content_hash', contentHash)
+      .limit(1)
+      .maybeSingle();
+    if (duplicateError) throw duplicateError;
+    if (duplicate) {
+      throw new Error(`This image is already in the Media Library as "${duplicate.name}". Reuse the existing asset instead of uploading it again.`);
+    }
+
     const folderName = String(metadata.folder || 'root').trim().replace(/^\/+|\/+$/g, '');
     const safeFolder = folderName && /^[a-zA-Z0-9][a-zA-Z0-9/_ -]{0,80}$/.test(folderName)
       ? folderName
@@ -120,6 +133,7 @@ export class MediaService {
         altText: safeAltText,
         folderId,
         uploadedBy,
+        contentHash,
       });
     } catch (error) {
       await supabase.storage.from('media').remove([filePath]).catch(() => undefined);
