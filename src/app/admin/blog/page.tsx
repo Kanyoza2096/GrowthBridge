@@ -109,12 +109,12 @@ export default function AdminBlogPage() {
 
     const tagsArr = formTags.split(',').map((s) => s.trim()).filter(Boolean);
     const finalSlug = formSlug || autoSlug(formTitle);
-    const payload: Partial<BlogPost> & { id?: string } = {
+    const payload: Partial<BlogPost> & { id?: string; image?: string } = {
       slug: finalSlug, title: formTitle.trim(), excerpt: formExcerpt.trim(),
       content: formContent, category: formCategory.trim() || 'General',
       tags: tagsArr, status: formStatus,
       scheduledAt: formStatus === 'scheduled' ? new Date(formScheduledAt).toISOString() : undefined,
-      author: formAuthor.trim() || 'Admin', authorId: 'admin-1', coverImage: formCoverImage || undefined,
+      author: formAuthor.trim() || 'Admin', authorId: 'admin-1', image: formCoverImage || undefined,
     };
 
     if (editingPost) payload.id = editingPost.id;
