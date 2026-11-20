@@ -94,7 +94,7 @@ export default function AdminNewPersonPage() {
       </div>
 
       {/* Form Card */}
-      <form onSubmit={handleSubmit} className="rounded-3xl p-6 sm:p-8 bg-[var(--admin-surface-card)] border border-[var(--admin-border)] space-y-6">
+      <form onSubmit={handleSubmit} className="rounded-3xl p-4 sm:p-6 bg-[var(--admin-surface-card)] border border-[var(--admin-border)] space-y-6">
         {/* Basic Info Section */}
         <div className="space-y-4">
           <h2 className="text-sm font-bold uppercase tracking-widest text-[var(--gb-green-400)] border-b border-[var(--admin-border)] pb-2">
@@ -155,10 +155,13 @@ export default function AdminNewPersonPage() {
         </div>
 
         {/* Contact & Location Section */}
-        <div className="space-y-4">
-          <h2 className="text-sm font-bold uppercase tracking-widest text-[var(--gb-green-400)] border-b border-[var(--admin-border)] pb-2">
-            Contact & Location
-          </h2>
+        <details className="group rounded-2xl border border-[var(--admin-border)] bg-[var(--admin-surface-deep)]/30 px-4 py-3">
+          <summary className="flex cursor-pointer list-none items-center justify-between gap-3 text-sm font-bold text-[var(--admin-text-primary)] [&::-webkit-details-marker]:hidden">
+            <span>Contact & Location</span>
+            <span className="text-[var(--admin-text-tertiary)] transition-transform group-open:rotate-180" aria-hidden="true">⌄</span>
+          </summary>
+          <div className="mt-4 space-y-4">
+          
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div>
@@ -190,12 +193,18 @@ export default function AdminNewPersonPage() {
             </div>
           </div>
         </div>
+        </details>
+
+        
 
         {/* Biography & Photo */}
-        <div className="space-y-4">
-          <h2 className="text-sm font-bold uppercase tracking-widest text-[var(--gb-green-400)] border-b border-[var(--admin-border)] pb-2">
-            Biography & Photo
-          </h2>
+        <details className="group rounded-2xl border border-[var(--admin-border)] bg-[var(--admin-surface-deep)]/30 px-4 py-3">
+          <summary className="flex cursor-pointer list-none items-center justify-between gap-3 text-sm font-bold text-[var(--admin-text-primary)] [&::-webkit-details-marker]:hidden">
+            <span>Biography & Photo</span>
+            <span className="text-[var(--admin-text-tertiary)] transition-transform group-open:rotate-180" aria-hidden="true">⌄</span>
+          </summary>
+          <div className="mt-4 space-y-4">
+          
 
           <MediaPicker
             label="Team photo"
@@ -223,12 +232,18 @@ export default function AdminNewPersonPage() {
             />
           </div>
         </div>
+        </details>
+
+        
 
         {/* Skills & Certifications */}
-        <div className="space-y-4">
-          <h2 className="text-sm font-bold uppercase tracking-widest text-[var(--gb-green-400)] border-b border-[var(--admin-border)] pb-2">
-            Skills & Certifications
-          </h2>
+        <details className="group rounded-2xl border border-[var(--admin-border)] bg-[var(--admin-surface-deep)]/30 px-4 py-3">
+          <summary className="flex cursor-pointer list-none items-center justify-between gap-3 text-sm font-bold text-[var(--admin-text-primary)] [&::-webkit-details-marker]:hidden">
+            <span>Skills & Certifications</span>
+            <span className="text-[var(--admin-text-tertiary)] transition-transform group-open:rotate-180" aria-hidden="true">⌄</span>
+          </summary>
+          <div className="mt-4 space-y-4">
+          
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
@@ -250,12 +265,18 @@ export default function AdminNewPersonPage() {
             </div>
           </div>
         </div>
+        </details>
+
+        
 
         {/* Social Links */}
-        <div className="space-y-4">
-          <h2 className="text-sm font-bold uppercase tracking-widest text-[var(--gb-green-400)] border-b border-[var(--admin-border)] pb-2">
-            Social Profiles
-          </h2>
+        <details className="group rounded-2xl border border-[var(--admin-border)] bg-[var(--admin-surface-deep)]/30 px-4 py-3">
+          <summary className="flex cursor-pointer list-none items-center justify-between gap-3 text-sm font-bold text-[var(--admin-text-primary)] [&::-webkit-details-marker]:hidden">
+            <span>Social Profiles</span>
+            <span className="text-[var(--admin-text-tertiary)] transition-transform group-open:rotate-180" aria-hidden="true">⌄</span>
+          </summary>
+          <div className="mt-4 space-y-4">
+          
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
@@ -292,12 +313,18 @@ export default function AdminNewPersonPage() {
             </div>
           </div>
         </div>
+        </details>
+
+        
 
         {/* Display Settings */}
-        <div className="space-y-4">
-          <h2 className="text-sm font-bold uppercase tracking-widest text-[var(--gb-green-400)] border-b border-[var(--admin-border)] pb-2">
-            Display Settings
-          </h2>
+        <details className="group rounded-2xl border border-[var(--admin-border)] bg-[var(--admin-surface-deep)]/30 px-4 py-3">
+          <summary className="flex cursor-pointer list-none items-center justify-between gap-3 text-sm font-bold text-[var(--admin-text-primary)] [&::-webkit-details-marker]:hidden">
+            <span>Display Settings</span>
+            <span className="text-[var(--admin-text-tertiary)] transition-transform group-open:rotate-180" aria-hidden="true">⌄</span>
+          </summary>
+          <div className="mt-4 space-y-4">
+          
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 items-center">
             <div>
@@ -336,6 +363,9 @@ export default function AdminNewPersonPage() {
             </div>
           </div>
         </div>
+        </details>
+
+        
 
         {/* Action Buttons */}
         <div className="pt-4 border-t border-[var(--admin-border)] flex justify-end space-x-3">
