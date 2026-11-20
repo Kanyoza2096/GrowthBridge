@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Textarea } from '@/components/ui/Textarea';
 import { Modal } from '@/components/ui/Modal';
+import { MediaPicker } from '@/components/admin/MediaPicker';
 import { useAdminAuth } from '@/components/providers/AdminAuthProvider';
 import { useAdminData } from '@/components/providers/AdminDataProvider';
 import { useToast } from '@/components/providers/ToastProvider';
@@ -58,6 +59,7 @@ export default function AdminPartnersPage() {
   const [formEndDate, setFormEndDate] = useState('');
   const [formAddress, setFormAddress] = useState('');
   const [formNotes, setFormNotes] = useState('');
+  const [formLogo, setFormLogo] = useState('');
 
   const industries = useMemo(() => {
     const set = new Set(partners.map((p) => p.industry).filter(Boolean));
@@ -93,6 +95,7 @@ export default function AdminPartnersPage() {
     setFormEndDate('');
     setFormAddress('');
     setFormNotes('');
+    setFormLogo('');
   };
 
   const openCreateModal = () => {
@@ -118,6 +121,7 @@ export default function AdminPartnersPage() {
     setFormEndDate(p.partnershipEndDate || '');
     setFormAddress(p.address || '');
     setFormNotes(p.notes || '');
+    setFormLogo(p.logo || '');
     setModalOpen(true);
   };
 
@@ -135,6 +139,7 @@ export default function AdminPartnersPage() {
       contactPerson: formContactPerson.trim(),
       email: formEmail.trim(),
       phone: formPhone.trim(),
+      logo: formLogo || undefined,
       website: formWebsite.trim() || undefined,
       industry: formIndustry.trim(),
       description: formDescription.trim(),
@@ -352,6 +357,7 @@ export default function AdminPartnersPage() {
               onChange={(e) => setFormIndustry(e.target.value)}
             />
           </div>
+          <MediaPicker label="Partner logo" value={formLogo} onChange={setFormLogo} helper="Use an official partner logo. Only publish logos you are authorized to display." />
           <Textarea
             label="Description"
             value={formDescription}
