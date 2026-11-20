@@ -483,24 +483,28 @@ export default function AdminMediaPage() {
                 <span className="block font-semibold text-[var(--admin-text-primary)]">Automatic optimization</span>
                 JPEG, PNG and WebP are resized and converted to WebP. Animated GIFs are preserved.
               </div>
-              {selectedFiles.length <= 1 && <Input
-                type="number"
-                label="Width (px)"
-                value={uploadForm.width || ''}
-                onChange={(e) =>
-                  setUploadForm({ ...uploadForm, width: parseInt(e.target.value || '0', 10) || 0 })
-                }
-                placeholder="1920"
-              />
-              {selectedFiles.length <= 1 && <Input
-                type="number"
-                label="Height (px)"
-                value={uploadForm.height || ''}
-                onChange={(e) =>
-                  setUploadForm({ ...uploadForm, height: parseInt(e.target.value || '0', 10) || 0 })
-                }
-                placeholder="1080"
-              />
+              {selectedFiles.length <= 1 && (
+                <Input
+                  type="number"
+                  label="Width (px)"
+                  value={uploadForm.width || ''}
+                  onChange={(e) =>
+                    setUploadForm({ ...uploadForm, width: parseInt(e.target.value || '0', 10) || 0 })
+                  }
+                  placeholder="1920"
+                />
+              )}
+              {selectedFiles.length <= 1 && (
+                <Input
+                  type="number"
+                  label="Height (px)"
+                  value={uploadForm.height || ''}
+                  onChange={(e) =>
+                    setUploadForm({ ...uploadForm, height: parseInt(e.target.value || '0', 10) || 0 })
+                  }
+                  placeholder="1080"
+                />
+              )}
             </div>
           </div>
 
