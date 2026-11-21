@@ -20,6 +20,23 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ success: false, error: 'Forbidden' }, { status: 403 });
   }
 
+  if (request.nextUrl.searchParams.get('view') === 'reminders') {
+    try {
+      const supabase = createAdminClient();
+      const { data, error } = await supabase.from('growthbridge_crm_leads')
+        .select('source, inquiry_id, stage, follow_up_at')
+        .not('follow_up_at', 'is', null)
+        .not('stage', 'in', '(won,lost)')
+        .order('follow_up_at', { ascending: true })
+        .limit(100);
+      if (error) throw error;
+      return NextResponse.json({ success: true, data: { reminders: data || [] } });
+    } catch (error) {
+      console.error('[API CRM reminders]', error);
+      return NextResponse.json({ success: false, error: 'Could not load follow-up reminders' }, { status: 500 });
+    }
+  }
+
   const source = request.nextUrl.searchParams.get('source');
   const id = request.nextUrl.searchParams.get('id');
   if (!validLead(source, id)) {
