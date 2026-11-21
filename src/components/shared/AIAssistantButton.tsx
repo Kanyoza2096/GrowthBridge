@@ -172,7 +172,7 @@ export function AIAssistantButton() {
                 <input type="checkbox" checked={consent} onChange={(event) => setConsent(event.target.checked)} required className="mt-0.5 accent-[var(--gb-green-600)]" />
                 I agree to share my contact details and the recent chat with GrowthBridge so the team can respond to my enquiry.
               </label>
-              <Button type="submit" size="sm" variant="primary" block disabled={!consent || isSubmittingLead}>
+              <Button type="submit" size="sm" variant="primary" fullWidth disabled={!consent || isSubmittingLead}>
                 {isSubmittingLead ? 'Sending…' : 'Send enquiry'}
               </Button>
               <p className="text-[10px] leading-relaxed text-[var(--text-tertiary)]">Only the recent conversation is included. Do not share passwords, payment details or other sensitive information.</p>
