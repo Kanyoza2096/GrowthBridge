@@ -128,8 +128,8 @@ export function AIAssistantButton() {
 
           <div className="flex-1 min-h-0 overflow-y-auto space-y-3 p-1 sm:p-2" aria-live="polite" aria-label="Conversation">
             {messages.map((message, index) => (
-              <div key={index} className={\`flex \${message.sender === 'user' ? 'justify-end' : 'justify-start'}\`}>
-                <div className={\`max-w-[92%] sm:max-w-[86%] whitespace-pre-wrap rounded-2xl px-3 sm:px-4 py-2.5 text-xs sm:text-sm leading-relaxed \${message.sender === 'user' ? 'bg-[var(--action-primary)] text-[var(--action-primary-text)] rounded-br-none' : 'bg-[var(--surface-subtle)] text-[var(--text-primary)] border border-[var(--border-subtle)] rounded-bl-none'}\`}>
+              <div key={index} className={`flex ${message.sender === 'user' ? 'justify-end' : 'justify-start'}`}>
+                <div className={`max-w-[92%] sm:max-w-[86%] whitespace-pre-wrap rounded-2xl px-3 sm:px-4 py-2.5 text-xs sm:text-sm leading-relaxed ${message.sender === 'user' ? 'bg-[var(--action-primary)] text-[var(--action-primary-text)] rounded-br-none' : 'bg-[var(--surface-subtle)] text-[var(--text-primary)] border border-[var(--border-subtle)] rounded-bl-none'}`}>
                   {message.text}
                 </div>
               </div>
