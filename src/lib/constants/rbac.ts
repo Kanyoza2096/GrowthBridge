@@ -111,6 +111,7 @@ export function canAccessRoute(route: string, permissions: AdminPermission[]): b
     '/admin/audit-log': 'audit',
     '/admin/notifications': 'notifications',
     '/admin/inquiries': 'applications',
+    '/admin/crm': 'applications',
     '/admin/users': 'users',
   };
 

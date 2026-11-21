@@ -20,6 +20,83 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ success: false, error: 'Forbidden' }, { status: 403 });
   }
 
+  if (request.nextUrl.searchParams.get('view') === 'summary') {
+    try {
+      const supabase = createAdminClient();
+      const { data, error } = await supabase.from('growthbridge_crm_leads')
+        .select('source, stage, follow_up_at, converted_at, conversion_value, created_at')
+        .order('created_at', { ascending: true })
+        .limit(10000);
+      if (error) throw error;
+
+      const leads = data || [];
+      const now = Date.now();
+      const stages = ['new', 'qualified', 'proposal', 'won', 'lost'] as const;
+      const stageCounts = Object.fromEntries(stages.map((stage) => [stage, 0])) as Record<typeof stages[number], number>;
+      const sourceCounts: Record<Source, number> = { application: 0, contact: 0, partnership: 0 };
+      let due = 0;
+      let overdue = 0;
+      let wonValue = 0;
+      let wonCount = 0;
+      let lostCount = 0;
+      for (const lead of leads) {
+        if (lead.stage in stageCounts) stageCounts[lead.stage as keyof typeof stageCounts] += 1;
+        if (lead.source in sourceCounts) sourceCounts[lead.source as Source] += 1;
+        if (lead.follow_up_at && !['won', 'lost'].includes(lead.stage)) {
+          const followUpTime = Date.parse(lead.follow_up_at);
+          if (Number.isFinite(followUpTime) && followUpTime <= now) {
+            due += 1;
+            if (followUpTime < now) overdue += 1;
+          }
+        }
+        if (lead.stage === 'won') {
+          wonCount += 1;
+          if (typeof lead.conversion_value === 'number') wonValue += lead.conversion_value;
+        }
+        if (lead.stage === 'lost') lostCount += 1;
+      }
+
+      const months = Array.from({ length: 6 }, (_, index) => {
+        const date = new Date();
+        date.setDate(1);
+        date.setHours(0, 0, 0, 0);
+        date.setMonth(date.getMonth() - (5 - index));
+        return { key: date.toISOString().slice(0, 7), label: date.toLocaleDateString('en', { month: 'short' }), wins: 0, value: 0 };
+      });
+      for (const lead of leads) {
+        if (lead.stage !== 'won' || !lead.converted_at) continue;
+        const key = String(lead.converted_at).slice(0, 7);
+        const month = months.find((item) => item.key === key);
+        if (month) {
+          month.wins += 1;
+          if (typeof lead.conversion_value === 'number') month.value += lead.conversion_value;
+        }
+      }
+
+      const closedLeads = wonCount + lostCount;
+      return NextResponse.json({
+        success: true,
+        data: {
+          totalTracked: leads.length,
+          stages: stageCounts,
+          followUpsDue: due,
+          overdueFollowUps: overdue,
+          wonCount,
+          lostCount,
+          winRate: closedLeads ? Math.round((wonCount / closedLeads) * 100) : null,
+          wonValue,
+          sources: sourceCounts,
+          monthlyConversions: months,
+          generatedAt: new Date().toISOString(),
+          truncated: leads.length === 10000,
+        },
+      });
+    } catch (error) {
+      console.error('[API CRM summary]', error);
+      return NextResponse.json({ success: false, error: 'Could not load CRM performance summary' }, { status: 500 });
+    }
+  }
+
   if (request.nextUrl.searchParams.get('view') === 'reminders') {
     try {
       const supabase = createAdminClient();

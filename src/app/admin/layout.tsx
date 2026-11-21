@@ -45,6 +45,7 @@ const NAV_SECTIONS = [
       { label: 'Projects', href: '/admin/projects', icon: 'projects', resource: 'projects', badgeCount: null },
       { label: 'Applications', href: '/admin/applications', icon: 'applications', resource: 'applications', badgeCount: null },
       { label: 'Inquiries', href: '/admin/inquiries', icon: 'inquiries', resource: 'applications', badgeCount: null },
+      { label: 'CRM Performance', href: '/admin/crm', icon: 'dashboard', resource: 'applications', badgeCount: null },
     ],
   },
   {
