@@ -170,7 +170,7 @@ export function AIAssistantButton() {
               <Input label="Phone (optional)" type="tel" value={leadPhone} onChange={(event) => setLeadPhone(event.target.value)} maxLength={30} />
               <label className="flex items-start gap-2 text-xs leading-relaxed text-[var(--text-secondary)]">
                 <input type="checkbox" checked={consent} onChange={(event) => setConsent(event.target.checked)} required className="mt-0.5 accent-[var(--gb-green-600)]" />
-                I agree to share my contact details and the recent chat with GrowthBridge so the team can respond to my enquiry.
+                I agree to share my contact details and recent chat with GrowthBridge. The chat text may be processed by Cloudflare Workers AI to prepare an internal enquiry summary; please do not include sensitive personal or payment information.
               </label>
               <Button type="submit" size="sm" variant="primary" fullWidth disabled={!consent || isSubmittingLead}>
                 {isSubmittingLead ? 'Sending…' : 'Send enquiry'}
