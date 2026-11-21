@@ -261,21 +261,23 @@ function AgentAnalysisPanel({ inquiry, compact = false }: { inquiry: Inquiry; co
                 <p className="text-[10px] uppercase font-bold text-[var(--admin-text-tertiary)] mb-1">Suggested next step</p>
                 <p className="text-xs text-[var(--admin-text-primary)]">{analysis.suggested_next_step}</p>
               </div>
-              <div className="rounded-lg border border-[var(--admin-border)] bg-[var(--admin-surface-card)]/60 p-3 space-y-2">
-                <div className="flex flex-wrap items-center justify-between gap-2">
-                  <p className="text-[10px] uppercase font-bold text-[var(--admin-text-tertiary)]">Suggested customer reply</p>
-                  <button
-                    type="button"
-                    onClick={() => void navigator.clipboard.writeText(analysis.reply_draft)}
-                    className="rounded-lg border border-[var(--admin-border-strong)] px-2.5 py-1.5 text-[10px] font-bold text-[var(--gb-green-400)] hover:bg-[var(--admin-surface-soft)] focus:outline-none focus:ring-2 focus:ring-[var(--gb-green-500)]"
-                    aria-label="Copy suggested customer reply"
-                  >
-                    Copy draft
-                  </button>
+              {analysis.reply_draft && (
+                <div className="rounded-lg border border-[var(--admin-border)] bg-[var(--admin-surface-card)]/60 p-3 space-y-2">
+                  <div className="flex flex-wrap items-center justify-between gap-2">
+                    <p className="text-[10px] uppercase font-bold text-[var(--admin-text-tertiary)]">Suggested customer reply</p>
+                    <button
+                      type="button"
+                      onClick={() => void navigator.clipboard.writeText(analysis.reply_draft)}
+                      className="rounded-lg border border-[var(--admin-border-strong)] px-2.5 py-1.5 text-[10px] font-bold text-[var(--gb-green-400)] hover:bg-[var(--admin-surface-soft)] focus:outline-none focus:ring-2 focus:ring-[var(--gb-green-500)]"
+                      aria-label="Copy suggested customer reply"
+                    >
+                      Copy draft
+                    </button>
+                  </div>
+                  <p className="whitespace-pre-wrap text-xs leading-relaxed text-[var(--admin-text-primary)]">{analysis.reply_draft}</p>
+                  <p className="text-[10px] text-[var(--admin-text-tertiary)]">AI-generated draft only. It has not been sent. Verify details and edit before contacting the customer.</p>
                 </div>
-                <p className="whitespace-pre-wrap text-xs leading-relaxed text-[var(--admin-text-primary)]">{analysis.reply_draft}</p>
-                <p className="text-[10px] text-[var(--admin-text-tertiary)]">AI-generated draft only. It has not been sent. Verify details and edit before contacting the customer.</p>
-              </div>
+              )}
               {analysis.risk_flags.length > 0 && (
                 <div className="rounded-lg border border-orange-500/25 bg-orange-500/5 p-2.5">
                   <p className="text-[10px] uppercase font-bold text-orange-300 mb-1">Needs careful human review</p>
