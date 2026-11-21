@@ -81,7 +81,7 @@ export async function POST(request: NextRequest) {
       code: 'AI_NOT_CONFIGURED',
     }, { status: 503 });
 
-    const model = process.env.CLOUDFLARE_AI_MODEL?.trim() || '@cf/meta/llama-3.2-3b-instruct';
+    const model = process.env.CLOUDFLARE_AI_MODEL?.trim() || '@cf/meta/llama-3.3-70b-instruct-fp8-fast';
     if (!/^@cf\/[a-zA-Z0-9._-]+\/[a-zA-Z0-9._-]+$/.test(model)) {
       console.error('[GrowthBridge AI] Invalid Cloudflare model identifier.');
       return NextResponse.json({ error: 'The AI service is temporarily misconfigured.' }, { status: 503 });
