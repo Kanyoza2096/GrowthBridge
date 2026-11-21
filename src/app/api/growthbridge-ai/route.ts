@@ -74,36 +74,60 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Please send a valid message.' }, { status: 400 });
     }
 
-    const apiKey = process.env.OPENAI_API_KEY?.trim();
-    if (!apiKey) return NextResponse.json({
+    const accountId = process.env.CLOUDFLARE_ACCOUNT_ID?.trim();
+    const apiToken = process.env.CLOUDFLARE_API_TOKEN?.trim();
+    if (!accountId || !apiToken) return NextResponse.json({
       error: 'The GrowthBridge AI consultant is being configured. You can still reach our team through the Contact page.',
       code: 'AI_NOT_CONFIGURED',
     }, { status: 503 });
+
+    const model = process.env.CLOUDFLARE_AI_MODEL?.trim() || '@cf/meta/llama-3.2-3b-instruct';
+    if (!/^@cf\/[a-zA-Z0-9._-]+\/[a-zA-Z0-9._-]+$/.test(model)) {
+      console.error('[GrowthBridge AI] Invalid Cloudflare model identifier.');
+      return NextResponse.json({ error: 'The AI service is temporarily misconfigured.' }, { status: 503 });
+    }
 
     const knowledge = await loadPublicKnowledge();
     const knowledgeText = knowledge.map((item, index) =>
       '[Source ' + (index + 1) + ': ' + item.title + ' | ' + item.source + ']\n' + item.content
     ).join('\n\n').slice(0, 24000);
 
-    const upstream = await fetch('https://api.openai.com/v1/responses', {
-      method: 'POST',
-      headers: { Authorization: 'Bearer ' + apiKey, 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        model: process.env.OPENAI_MODEL?.trim() || 'gpt-4o-mini',
-        instructions: SYSTEM_PROMPT + '\n\nPUBLISHED WEBSITE KNOWLEDGE:\n' + (knowledgeText || 'No published content is currently available. Do not invent details.'),
-        input: parsed.data.messages.map((message) => ({ role: message.role, content: message.content })),
-        max_output_tokens: 550,
-      }),
-      signal: AbortSignal.timeout(18000),
-      cache: 'no-store',
-    });
+    const upstream = await fetch(
+      'https://api.cloudflare.com/client/v4/accounts/' + encodeURIComponent(accountId) + '/ai/run/' + model,
+      {
+        method: 'POST',
+        headers: { Authorization: 'Bearer ' + apiToken, 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          messages: [
+            { role: 'system', content: SYSTEM_PROMPT + '\\n\\nPUBLISHED WEBSITE KNOWLEDGE:\\n' + (knowledgeText || 'No published content is currently available. Do not invent details.') },
+            ...parsed.data.messages.map((message) => ({ role: message.role, content: message.content })),
+          ],
+          max_tokens: 550,
+          temperature: 0.35,
+        }),
+        signal: AbortSignal.timeout(18000),
+        cache: 'no-store',
+      },
+    );
     if (!upstream.ok) {
-      console.error('[GrowthBridge AI] Provider request failed:', upstream.status);
-      return NextResponse.json({ error: 'The consultant is temporarily unavailable. Please try again or contact our team.' }, { status: 502 });
+      console.error('[GrowthBridge AI] Cloudflare Workers AI request failed:', upstream.status);
+      const status = upstream.status === 429 || upstream.status === 503 ? 503 : 502;
+      return NextResponse.json({
+        error: status === 503
+          ? 'The AI service is busy or its free daily allowance may have been reached. Please try again later or contact our team.'
+          : 'The consultant is temporarily unavailable. Please try again or contact our team.',
+      }, { status });
     }
-    const result = await upstream.json() as { choices?: Array<{ message?: { content?: string } }> };
-    const reply = result.choices?.[0]?.message?.content?.trim();
-    if (!reply) return NextResponse.json({ error: 'I could not prepare a response just now. Please try again.' }, { status: 502 });
+    const result = await upstream.json() as {
+      success?: boolean;
+      errors?: Array<{ message?: string }>;
+      result?: { response?: string };
+    };
+    const reply = result.result?.response?.trim();
+    if (!upstream.ok || result.success === false || !reply) {
+      console.error('[GrowthBridge AI] Cloudflare returned an unsuccessful or empty response.');
+      return NextResponse.json({ error: 'I could not prepare a response just now. Please try again.' }, { status: 502 });
+    }
     return NextResponse.json({ reply, knowledgeCount: knowledge.length });
   } catch (error) {
     console.error('[GrowthBridge AI] Request failed:', error instanceof Error ? error.message : 'Unknown error');
