@@ -36,7 +36,7 @@ jobs:
           result=${PIPESTATUS[0]}
           exit "$result"
       - if: always() && steps.install.outcome == 'success'
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: typecheck-diagnostics
           path: typecheck.log
@@ -65,7 +65,7 @@ jobs:
         name: Run browser end-to-end tests
         run: npm run test:e2e
       - if: always() && steps.install.outcome == 'success'
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: playwright-report
           path: |
