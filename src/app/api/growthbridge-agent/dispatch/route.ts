@@ -53,7 +53,7 @@ function parseAgentJson(value: string): unknown {
   }
 }
 
-async function analyzeEnquiry(subject: string, message: string, type: string, services: string[]) {
+async function analyzeEnquiry(subject: string, message: string, type: string, services: { title: string; tagline: string; description: string }[]) {
   const accountId = process.env.CLOUDFLARE_ACCOUNT_ID?.trim();
   const apiToken = process.env.CLOUDFLARE_API_TOKEN?.trim();
   const model = process.env.CLOUDFLARE_AI_MODEL?.trim() || '@cf/meta/llama-3.3-70b-instruct-fp8-fast';
@@ -160,7 +160,7 @@ export async function POST(request: NextRequest) {
       }
 
       // Deliberately exclude name, email and phone from the model request.
-      const result = await analyzeEnquiry(enquiry.subject, enquiry.message, enquiry.type || 'general', publishedServices as unknown as string[]);
+      const result = await analyzeEnquiry(enquiry.subject, enquiry.message, enquiry.type || 'general', publishedServices);
       const { data: finalized, error: finalizeError } = await admin.from('growthbridge_agent_jobs').update({
         status: 'completed',
         result,
