@@ -41,6 +41,10 @@ export function ServicesPreview() {
               <ScrollReveal key={service.id} delay={index * 100}>
                 <Card variant="glass" hoverEffect className="h-full flex flex-col justify-between group p-6">
                   <div className="space-y-4">
+                    {service.image ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img src={service.image} alt={service.title} loading="lazy" className="w-full h-36 rounded-xl object-cover" />
+                    ) : null}
                     <div className="flex items-center justify-between">
                       <div className="w-12 h-12 rounded-2xl bg-gradient-brand flex items-center justify-center text-white shadow-md group-hover:scale-110 transition-transform">
                         <span className="font-bold text-lg">0{service.order}</span>

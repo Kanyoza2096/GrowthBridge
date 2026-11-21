@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Textarea } from '@/components/ui/Textarea';
 import { Modal } from '@/components/ui/Modal';
+import { MediaPicker } from '@/components/admin/MediaPicker';
 import { useAdminAuth } from '@/components/providers/AdminAuthProvider';
 import { useAdminData } from '@/components/providers/AdminDataProvider';
 import { useToast } from '@/components/providers/ToastProvider';
@@ -28,6 +29,7 @@ const emptyForm = {
   status: 'draft' as Project['status'],
   startDate: '',
   endDate: '',
+  image: '',
 };
 
 function statusVariant(status: Project['status']) {
@@ -93,6 +95,7 @@ export default function AdminProjectsPage() {
       status: proj.status,
       startDate: proj.startDate || '',
       endDate: proj.endDate || '',
+      image: proj.image || '',
     });
     setIsEditing(true);
     setModalOpen(true);
@@ -132,6 +135,7 @@ export default function AdminProjectsPage() {
       status: form.status,
       startDate: form.startDate || undefined,
       endDate: form.endDate || undefined,
+      image: form.image || undefined,
     });
 
     success(isEditing ? 'Project Updated' : 'Project Created', `${form.title} has been saved.`);
@@ -282,6 +286,7 @@ export default function AdminProjectsPage() {
             <Input label="Slug" value={form.slug} onChange={(e) => setForm({ ...form, slug: e.target.value })} placeholder="auto-generated if empty" />
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <MediaPicker label="Project cover image" value={form.image} onChange={(url) => setForm((current) => ({ ...current, image: url }))} helper="Choose an uploaded image to display on the public portfolio and project case study." />
             <Input label="Client" value={form.client} onChange={(e) => setForm({ ...form, client: e.target.value })} placeholder="Client organization" />
             <Input label="Category" value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })} placeholder="Healthcare, E-Commerce, ..." />
           </div>

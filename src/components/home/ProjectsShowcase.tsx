@@ -52,8 +52,13 @@ export function ProjectsShowcase() {
             {featuredProjects.map((project, idx) => (
               <ScrollReveal key={project.id} delay={idx * 150}>
                 <Card variant="glass" hoverEffect className="h-full flex flex-col justify-between group p-0 overflow-hidden">
-                  {/* Decorative Banner Header */}
+                  {/* Selected Media Library cover, with branded fallback */}
                   <div className="h-44 bg-gradient-brand p-6 flex flex-col justify-between relative overflow-hidden">
+                    {project.image ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img src={project.image} alt={project.title} loading="lazy" className="absolute inset-0 w-full h-full object-cover" />
+                    ) : null}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/25 to-black/20" aria-hidden="true" />
                     <div className="flex items-center justify-between z-10">
                       <Badge variant="green" className="text-[10px]">
                         {project.category.replace('-', ' ').toUpperCase()}

@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Textarea } from '@/components/ui/Textarea';
 import { Modal } from '@/components/ui/Modal';
+import { MediaPicker } from '@/components/admin/MediaPicker';
 import { useAdminAuth } from '@/components/providers/AdminAuthProvider';
 import { useAdminData } from '@/components/providers/AdminDataProvider';
 import { useToast } from '@/components/providers/ToastProvider';
@@ -55,6 +56,7 @@ export default function AdminBlogPage() {
   const [formStatus, setFormStatus] = useState<BlogPost['status']>('draft');
   const [formScheduledAt, setFormScheduledAt] = useState('');
   const [formAuthor, setFormAuthor] = useState('');
+  const [formCoverImage, setFormCoverImage] = useState('');
 
   const filteredPosts = useMemo(() => blogPosts.filter((b) => {
     const matchesStatus = statusFilter === 'all' || b.status === statusFilter;
@@ -67,7 +69,7 @@ export default function AdminBlogPage() {
   const resetForm = () => {
     setFormTitle(''); setFormSlug(''); setFormCategory(''); setFormTags('');
     setFormExcerpt(''); setFormContent(''); setFormStatus('draft');
-    setFormScheduledAt(''); setFormAuthor('');
+    setFormScheduledAt(''); setFormAuthor(''); setFormCoverImage('');
   };
 
   const autoSlug = (title: string) => title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
@@ -87,7 +89,7 @@ export default function AdminBlogPage() {
     setFormCategory(b.category); setFormTags(b.tags.join(', '));
     setFormExcerpt(b.excerpt); setFormContent(b.content); setFormStatus(b.status);
     setFormScheduledAt(b.scheduledAt ? b.scheduledAt.slice(0, 16) : '');
-    setFormAuthor(b.author); setModalOpen(true);
+    setFormAuthor(b.author); setFormCoverImage(b.coverImage || ''); setModalOpen(true);
   };
 
   const closeModal = () => { if (!isSaving) { setModalOpen(false); setEditingPost(null); } };
@@ -107,12 +109,12 @@ export default function AdminBlogPage() {
 
     const tagsArr = formTags.split(',').map((s) => s.trim()).filter(Boolean);
     const finalSlug = formSlug || autoSlug(formTitle);
-    const payload: Partial<BlogPost> & { id?: string } = {
+    const payload: Partial<BlogPost> & { id?: string; image?: string } = {
       slug: finalSlug, title: formTitle.trim(), excerpt: formExcerpt.trim(),
       content: formContent, category: formCategory.trim() || 'General',
       tags: tagsArr, status: formStatus,
       scheduledAt: formStatus === 'scheduled' ? new Date(formScheduledAt).toISOString() : undefined,
-      author: formAuthor.trim() || 'Admin', authorId: 'admin-1',
+      author: formAuthor.trim() || 'Admin', authorId: 'admin-1', image: formCoverImage || undefined,
     };
 
     if (editingPost) payload.id = editingPost.id;
@@ -178,6 +180,7 @@ export default function AdminBlogPage() {
           <Input label="Slug *" required value={formSlug} onChange={(e) => setFormSlug(e.target.value)} placeholder="url-friendly-slug" />
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4"><Input label="Category" value={formCategory} onChange={(e) => setFormCategory(e.target.value)} placeholder="e.g. Case Studies, Impact Stories" /><Input label="Author" value={formAuthor} onChange={(e) => setFormAuthor(e.target.value)} placeholder="Author name" /></div>
           <Input label="Tags (comma-separated)" value={formTags} onChange={(e) => setFormTags(e.target.value)} placeholder="Healthcare, Digital Transformation, Case Study" />
+          <MediaPicker label="Featured image" value={formCoverImage} onChange={setFormCoverImage} helper="Featured images appear on public article cards and article pages." />
           <Textarea label="Excerpt" value={formExcerpt} onChange={(e) => setFormExcerpt(e.target.value)} rows={2} placeholder="Short summary displayed on blog list..." />
           <Textarea label="Content" value={formContent} onChange={(e) => setFormContent(e.target.value)} rows={6} placeholder="Full article content (HTML supported)..." />
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">

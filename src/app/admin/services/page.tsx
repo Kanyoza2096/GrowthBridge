@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Textarea } from '@/components/ui/Textarea';
 import { Modal } from '@/components/ui/Modal';
+import { MediaPicker } from '@/components/admin/MediaPicker';
 import { useAdminAuth } from '@/components/providers/AdminAuthProvider';
 import { useAdminData } from '@/components/providers/AdminDataProvider';
 import { useToast } from '@/components/providers/ToastProvider';
@@ -25,6 +26,7 @@ const emptyForm = {
   seoTitle: '',
   seoDescription: '',
   seoKeywords: '',
+  image: '',
 };
 
 function statusVariant(status: Service['status']) {
@@ -87,6 +89,7 @@ export default function AdminServicesPage() {
       seoTitle: svc.seoTitle,
       seoDescription: svc.seoDescription,
       seoKeywords: svc.seoKeywords.join(', '),
+      image: svc.image || '',
     });
     setIsEditing(true);
     setModalOpen(true);
@@ -117,6 +120,7 @@ export default function AdminServicesPage() {
       seoTitle: form.seoTitle.trim() || form.title.trim(),
       seoDescription: form.seoDescription.trim(),
       seoKeywords: keywordsArr,
+      image: form.image || undefined,
     });
 
     success(isEditing ? 'Service Updated' : 'Service Created', `${form.title} has been saved.`);
@@ -260,6 +264,7 @@ export default function AdminServicesPage() {
         <div className="space-y-4">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <Input label="Title *" value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} placeholder="e.g. Digital Solutions" />
+            <MediaPicker label="Service image" value={form.image} onChange={(url) => setForm((current) => ({ ...current, image: url }))} helper="Selected image appears on the public service detail page and social preview." />
             <Input label="Slug" value={form.slug} onChange={(e) => setForm({ ...form, slug: e.target.value })} placeholder="auto-generated if empty" />
           </div>
           <Textarea label="Description" value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} placeholder="Short summary of this service..." rows={3} />

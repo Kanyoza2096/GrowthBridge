@@ -88,6 +88,7 @@ export interface Project {
   description: string;
   longDescription?: string;
   category: string;
+  image?: string;
   images: string[];
   technologies: string[];
   impactStats: { label: string; value: string }[];
