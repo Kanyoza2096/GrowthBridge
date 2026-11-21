@@ -401,9 +401,11 @@ function InquiryDetailModal({
           </div>
         </div>
 
-        <div className="px-6 py-4 border-b border-[var(--admin-border)]">
-          <AgentAnalysisPanel inquiry={inquiry} />
-        </div>
+        {inquiry.agentStatus && (
+          <div className="px-6 py-4 border-b border-[var(--admin-border)]">
+            <AgentAnalysisPanel inquiry={inquiry} />
+          </div>
+        )}
 
         <div className="px-6 py-3 border-b border-[var(--admin-border)] flex gap-2">
           {(['reply', 'notes', 'history'] as const).map((t) => (
