@@ -301,6 +301,202 @@ function AgentAnalysisPanel({ inquiry, compact = false }: { inquiry: Inquiry; co
   );
 }
 
+type CrmLead = {
+  stage: 'new' | 'qualified' | 'proposal' | 'won' | 'lost';
+  follow_up_at: string | null;
+  converted_at: string | null;
+  conversion_value: number | null;
+};
+type CrmReminder = { source: Inquiry['source']; inquiry_id: string; stage: CrmLead['stage']; follow_up_at: string };
+type CrmActivity = {
+  id: string;
+  activity_type: string;
+  content: string | null;
+  metadata: Record<string, unknown>;
+  actor_name: string;
+  created_at: string;
+};
+type CrmResponse = { lead: CrmLead | null; activities: CrmActivity[] };
+
+function localDateTime(value: string | null) {
+  if (!value) return '';
+  const date = new Date(value);
+  return new Date(date.getTime() - date.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
+}
+
+function crmActivityLabel(activity: CrmActivity) {
+  switch (activity.activity_type) {
+    case 'note_added': return 'Internal note added';
+    case 'follow_up_scheduled': return 'Follow-up scheduled';
+    case 'follow_up_cleared': return 'Follow-up cleared';
+    case 'conversion_recorded': return 'Lead marked as won';
+    case 'conversion_reverted': return 'Conversion status changed';
+    case 'stage_changed': return 'Pipeline stage updated';
+    default: return 'Lead activity';
+  }
+}
+
+function LeadCRMPanel({ open, inquiry, canEdit }: { open: boolean; inquiry: Inquiry | null; canEdit: boolean }) {
+  const [lead, setLead] = useState<CrmLead | null>(null);
+  const [activities, setActivities] = useState<CrmActivity[]>([]);
+  const [followUp, setFollowUp] = useState('');
+  const [stage, setStage] = useState<CrmLead['stage']>('new');
+  const [conversionValue, setConversionValue] = useState('');
+  const [note, setNote] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const { success, error } = useToast();
+
+  const reload = React.useCallback(async () => {
+    if (!inquiry) return;
+    setLoading(true);
+    try {
+      const result = await adminFetch<CrmResponse>(`/api/admin/crm?source=${inquiry.source}&id=${inquiry.id}`);
+      setLead(result.lead);
+      setActivities(result.activities || []);
+      setStage(result.lead?.stage || 'new');
+      setFollowUp(localDateTime(result.lead?.follow_up_at || null));
+      setConversionValue(result.lead?.conversion_value == null ? '' : String(result.lead.conversion_value));
+    } catch {
+      error('CRM unavailable', 'Could not load lead history and follow-up details.');
+    } finally {
+      setLoading(false);
+    }
+  }, [error, inquiry?.id, inquiry?.source]);
+
+  React.useEffect(() => {
+    if (open && inquiry) void reload();
+  }, [open, inquiry?.id, inquiry?.source, reload]);
+
+  const save = async (payload: Record<string, unknown>, message: string) => {
+    if (!inquiry) return;
+    setSaving(true);
+    try {
+      await adminFetch('/api/admin/crm', { method: 'POST', body: JSON.stringify({ source: inquiry.source, id: inquiry.id, ...payload }) });
+      await reload();
+      success('CRM updated', message);
+    } catch {
+      error('Update failed', 'The CRM change could not be saved. Please retry.');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  if (!inquiry) return null;
+  const isWon = stage === 'won';
+
+  return (
+    <section className="px-6 py-4 border-b border-[var(--admin-border)] space-y-4">
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <div>
+          <p className="text-[10px] uppercase font-extrabold tracking-wider text-[var(--gb-green-400)]">Lead CRM</p>
+          <p className="text-xs text-[var(--admin-text-secondary)]">Pipeline, reminders and internal activity</p>
+        </div>
+        <Badge variant={isWon ? 'green' : stage === 'lost' ? 'outline' : 'blue'}>{stage.toUpperCase()}</Badge>
+      </div>
+
+      {loading ? (
+        <p className="text-xs text-[var(--admin-text-tertiary)]">Loading CRM record…</p>
+      ) : (
+        <>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <label className="space-y-1.5 text-xs text-[var(--admin-text-secondary)]">
+              Pipeline stage
+              <select
+                value={stage}
+                disabled={!canEdit || saving}
+                onChange={(event) => setStage(event.target.value as CrmLead['stage'])}
+                className="w-full rounded-lg border border-[var(--admin-border-strong)] bg-[var(--admin-surface-card)] px-3 py-2 text-[var(--admin-text-primary)]"
+              >
+                <option value="new">New</option>
+                <option value="qualified">Qualified</option>
+                <option value="proposal">Proposal</option>
+                <option value="won">Won / Converted</option>
+                <option value="lost">Lost</option>
+              </select>
+            </label>
+            <label className="space-y-1.5 text-xs text-[var(--admin-text-secondary)]">
+              Follow-up reminder
+              <input
+                type="datetime-local"
+                value={followUp}
+                disabled={!canEdit || saving}
+                onChange={(event) => setFollowUp(event.target.value)}
+                className="w-full rounded-lg border border-[var(--admin-border-strong)] bg-[var(--admin-surface-card)] px-3 py-2 text-[var(--admin-text-primary)]"
+              />
+            </label>
+          </div>
+          {stage === 'won' && (
+            <label className="block space-y-1.5 text-xs text-[var(--admin-text-secondary)]">
+              Conversion value (optional)
+              <input
+                type="number"
+                min="0"
+                step="0.01"
+                value={conversionValue}
+                disabled={!canEdit || saving}
+                onChange={(event) => setConversionValue(event.target.value)}
+                placeholder="e.g. 2500"
+                className="w-full sm:max-w-xs rounded-lg border border-[var(--admin-border-strong)] bg-[var(--admin-surface-card)] px-3 py-2 text-[var(--admin-text-primary)]"
+              />
+            </label>
+          )}
+          {canEdit && (
+            <div className="flex flex-wrap gap-2">
+              <Button size="sm" variant="primary" disabled={saving} isLoading={saving} onClick={() => void save({
+                action: 'set_stage', stage,
+                conversionValue: stage === 'won' && conversionValue.trim() ? Number(conversionValue) : null,
+              }, stage === 'won' ? 'Conversion recorded.' : 'Pipeline stage saved.')}>Save stage</Button>
+              <Button size="sm" variant="secondary" disabled={saving || !followUp} onClick={() => void save({ action: 'set_follow_up', followUpAt: new Date(followUp).toISOString() }, 'Follow-up reminder scheduled.')}>Schedule follow-up</Button>
+              {lead?.follow_up_at && (
+                <Button size="sm" variant="ghost" disabled={saving} onClick={() => { setFollowUp(''); void save({ action: 'set_follow_up', followUpAt: null }, 'Follow-up reminder cleared.'); }}>Clear reminder</Button>
+              )}
+            </div>
+          )}
+          {lead?.follow_up_at && (
+            <p className="text-xs text-[var(--admin-text-secondary)]">
+              <span className="font-bold">Next follow-up:</span> {new Date(lead.follow_up_at).toLocaleString()}
+              {new Date(lead.follow_up_at).getTime() < Date.now() && stage !== 'won' && stage !== 'lost' ? <span className="ml-2 text-amber-400 font-bold">Overdue</span> : null}
+            </p>
+          )}
+          {lead?.converted_at && (
+            <p className="text-xs text-[var(--gb-green-400)] font-semibold">
+              Converted {new Date(lead.converted_at).toLocaleDateString()}
+              {lead.conversion_value != null ? ` · Value: ${lead.conversion_value}` : ''}
+            </p>
+          )}
+        </>
+      )}
+
+      {canEdit && (
+        <div className="space-y-2">
+          <label className="block text-[10px] uppercase font-bold text-[var(--admin-text-tertiary)]">Internal CRM note</label>
+          <Textarea value={note} onChange={(event) => setNote(event.target.value)} placeholder="Record a call, meeting, customer requirement or next action…" className="min-h-[72px]" />
+          <div className="flex justify-end">
+            <Button size="sm" variant="secondary" disabled={saving || !note.trim()} onClick={() => void save({ action: 'add_note', content: note.trim() }, 'Internal note saved.')}>Add note</Button>
+          </div>
+        </div>
+      )}
+
+      <div className="space-y-2">
+        <p className="text-[10px] uppercase font-bold text-[var(--admin-text-tertiary)]">Activity history ({activities.length})</p>
+        {activities.length === 0 ? (
+          <p className="text-xs text-[var(--admin-text-tertiary)]">No CRM activity recorded yet.</p>
+        ) : activities.map((activity) => (
+          <div key={activity.id} className="rounded-lg border border-[var(--admin-border)] bg-[var(--admin-surface-card)]/50 p-3 space-y-1">
+            <div className="flex flex-wrap justify-between gap-2">
+              <p className="text-xs font-bold text-[var(--admin-text-primary)]">{crmActivityLabel(activity)}</p>
+              <span className="text-[10px] text-[var(--admin-text-tertiary)]">{new Date(activity.created_at).toLocaleString()}</span>
+            </div>
+            {activity.content && <p className="text-xs whitespace-pre-wrap text-[var(--admin-text-secondary)]">{activity.content}</p>}
+            <p className="text-[10px] text-[var(--admin-text-tertiary)]">By {activity.actor_name}</p>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
 function InquiryDetailModal({
   open,
   onClose,
@@ -423,6 +619,8 @@ function InquiryDetailModal({
             <AgentAnalysisPanel inquiry={inquiry} />
           </div>
         )}
+
+        <LeadCRMPanel open={open} inquiry={inquiry} canEdit={canEdit} />
 
         <div className="px-6 py-3 border-b border-[var(--admin-border)] flex gap-2">
           {(['reply', 'notes', 'history'] as const).map((t) => (
@@ -664,6 +862,7 @@ export default function AdminInquiriesPage() {
   const { addApplicationNote } = useAdminData();
   const { success, info, error } = useToast();
   const [inquiries, setInquiries] = useState<Inquiry[]>([]);
+  const [reminders, setReminders] = useState<CrmReminder[]>([]);
   const [loadingInquiries, setLoadingInquiries] = useState(true);
   const [inquiryLoadFailed, setInquiryLoadFailed] = useState(false);
 
@@ -687,6 +886,17 @@ export default function AdminInquiriesPage() {
     }
   }, [error, hasPermission]);
   React.useEffect(() => { void loadInquiries(); }, [loadInquiries]);
+
+  const loadReminders = React.useCallback(async () => {
+    if (!hasPermission('applications', 'read')) return;
+    try {
+      const result = await adminFetch<{ reminders: CrmReminder[] }>('/api/admin/crm?view=reminders');
+      setReminders(result.reminders || []);
+    } catch {
+      setReminders([]);
+    }
+  }, [hasPermission]);
+  React.useEffect(() => { void loadReminders(); }, [loadReminders]);
 
   const [filterTab, setFilterTab] = useState<InquiryTab>('all');
   const [statusFilter, setStatusFilter] = useState<InquiryStatus>('all');
@@ -796,6 +1006,40 @@ export default function AdminInquiriesPage() {
           </div>
         }
       />
+
+      <Card variant="solid" className="p-4 sm:p-5 space-y-3">
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <div>
+            <p className="text-xs font-extrabold uppercase tracking-wider text-[var(--gb-green-400)]">Follow-up queue</p>
+            <p className="text-xs text-[var(--admin-text-secondary)]">Upcoming and overdue customer follow-ups</p>
+          </div>
+          <Badge variant={reminders.some((item) => new Date(item.follow_up_at).getTime() < Date.now()) ? 'orange' : 'blue'}>
+            {reminders.filter((item) => new Date(item.follow_up_at).getTime() < Date.now()).length} overdue
+          </Badge>
+        </div>
+        {reminders.length === 0 ? (
+          <p className="text-xs text-[var(--admin-text-tertiary)]">No follow-ups scheduled. Open a lead to set its next reminder.</p>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+            {reminders.map((reminder) => {
+              const item = inquiries.find((entry) => entry.id === reminder.inquiry_id && entry.source === reminder.source);
+              if (!item) return null;
+              const overdue = new Date(reminder.follow_up_at).getTime() < Date.now();
+              return (
+                <button key={reminder.source + reminder.inquiry_id} type="button" onClick={() => setDetailInquiry(item)}
+                  className="text-left rounded-xl border border-[var(--admin-border)] bg-[var(--admin-surface-card)]/50 p-3 hover:border-[var(--gb-green-600)] transition-colors">
+                  <span className="flex items-center justify-between gap-2">
+                    <span className="text-xs font-bold text-[var(--admin-text-primary)] truncate">{item.name}</span>
+                    <Badge variant={overdue ? 'orange' : 'blue'}>{overdue ? 'OVERDUE' : reminder.stage.toUpperCase()}</Badge>
+                  </span>
+                  <span className="block text-[10px] text-[var(--admin-text-secondary)] mt-1">{item.subject || item.type}</span>
+                  <span className="block text-[10px] font-semibold text-[var(--admin-text-tertiary)] mt-1">{new Date(reminder.follow_up_at).toLocaleString()}</span>
+                </button>
+              );
+            })}
+          </div>
+        )}
+      </Card>
 
       <Card variant="solid" className="p-4 sm:p-5 space-y-4">
         <div className="flex flex-wrap gap-2">
