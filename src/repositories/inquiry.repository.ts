@@ -1,5 +1,5 @@
 import { createAdminClient } from '@/lib/supabase/server';
-import type { Inquiry, InquiryStatus } from '@/lib/types/inquiry';
+import type { AgentLeadAnalysis, Inquiry, InquiryStatus } from '@/lib/types/inquiry';
 
 const status = (value: string): InquiryStatus => value === 'new' ? 'new' : value === 'reviewing' ? 'contacted' : 'closed';
 
@@ -12,9 +12,35 @@ export class InquiryRepository {
       supabase.from('partnership_requests').select('*').order('created_at', { ascending: false }),
     ]);
     for (const result of [apps, contacts, partnerships]) if (result.error) throw result.error;
+
+    const aiContactIds = (contacts.data || [])
+      .filter((contact) => contact.subject === 'GrowthBridge AI consultation request')
+      .map((contact) => contact.id);
+    const agentJobs = aiContactIds.length
+      ? await supabase.from('growthbridge_agent_jobs')
+          .select('contact_submission_id, status, result')
+          .in('contact_submission_id', aiContactIds)
+      : null;
+    if (agentJobs?.error) throw agentJobs.error;
+    const agentJobByContactId = new Map(
+      (agentJobs?.data || []).map((job) => [job.contact_submission_id, job])
+    );
+
     return [
       ...(apps.data || []).map((r: any): Inquiry => ({ id:r.id, source:'application', type:r.type, name:r.applicant_name, email:r.email, phone:r.phone||'', subject:r.subject, message:r.message, status:status(r.status), submittedAt:r.submitted_at, assignee:r.assignee || undefined, notes:Array.isArray(r.notes)?r.notes:[], history:Array.isArray(r.history)?r.history:[] })),
-      ...(contacts.data || []).map((r: any): Inquiry => ({ id:r.id, source:'contact', type:r.type === 'partnership' ? 'partnership' : 'general', name:r.name, email:r.email, phone:r.phone||'', subject:r.subject, message:r.message, status:r.status === 'new' ? 'new' : r.status === 'replied' || r.status === 'archived' ? 'closed' : 'contacted', submittedAt:r.created_at, notes:[], history:[] })),
+      ...(contacts.data || []).map((r: any): Inquiry => {
+        const agentJob = agentJobByContactId.get(r.id);
+        return {
+          id:r.id, source:'contact', type:r.type === 'partnership' ? 'partnership' : 'general',
+          name:r.name, email:r.email, phone:r.phone||'', subject:r.subject, message:r.message,
+          status:r.status === 'new' ? 'new' : r.status === 'replied' || r.status === 'archived' ? 'closed' : 'contacted',
+          submittedAt:r.created_at, notes:[], history:[],
+          agentStatus: agentJob?.status as Inquiry['agentStatus'],
+          agentAnalysis: agentJob?.status === 'completed' && agentJob.result
+            ? agentJob.result as unknown as AgentLeadAnalysis
+            : undefined,
+        };
+      }),
       ...(partnerships.data || []).map((r: any): Inquiry => ({ id:r.id, source:'partnership', type:'partnership', name:r.contact_person, email:r.email, phone:r.phone||'', subject:`Partnership: ${r.partnership_type}`, message:r.message, status:r.status === 'new' ? 'new' : r.status === 'approved' || r.status === 'declined' ? 'closed' : 'contacted', submittedAt:r.created_at, notes:[], history:[] })),
     ].sort((a,b) => new Date(b.submittedAt).getTime() - new Date(a.submittedAt).getTime());
   }
