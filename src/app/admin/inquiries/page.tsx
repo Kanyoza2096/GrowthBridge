@@ -307,6 +307,7 @@ type CrmLead = {
   converted_at: string | null;
   conversion_value: number | null;
 };
+type CrmReminder = { source: Inquiry['source']; inquiry_id: string; stage: CrmLead['stage']; follow_up_at: string };
 type CrmActivity = {
   id: string;
   activity_type: string;
@@ -861,6 +862,7 @@ export default function AdminInquiriesPage() {
   const { addApplicationNote } = useAdminData();
   const { success, info, error } = useToast();
   const [inquiries, setInquiries] = useState<Inquiry[]>([]);
+  const [reminders, setReminders] = useState<CrmReminder[]>([]);
   const [loadingInquiries, setLoadingInquiries] = useState(true);
   const [inquiryLoadFailed, setInquiryLoadFailed] = useState(false);
 
@@ -884,6 +886,17 @@ export default function AdminInquiriesPage() {
     }
   }, [error, hasPermission]);
   React.useEffect(() => { void loadInquiries(); }, [loadInquiries]);
+
+  const loadReminders = React.useCallback(async () => {
+    if (!hasPermission('applications', 'read')) return;
+    try {
+      const result = await adminFetch<{ reminders: CrmReminder[] }>('/api/admin/crm?view=reminders');
+      setReminders(result.reminders || []);
+    } catch {
+      setReminders([]);
+    }
+  }, [hasPermission]);
+  React.useEffect(() => { void loadReminders(); }, [loadReminders]);
 
   const [filterTab, setFilterTab] = useState<InquiryTab>('all');
   const [statusFilter, setStatusFilter] = useState<InquiryStatus>('all');
@@ -993,6 +1006,40 @@ export default function AdminInquiriesPage() {
           </div>
         }
       />
+
+      <Card variant="solid" className="p-4 sm:p-5 space-y-3">
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <div>
+            <p className="text-xs font-extrabold uppercase tracking-wider text-[var(--gb-green-400)]">Follow-up queue</p>
+            <p className="text-xs text-[var(--admin-text-secondary)]">Upcoming and overdue customer follow-ups</p>
+          </div>
+          <Badge variant={reminders.some((item) => new Date(item.follow_up_at).getTime() < Date.now()) ? 'orange' : 'blue'}>
+            {reminders.filter((item) => new Date(item.follow_up_at).getTime() < Date.now()).length} overdue
+          </Badge>
+        </div>
+        {reminders.length === 0 ? (
+          <p className="text-xs text-[var(--admin-text-tertiary)]">No follow-ups scheduled. Open a lead to set its next reminder.</p>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+            {reminders.map((reminder) => {
+              const item = inquiries.find((entry) => entry.id === reminder.inquiry_id && entry.source === reminder.source);
+              if (!item) return null;
+              const overdue = new Date(reminder.follow_up_at).getTime() < Date.now();
+              return (
+                <button key={reminder.source + reminder.inquiry_id} type="button" onClick={() => setDetailInquiry(item)}
+                  className="text-left rounded-xl border border-[var(--admin-border)] bg-[var(--admin-surface-card)]/50 p-3 hover:border-[var(--gb-green-600)] transition-colors">
+                  <span className="flex items-center justify-between gap-2">
+                    <span className="text-xs font-bold text-[var(--admin-text-primary)] truncate">{item.name}</span>
+                    <Badge variant={overdue ? 'orange' : 'blue'}>{overdue ? 'OVERDUE' : reminder.stage.toUpperCase()}</Badge>
+                  </span>
+                  <span className="block text-[10px] text-[var(--admin-text-secondary)] mt-1">{item.subject || item.type}</span>
+                  <span className="block text-[10px] font-semibold text-[var(--admin-text-tertiary)] mt-1">{new Date(reminder.follow_up_at).toLocaleString()}</span>
+                </button>
+              );
+            })}
+          </div>
+        )}
+      </Card>
 
       <Card variant="solid" className="p-4 sm:p-5 space-y-4">
         <div className="flex flex-wrap gap-2">
