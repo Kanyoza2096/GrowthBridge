@@ -62,7 +62,14 @@ describe('GrowthBridge event-driven agent dispatcher', () => {
     process.env.CLOUDFLARE_ACCOUNT_ID = 'test-account';
     process.env.CLOUDFLARE_API_TOKEN = 'test-token';
     const rpc = vi.fn().mockResolvedValue({ data: [], error: null });
-    vi.mocked(createAdminClient).mockReturnValue({ rpc } as never);
+    const serviceQuery = {
+      select: vi.fn().mockReturnThis(),
+      eq: vi.fn().mockReturnThis(),
+      is: vi.fn().mockReturnThis(),
+      order: vi.fn().mockResolvedValue({ data: [], error: null }),
+    };
+    const from = vi.fn(() => serviceQuery);
+    vi.mocked(createAdminClient).mockReturnValue({ rpc, from } as never);
 
     const response = await POST(request('test-dispatch-secret'));
     expect(response.status).toBe(200);
@@ -103,15 +110,27 @@ describe('GrowthBridge event-driven agent dispatcher', () => {
       maybeSingle: vi.fn().mockResolvedValue({ data: { id: 'job-1' }, error: null }),
     };
     const update = vi.fn().mockReturnValue(finalizeQuery);
+    const serviceQuery = {
+      select: vi.fn().mockReturnThis(),
+      eq: vi.fn().mockReturnThis(),
+      is: vi.fn().mockReturnThis(),
+      order: vi.fn().mockResolvedValue({
+        data: [{ title: 'Web Design & Development', tagline: 'Business websites', description: 'Design and build business websites.' }],
+        error: null,
+      }),
+    };
     const from = vi.fn((table: string) => table === 'contact_submissions'
       ? contactQuery
-      : { update });
+      : table === 'services'
+        ? serviceQuery
+        : { update });
     vi.mocked(createAdminClient).mockReturnValue({ rpc, from } as never);
 
     const agentResult = {
       classification: 'sales_lead',
       priority: 'normal',
       summary: 'The visitor is exploring a website for a small business.',
+      reply_draft: 'Thanks for reaching out. We would be happy to learn more about your website goals.',
       recommended_services: ['Web Design & Development'],
       missing_information: ['Business type', 'Desired launch window'],
       suggested_next_step: 'Ask what the website should help the business achieve.',
@@ -130,6 +149,8 @@ describe('GrowthBridge event-driven agent dispatcher', () => {
     expect(JSON.stringify(modelRequest)).toContain('I need a website for my small business.');
     expect(JSON.stringify(modelRequest)).not.toContain('private@example.com');
     expect(JSON.stringify(modelRequest)).not.toContain('Private Name');
+    expect(JSON.stringify(modelRequest)).toContain('Web Design & Development');
+    expect(JSON.stringify(modelRequest)).toContain('published_services');
     expect(update).toHaveBeenCalledWith(expect.objectContaining({
       status: 'completed',
       result: agentResult,
