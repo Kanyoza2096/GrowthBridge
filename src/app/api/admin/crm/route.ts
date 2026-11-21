@@ -52,12 +52,12 @@ export async function POST(request: NextRequest) {
     source?: string; id?: string; action?: string; content?: string;
     followUpAt?: string | null; stage?: string; conversionValue?: number | null;
   } | null;
-  if (!validLead(body?.source || null, body?.id || null) || !body?.action) {
+  if (!body || !validLead(body.source || null, body.id || null) || !body.action) {
     return NextResponse.json({ success: false, error: 'A valid lead and action are required' }, { status: 400 });
   }
 
-  const source = body.source;
-  const id = body.id;
+  const source = body.source as Source;
+  const id = body.id as string;
   let activityType = '';
   let content: string | null = null;
   let metadata: Record<string, unknown> = {};
