@@ -7,6 +7,8 @@ on:
     - cron: '*/5 * * * *'
   workflow_dispatch:
   push:
+    branches:
+      - main
     paths:
       - '.github/workflows/kdo-website-outbox.yml'
 
@@ -19,6 +21,7 @@ jobs:
     timeout-minutes: 2
     steps:
       - name: Dispatch pending KDO website events
+        if: github.ref == 'refs/heads/main'
         env:
           DISPATCH_URL: ${{ vars.GROWTHBRIDGE_KDO_DISPATCH_URL }}
           DISPATCH_SECRET: ${{ secrets.KDO_WEBSITE_DISPATCH_SECRET }}
@@ -38,3 +41,28 @@ jobs:
             --header "Authorization: Bearer $DISPATCH_SECRET" \
             --write-out '\nHTTP_STATUS=%{http_code}\n' \
             "$DISPATCH_URL"
+      - name: Dispatch pending GrowthBridge agent jobs
+        if: always() && github.ref == 'refs/heads/main'
+        env:
+          DISPATCH_URL: ${{ vars.GROWTHBRIDGE_KDO_DISPATCH_URL }}
+          DISPATCH_SECRET: ${{ secrets.KDO_WEBSITE_DISPATCH_SECRET }}
+        run: |
+          if [ -z "$DISPATCH_URL" ] || [ -z "$DISPATCH_SECRET" ]; then
+            echo "GrowthBridge agent dispatcher is not configured; skipping safely."
+            exit 0
+          fi
+          case "$DISPATCH_URL" in
+            https://*) ;;
+            *) echo "Dispatcher URL must use HTTPS."; exit 1 ;;
+          esac
+          case "$DISPATCH_URL" in
+            */api/kdo/events/dispatch) ;;
+            *) echo "The configured KDO dispatcher URL has an unexpected path."; exit 1 ;;
+          esac
+          AGENT_URL="${DISPATCH_URL%/api/kdo/events/dispatch}/api/growthbridge-agent/dispatch"
+          curl --fail-with-body --silent --show-error \
+            --connect-timeout 10 --max-time 45 \
+            --request POST \
+            --header "Authorization: Bearer $DISPATCH_SECRET" \
+            --header "Accept: application/json" \
+            "$AGENT_URL"
