@@ -119,17 +119,6 @@ export async function POST(request: NextRequest) {
   if (!accountId || !apiToken) return NextResponse.json({ ok: false, error: 'Cloudflare Workers AI is not configured.' }, { status: 503 });
 
   const admin = createAdminClient();
-  const { data: jobs, error: claimError } = await admin.rpc('claim_growthbridge_agent_jobs', {
-    p_limit: 2,
-    p_lease_seconds: 90,
-  });
-  if (claimError) {
-    console.error('[GrowthBridge Agent] Queue claim failed:', claimError.message);
-    return NextResponse.json({ ok: false, error: 'Unable to claim agent jobs.' }, { status: 500 });
-  }
-
-  if (!jobs?.length) return NextResponse.json({ ok: true, claimed: 0, completed: 0, retried: 0, failed: 0 });
-
   const { data: serviceRows, error: serviceError } = await admin.from('services')
     .select('title, tagline, description')
     .eq('status', 'published')
@@ -144,6 +133,17 @@ export async function POST(request: NextRequest) {
     tagline: service.tagline || '',
     description: (service.description || '').slice(0, 350),
   }));
+
+  const { data: jobs, error: claimError } = await admin.rpc('claim_growthbridge_agent_jobs', {
+    p_limit: 2,
+    p_lease_seconds: 90,
+  });
+  if (claimError) {
+    console.error('[GrowthBridge Agent] Queue claim failed:', claimError.message);
+    return NextResponse.json({ ok: false, error: 'Unable to claim agent jobs.' }, { status: 500 });
+  }
+
+  if (!jobs?.length) return NextResponse.json({ ok: true, claimed: 0, completed: 0, retried: 0, failed: 0 });
 
   let completed = 0;
   let retried = 0;
