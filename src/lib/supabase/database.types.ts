@@ -1104,6 +1104,63 @@ export type Database = {
         Update: { id?: string; recipient_id?: string; type?: string; title?: string; message?: string; link?: string | null; read?: boolean; created_at?: string }
         Relationships: [{ foreignKeyName: "admin_notifications_recipient_id_fkey"; columns: ["recipient_id"]; isOneToOne: false; referencedRelation: "profiles"; referencedColumns: ["id"] }]
       }
+      growthbridge_agent_jobs: {
+        Row: {
+          id: string
+          event_type: string
+          contact_submission_id: string
+          status: string
+          attempt_count: number
+          max_attempts: number
+          available_at: string
+          locked_until: string | null
+          lease_token: string | null
+          result: Json | null
+          last_error: string | null
+          created_at: string
+          updated_at: string
+          completed_at: string | null
+        }
+        Insert: {
+          id?: string
+          event_type?: string
+          contact_submission_id: string
+          status?: string
+          attempt_count?: number
+          max_attempts?: number
+          available_at?: string
+          locked_until?: string | null
+          lease_token?: string | null
+          result?: Json | null
+          last_error?: string | null
+          created_at?: string
+          updated_at?: string
+          completed_at?: string | null
+        }
+        Update: {
+          id?: string
+          event_type?: string
+          contact_submission_id?: string
+          status?: string
+          attempt_count?: number
+          max_attempts?: number
+          available_at?: string
+          locked_until?: string | null
+          lease_token?: string | null
+          result?: Json | null
+          last_error?: string | null
+          created_at?: string
+          updated_at?: string
+          completed_at?: string | null
+        }
+        Relationships: [{
+          foreignKeyName: "growthbridge_agent_jobs_contact_submission_id_fkey"
+          columns: ["contact_submission_id"]
+          isOneToOne: false
+          referencedRelation: "contact_submissions"
+          referencedColumns: ["id"]
+        }]
+      }
       kdo_website_event_outbox: {
         Row: { id: string; integration_id: string; event_id: string; event_type: string; event_version: string; occurred_at: string; payload: Json; status: string; attempt_count: number; next_attempt_at: string; locked_until: string | null; lease_token: string | null; last_error: string | null; created_at: string; delivered_at: string | null }
         Insert: { id?: string; integration_id: string; event_id: string; event_type: string; event_version?: string; occurred_at: string; payload?: Json; status?: string; attempt_count?: number; next_attempt_at?: string; locked_until?: string | null; lease_token?: string | null; last_error?: string | null; created_at?: string; delivered_at?: string | null }
@@ -1211,6 +1268,7 @@ export type Database = {
         Returns: undefined
       }
       unaccent: { Args: { "": string }; Returns: string }
+      claim_growthbridge_agent_jobs: { Args: { p_limit?: number; p_lease_seconds?: number }; Returns: { id: string; contact_submission_id: string; attempt_count: number; lease_token: string }[] }
       claim_kdo_website_event_outbox: { Args: { p_limit?: number; p_lease_seconds?: number }; Returns: Database["public"]["Tables"]["kdo_website_event_outbox"]["Row"][] }
       publish_kdo_blog_content: { Args: { p_idempotency_key: string; p_workspace_id: string; p_request_sha256: string; p_title: string; p_slug: string; p_content: string; p_excerpt: string | null; p_cover_image: string | null; p_status: string }; Returns: Json }
       delete_media_with_storage_cleanup: {
