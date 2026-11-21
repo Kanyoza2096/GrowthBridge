@@ -83,7 +83,7 @@ async function analyzeEnquiry(subject: string, message: string, type: string, se
           },
           { role: 'user', content: JSON.stringify({ enquiry_type: type, subject, message: message.slice(0, 5000), published_services: services }) },
         ],
-        max_tokens: 500,
+        max_tokens: 850,
         temperature: 0.15,
       }),
       signal: AbortSignal.timeout(18000),
