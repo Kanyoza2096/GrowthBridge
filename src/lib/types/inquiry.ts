@@ -5,7 +5,7 @@ export type AgentLeadAnalysis = {
   classification: 'sales_lead' | 'support_request' | 'partnership' | 'general' | 'spam_or_abuse';
   priority: 'low' | 'normal' | 'high';
   summary: string;
-  reply_draft: string;
+  reply_draft?: string;
   recommended_services: string[];
   missing_information: string[];
   suggested_next_step: string;
