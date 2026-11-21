@@ -37,7 +37,7 @@ export class InquiryRepository {
           submittedAt:r.created_at, notes:[], history:[],
           agentStatus: agentJob?.status as Inquiry['agentStatus'],
           agentAnalysis: agentJob?.status === 'completed' && agentJob.result
-            ? agentJob.result as AgentLeadAnalysis
+            ? agentJob.result as unknown as AgentLeadAnalysis
             : undefined,
         };
       }),
