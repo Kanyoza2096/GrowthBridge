@@ -19,6 +19,7 @@ jobs:
     timeout-minutes: 2
     steps:
       - name: Dispatch pending KDO website events
+        if: github.ref == 'refs/heads/main'
         env:
           DISPATCH_URL: ${{ vars.GROWTHBRIDGE_KDO_DISPATCH_URL }}
           DISPATCH_SECRET: ${{ secrets.KDO_WEBSITE_DISPATCH_SECRET }}
@@ -39,7 +40,7 @@ jobs:
             --write-out '\nHTTP_STATUS=%{http_code}\n' \
             "$DISPATCH_URL"
       - name: Dispatch pending GrowthBridge agent jobs
-        if: always()
+        if: always() && github.ref == 'refs/heads/main'
         env:
           DISPATCH_URL: ${{ vars.GROWTHBRIDGE_KDO_DISPATCH_URL }}
           DISPATCH_SECRET: ${{ secrets.KDO_WEBSITE_DISPATCH_SECRET }}
