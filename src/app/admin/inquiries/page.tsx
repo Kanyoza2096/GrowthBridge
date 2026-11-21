@@ -227,7 +227,7 @@ function AgentAnalysisPanel({ inquiry, compact = false }: { inquiry: Inquiry; co
         {analysis && (
           <>
             <Badge variant={priorityVariant} className="text-[9px] uppercase">{analysis.priority} priority</Badge>
-            <Badge variant="outline" className="text-[9px]">{analysis.classification.replaceAll('_', ' ')}</Badge>
+            <Badge variant="outline" className="text-[9px]">{analysis.classification.replace(/_/g, ' ')}</Badge>
           </>
         )}
       </div>
