@@ -119,7 +119,7 @@ export async function POST(request: NextRequest) {
 
   const admin = createAdminClient();
   const { data: jobs, error: claimError } = await admin.rpc('claim_growthbridge_agent_jobs', {
-    p_limit: 5,
+    p_limit: 2,
     p_lease_seconds: 90,
   });
   if (claimError) {

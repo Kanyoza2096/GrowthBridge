@@ -67,7 +67,7 @@ describe('GrowthBridge event-driven agent dispatcher', () => {
     const response = await POST(request('test-dispatch-secret'));
     expect(response.status).toBe(200);
     await expect(response.json()).resolves.toMatchObject({ ok: true, claimed: 0, completed: 0 });
-    expect(rpc).toHaveBeenCalledWith('claim_growthbridge_agent_jobs', { p_limit: 5, p_lease_seconds: 90 });
+    expect(rpc).toHaveBeenCalledWith('claim_growthbridge_agent_jobs', { p_limit: 2, p_lease_seconds: 90 });
     expect(fetch).not.toHaveBeenCalled();
   });
 
