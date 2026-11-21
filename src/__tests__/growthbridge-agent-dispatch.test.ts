@@ -62,7 +62,14 @@ describe('GrowthBridge event-driven agent dispatcher', () => {
     process.env.CLOUDFLARE_ACCOUNT_ID = 'test-account';
     process.env.CLOUDFLARE_API_TOKEN = 'test-token';
     const rpc = vi.fn().mockResolvedValue({ data: [], error: null });
-    vi.mocked(createAdminClient).mockReturnValue({ rpc } as never);
+    const serviceQuery = {
+      select: vi.fn().mockReturnThis(),
+      eq: vi.fn().mockReturnThis(),
+      is: vi.fn().mockReturnThis(),
+      order: vi.fn().mockResolvedValue({ data: [], error: null }),
+    };
+    const from = vi.fn(() => serviceQuery);
+    vi.mocked(createAdminClient).mockReturnValue({ rpc, from } as never);
 
     const response = await POST(request('test-dispatch-secret'));
     expect(response.status).toBe(200);
