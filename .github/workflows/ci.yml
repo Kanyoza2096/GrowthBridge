@@ -22,7 +22,7 @@ jobs:
       NEXT_PUBLIC_AUTONOMOUS_PLATFORM_ENABLED: 'false'
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with:
           node-version: 20
       # Install exactly the dependency graph captured by package-lock.json.
