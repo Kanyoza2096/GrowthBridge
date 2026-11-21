@@ -187,6 +187,8 @@ function InquiryCard({
           </p>
         )}
 
+        <AgentAnalysisPanel inquiry={inquiry} compact />
+
         {inquiry.notes.length > 0 && (
           <div className="flex items-center gap-2 text-[10px] text-[var(--admin-text-tertiary)] font-semibold">
             <span aria-hidden="true" className="text-[var(--admin-accent)]">●</span>
@@ -206,6 +208,79 @@ function InquiryCard({
         </div>
       </div>
     </Card>
+  );
+}
+
+
+function AgentAnalysisPanel({ inquiry, compact = false }: { inquiry: Inquiry; compact?: boolean }) {
+  if (!inquiry.agentStatus) return null;
+  const analysis = inquiry.agentAnalysis;
+  const priorityVariant = analysis?.priority === 'high' ? 'orange' : analysis?.priority === 'low' ? 'outline' : 'blue';
+
+  return (
+    <section className="rounded-xl border border-[var(--gb-green-600)]/25 bg-[var(--gb-green-600)]/5 p-3 space-y-2">
+      <div className="flex flex-wrap items-center gap-2">
+        <span className="text-[10px] font-extrabold uppercase tracking-wider text-[var(--gb-green-400)]">AI lead triage</span>
+        <Badge variant={inquiry.agentStatus === 'completed' ? 'green' : inquiry.agentStatus === 'failed' ? 'orange' : 'blue'} className="text-[9px] uppercase">
+          {inquiry.agentStatus}
+        </Badge>
+        {analysis && (
+          <>
+            <Badge variant={priorityVariant} className="text-[9px] uppercase">{analysis.priority} priority</Badge>
+            <Badge variant="outline" className="text-[9px]">{analysis.classification.replaceAll('_', ' ')}</Badge>
+          </>
+        )}
+      </div>
+
+      {analysis ? (
+        <>
+          <p className="text-xs leading-relaxed text-[var(--admin-text-primary)]">{analysis.summary}</p>
+          {!compact && (
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+              <div>
+                <p className="text-[10px] uppercase font-bold text-[var(--admin-text-tertiary)] mb-1">Recommended services</p>
+                {analysis.recommended_services.length ? (
+                  <ul className="list-disc pl-4 space-y-1 text-xs text-[var(--admin-text-secondary)]">
+                    {analysis.recommended_services.map((service) => <li key={service}>{service}</li>)}
+                  </ul>
+                ) : <p className="text-xs text-[var(--admin-text-tertiary)]">No service recommendation yet.</p>}
+              </div>
+              <div>
+                <p className="text-[10px] uppercase font-bold text-[var(--admin-text-tertiary)] mb-1">Information to clarify</p>
+                {analysis.missing_information.length ? (
+                  <ul className="list-disc pl-4 space-y-1 text-xs text-[var(--admin-text-secondary)]">
+                    {analysis.missing_information.map((item) => <li key={item}>{item}</li>)}
+                  </ul>
+                ) : <p className="text-xs text-[var(--admin-text-tertiary)]">No missing details identified.</p>}
+              </div>
+            </div>
+          )}
+          {!compact && (
+            <>
+              <div className="rounded-lg bg-[var(--admin-surface-card)]/60 p-2.5">
+                <p className="text-[10px] uppercase font-bold text-[var(--admin-text-tertiary)] mb-1">Suggested next step</p>
+                <p className="text-xs text-[var(--admin-text-primary)]">{analysis.suggested_next_step}</p>
+              </div>
+              {analysis.risk_flags.length > 0 && (
+                <div className="rounded-lg border border-orange-500/25 bg-orange-500/5 p-2.5">
+                  <p className="text-[10px] uppercase font-bold text-orange-300 mb-1">Needs careful human review</p>
+                  <ul className="list-disc pl-4 space-y-1 text-xs text-[var(--admin-text-secondary)]">
+                    {analysis.risk_flags.map((flag) => <li key={flag}>{flag}</li>)}
+                  </ul>
+                </div>
+              )}
+              <p className="text-[10px] text-[var(--admin-text-tertiary)]">Model confidence: {Math.round(analysis.confidence * 100)}%. AI-generated guidance only; verify before acting.</p>
+            </>
+          )}
+        </>
+      ) : (
+        <p className="text-xs text-[var(--admin-text-secondary)]">
+          {inquiry.agentStatus === 'pending' ? 'The enquiry is queued for AI analysis.' :
+            inquiry.agentStatus === 'processing' ? 'The agent is analysing this consented enquiry.' :
+              'The agent could not complete its analysis. Please review this enquiry manually.'}
+        </p>
+      )}
+    </section>
   );
 }
 
@@ -324,6 +399,10 @@ function InquiryDetailModal({
               {inquiry.message || '(No message included with this submission.)'}
             </p>
           </div>
+        </div>
+
+        <div className="px-6 py-4 border-b border-[var(--admin-border)]">
+          <AgentAnalysisPanel inquiry={inquiry} />
         </div>
 
         <div className="px-6 py-3 border-b border-[var(--admin-border)] flex gap-2">
