@@ -267,7 +267,7 @@ function AgentAnalysisPanel({ inquiry, compact = false }: { inquiry: Inquiry; co
                     <p className="text-[10px] uppercase font-bold text-[var(--admin-text-tertiary)]">Suggested customer reply</p>
                     <button
                       type="button"
-                      onClick={() => void navigator.clipboard.writeText(analysis.reply_draft)}
+                      onClick={() => void navigator.clipboard.writeText(analysis.reply_draft || '')}
                       className="rounded-lg border border-[var(--admin-border-strong)] px-2.5 py-1.5 text-[10px] font-bold text-[var(--gb-green-400)] hover:bg-[var(--admin-surface-soft)] focus:outline-none focus:ring-2 focus:ring-[var(--gb-green-500)]"
                       aria-label="Copy suggested customer reply"
                     >
