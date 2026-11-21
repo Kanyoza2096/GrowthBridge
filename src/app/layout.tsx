@@ -1,6 +1,5 @@
 import type { Metadata, Viewport } from 'next';
-import '@fontsource-variable/inter';
-import '@fontsource-variable/plus-jakarta-sans';
+import '@fontsource-variable/montserrat';
 import '@fontsource-variable/jetbrains-mono';
 import './globals.css';
 import { QueryProvider } from '@/components/providers/QueryProvider';
