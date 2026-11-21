@@ -28,7 +28,7 @@ async function authorized(request: NextRequest): Promise<boolean> {
   const expected = process.env.GROWTHBRIDGE_AGENT_DISPATCH_SECRET?.trim()
     || process.env.KDO_WEBSITE_DISPATCH_SECRET?.trim()
     || '';
-  const supplied = request.headers.get('authorization')?.replace(/^Bearer\\s+/i, '') || '';
+  const supplied = request.headers.get('authorization')?.replace(/^Bearer\s+/i, '') || '';
   if (!expected || supplied.length !== expected.length) return false;
   const encoder = new TextEncoder();
   const [expectedHash, suppliedHash] = await Promise.all([
@@ -43,7 +43,7 @@ async function authorized(request: NextRequest): Promise<boolean> {
 }
 
 function parseAgentJson(value: string): unknown {
-  const trimmed = value.trim().replace(/^\`\`\`(?:json)?\\s*/i, '').replace(/\\s*\`\`\`$/, '');
+  const trimmed = value.trim().replace(/^\`\`\`(?:json)?\s*/i, '').replace(/\s*\`\`\`$/, '');
   try { return JSON.parse(trimmed); } catch {
     const start = trimmed.indexOf('{');
     const end = trimmed.lastIndexOf('}');
@@ -57,7 +57,7 @@ async function analyzeEnquiry(subject: string, message: string, type: string) {
   const apiToken = process.env.CLOUDFLARE_API_TOKEN?.trim();
   const model = process.env.CLOUDFLARE_AI_MODEL?.trim() || '@cf/meta/llama-3.3-70b-instruct-fp8-fast';
   if (!accountId || !apiToken) throw new Error('Cloudflare Workers AI is not configured.');
-  if (!/^@cf\\/[a-zA-Z0-9._-]+\\/[a-zA-Z0-9._-]+$/.test(model)) throw new Error('Invalid Cloudflare model identifier.');
+  if (!/^@cf\/[a-zA-Z0-9._-]+\/[a-zA-Z0-9._-]+$/.test(model)) throw new Error('Invalid Cloudflare model identifier.');
 
   const response = await fetch(
     'https://api.cloudflare.com/client/v4/accounts/' + encodeURIComponent(accountId) + '/ai/run/' + model,
