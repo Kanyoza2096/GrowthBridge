@@ -85,17 +85,14 @@ export async function POST(request: NextRequest) {
       '[Source ' + (index + 1) + ': ' + item.title + ' | ' + item.source + ']\n' + item.content
     ).join('\n\n').slice(0, 24000);
 
-    const upstream = await fetch('https://api.openai.com/v1/chat/completions', {
+    const upstream = await fetch('https://api.openai.com/v1/responses', {
       method: 'POST',
       headers: { Authorization: 'Bearer ' + apiKey, 'Content-Type': 'application/json' },
       body: JSON.stringify({
         model: process.env.OPENAI_MODEL?.trim() || 'gpt-4o-mini',
-        temperature: 0.35,
-        max_tokens: 550,
-        messages: [
-          { role: 'system', content: SYSTEM_PROMPT + '\n\nPUBLISHED WEBSITE KNOWLEDGE:\n' + (knowledgeText || 'No published content is currently available. Do not invent details.') },
-          ...parsed.data.messages.map((message) => ({ role: message.role, content: message.content })),
-        ],
+        instructions: SYSTEM_PROMPT + '\n\nPUBLISHED WEBSITE KNOWLEDGE:\n' + (knowledgeText || 'No published content is currently available. Do not invent details.'),
+        input: parsed.data.messages.map((message) => ({ role: message.role, content: message.content })),
+        max_output_tokens: 550,
       }),
       signal: AbortSignal.timeout(18000),
       cache: 'no-store',
